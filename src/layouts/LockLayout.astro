@@ -1,0 +1,94 @@
+---
+import "../styles/global.scss";
+
+interface Props {
+  /** Pass only the part AFTER the pipe, e.g. "Category — Subcategory — Project Title" */
+  title?: string;
+  /** If provided, use this exact string for <title> (bypasses the site-name prefix) */
+  fullTitle?: string;
+  /** Optional meta description */
+  description?: string;
+  /** Social/OG image: absolute or relative path */
+  image?: string;
+  /** Alt text for the social image */
+  imageAlt?: string;
+  /** Open Graph type: 'website' | 'article' (default 'website') */
+  ogType?: 'website' | 'article';
+  /** Set true to add robots noindex,nofollow */
+  noIndex?: boolean;
+}
+
+const SITE_NAME = "Men's Shed Townsville";
+
+const {
+  title = "",
+  fullTitle = "",
+  description = "",
+  image = "",
+  imageAlt = "",
+  ogType = "website",
+  noIndex = false,
+} = Astro.props as Props;
+
+const computedTitle = fullTitle ? fullTitle : (title ? `${SITE_NAME} | ${title}` : SITE_NAME);
+const metaDescription = description || "Men's Shed Townsville community projects and events.";
+
+const canonicalUrl = Astro.url?.href ?? "";
+// Make the OG image absolute if a relative path was provided
+const ogImage = image ? new URL(image, Astro.url).href : "";
+const twitterCard = ogImage ? "summary_large_image" : "summary";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{computedTitle}</title>
+
+    <!-- Canonical -->
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- Robots -->
+    {noIndex && <meta name="robots" content="noindex,nofollow" />}
+
+    <!-- Basic meta -->
+    <meta name="description" content={metaDescription} />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content={ogType} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:title" content={computedTitle} />
+    <meta property="og:description" content={metaDescription} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={computedTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Fonts & Sanity CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <slot name="head" />
+  </head>
+  <body>
+    
+    <main>
+      <slot />
+    </main> 
+  </body>
+</html>
