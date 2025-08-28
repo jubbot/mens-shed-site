@@ -1,0 +1,66 @@
+@use '../base/variables' as *;
+
+.store-grid {
+padding:0 20px 20px 20px;
+
+&.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+ &.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  
+    .product-item {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+  
+      img {
+        width: 120px;
+        height: auto;
+        object-fit: contain;
+      }
+  
+      .product-info {
+        flex: 1;
+      }
+    }
+  }
+}
+  
+
+  // Product Card
+  .product-item {
+    background:#FFF;
+    border:1px solid #555;
+
+    h2 {
+        font-weight: 300;
+        display: block;
+        width:100%;
+        color:#333;
+    }
+    .price {
+        color:#333;
+        font-size:1.5rem;
+    }
+  }
+
+  .store-offline-message {
+    padding: 4rem 2rem;
+    text-align: center;
+    opacity: 0.8;
+    font-size: 1.25rem;
+    color: #999;
+  
+    h1 {
+      font-size: 2rem;
+      color: #df4d25;
+      margin-bottom: 0.5rem;
+    }
+  }
+  

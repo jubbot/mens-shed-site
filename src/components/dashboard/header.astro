@@ -1,0 +1,27 @@
+---
+const current = Astro.url.pathname;
+---
+<header>
+  <div class="width-fixed grid gap align-bottom">
+    <div class="l-4 m-4 s-12">
+      <a href="/" class="brand">
+          <img src="/images/mensshed-logo-coloured.svg" alt="Men’s Shed Townsville Logo" width="150" height="auto" />
+      </a>
+  </div>
+    <!-- Navigation -->
+ <div class="l-8 m-8 s-12">
+     <div class="topbar grid align-center content-end">
+        <span><a href="/"><i class="wt-home"></i> Return to Home</a></span>
+        <span><a href="/dashboard/user"><i class="wt-user1"> </i> Hello William Thomas</a></span>
+         </div>
+     <nav class="grid content-end">
+         <div class="has-dropmenu">
+         <a href="/dashboard/products" class={current === '/dashboard/products' ? 'active' : ''}>Products</a></div>
+         <div><a href="/dashboard/projects" class={current === '/dashboard/projects' ? 'active' : ''}>Projects</a></div>
+          <div><a href="/dashboard/events" class={current === '/dashboard/whats-on' ? 'active' : ''}>What's on</a></div>
+         <div><a href="/whats-on" class={current === '/dashboard/members' ? 'active' : ''}>Members</a></div>
+       
+     </nav>
+ </div>
+    </div>
+</header>

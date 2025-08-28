@@ -1,0 +1,16 @@
+@page { size: A4; margin: 12mm; }
+@media print {
+  /* hide things inside the form you don't want printed */
+  #membership-form .btn,
+  #membership-form button { display:none !important; }
+
+  /* avoid ugly splits */
+  #membership-form section, 
+  #membership-form .form-group { break-inside: avoid; page-break-inside: avoid; }
+
+  body {
+    background:red;
+  }
+}
+
+ 

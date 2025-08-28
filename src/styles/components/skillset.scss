@@ -1,0 +1,201 @@
+@use '../base/variables' as *;
+
+// Skillset Grid
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 2rem auto; /* Center the grid horizontally */
+    max-width: 1400px;  /* Limit width so grid stays centered */
+    padding: 0 1rem;    /* Small padding for mobile screens */
+    justify-content: center; /* Center grid items if row isn't full */
+
+    .skill-item {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #000;
+      position: relative;
+      display: flex;
+      flex-direction: column; /* safer for content stacking */
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: 0.3s;
+      cursor: pointer;
+    &:hover:before {
+        background:#fff;
+    }
+    &:before {
+        background: #f0f0f0;
+        position:absolute;
+        top:10px;
+        left:10px;
+        right:10px;
+        bottom:10px;
+        content:'';
+        display:block;
+        transition: .1ms ease-in;  
+    }
+    .content {
+        padding:1rem;
+        position: relative;
+        z-index: 1;
+    }
+    h2 {
+        font-size:5rem;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        white-space: nowrap;
+        font-family: sans-serif;
+    }
+    span {
+        font-size:1.3rem;
+    }
+    .legend-icon {
+        position:absolute;
+        top:9px; right:5px;
+        font-size:1.2rem;
+        border:1px solid #111;
+        padding:5px;
+        border-radius:0 0 0 4px;
+    }
+// Animate skill-item card
+&.active .overlay {
+    opacity: 1;
+    pointer-events: auto;
+}    
+// Animate the icons 
+&.active .overlay .tools {
+    img {transform: translate(0);opacity: 1;}
+    img:nth-child(1) {transition-delay: 0.1s;}
+    img:nth-child(2) {transition-delay: 0.3s;}
+    img:nth-child(3) {transition-delay: 0.5s;}
+    img:nth-child(4) {transition-delay: 0.8s;}
+    img:nth-child(5) {transition-delay: 0.11s;}
+}
+    &.active {
+        cursor: auto;
+    &:before, &:after {
+        position: absolute;
+        z-index: 2;
+        top:0; left:0; 
+        right:0; bottom:0;
+        content:'';
+        opacity:1;
+    }
+    &:before { background:#333;}
+    &:after {
+        background-image: url('#{$assets-url}/bg-grid-grey.svg');
+        background-size: 12px;
+        background-position: 0 0;
+        opacity:.5;
+        animation: scroll-bg 10s linear infinite;
+    }
+    }
+    &.active .overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+// Animate the rating 
+.rating i:before  {
+   opacity:0;
+    transform: translateY(-5px);
+    transition: opacity 1.4s ease, transform 0.4s ease;
+}
+&.active .rating {
+i:before {
+   opacity: 1;
+    transform: translate(0);
+}
+    i:nth-child(1):before {transition-delay: 0.1s;}
+    i:nth-child(2):before {transition-delay: 0.3s;}
+    i:nth-child(3):before {transition-delay: 0.5s;}
+    
+    &.excellent {
+        i:before { background:#DF4D25;}
+    }
+    &.good {
+        i:nth-child(1):before { background:#DF4D25;}
+        i:nth-child(2):before { background:#DF4D25;}
+    }
+    &.fair {
+        i:nth-child(1):before { background:#DF4D25;}
+    }
+}
+}
+.overlay {
+    position:absolute;
+    top:10px;
+    bottom:10px;
+    left:10px;
+    right:10px;
+    z-index: 3;
+    display:flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease, transform 0.3s ease;
+    color:#FFF;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+h3 {
+    font-family: sans-serif;
+    font-weight:400;
+}
+.level {
+    margin:10px 0;     
+    .caption {font-size:11pt;}
+    .rating {
+        display:flex;
+        margin:5px auto;
+        width:120px;
+
+        i {
+            background:#CCC;
+            height: 8px;
+            width:33.33%;
+            margin-right:5px;
+            position:relative;
+        }
+        i:last-child {margin-right:0;}
+        i:before {
+            position:absolute;
+            left:0; top:0;
+            right:0; bottom:0;
+            content:'';            
+        }
+    }
+      }
+}
+.tools {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+    justify-content: center;
+    img {
+      height: 30px;
+      width: auto;
+      transform: translateY(20px);
+      opacity:0;
+      transition: opacity 1.4s ease, transform 0.4s ease; 
+    }
+  }
+}
+
+// Page Header 
+.section-header {
+    padding:20px 10px;
+    text-align: center;
+    h1 {
+        font-weight: 300;
+        font-size:2.5rem;
+        line-height: 2.5rem;
+    }
+    p {
+        font-size:1.2rem;
+        margin:0; padding:0;
+    }
+
+}

@@ -1,0 +1,211 @@
+.help-block {
+    margin: 5px 0;
+    padding: 5px 5px 5px 10px;
+    font-size: 9pt;
+    font-weight: 300;
+    display: inline-block;
+    clip-path: polygon(
+        0 0, 100% 0, 100% 100%, calc(0% + 10px) 100%, 0 calc(100% - 10px)
+    );
+    border-radius: 2px;
+    text-align: center;
+    text-transform: uppercase;
+
+    &.form-field-error-label {
+        background-image: linear-gradient(30deg, #525252 25%, #474747 25%, #474747 50%, #525252 50%, #525252 75%, #474747 75%, #474747 100%);
+        background-size: 60.00px 34.64px;
+        color: #FFF;
+    }
+}
+
+.has-error {
+    input[type=text], textarea, iframe {
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+}
+
+.scroll-y {
+    position: relative;
+    z-index: 1;
+}
+
+.upload-files-container {
+    .upload-object {
+        background: #FFF;
+        display: flex;
+        border-radius: 3px;
+        align-items: center;
+        margin: 10px 0;
+        border: 1px solid #afafaf;
+        transition: .3s linear;
+        height: 100px;
+        overflow: hidden;
+        cursor: pointer;
+
+        &:hover {
+            & {
+            background: #eaeaea;
+            }
+
+            .upload-remove-button {
+                color: #b95050;
+            }
+        }
+    }
+
+    .icon-container {
+        width: 120px;
+        border-right: 1px solid #afafaf;
+        padding: 10px;
+    }
+
+    .info {
+        width: calc(100% - 120px - 60px);
+        padding: 10px;
+    }
+
+    .meta {
+        width: 40px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .size {
+        margin: 0;
+        font-size: 9pt;
+        border: 1px solid #afafaf;
+        border-radius: 3px;
+        background: #FFF;
+        padding: 5px;
+        display: table-cell;
+    }
+
+    .upload-remove-button {
+        font-size: 30pt;
+        color: #CCC;
+        font-weight: 400;
+        font-family: 'Teko';
+    }
+}
+
+.notice h4 {
+    font-family: 'Teko';
+    font-size: 30pt;
+    font-weight: 400;
+    color: #333;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+
+    label {
+        font-size: 13pt;
+        text-transform: uppercase;
+    }
+}
+
+.split-2 {
+    margin: 0 -10px;
+
+    > div {
+        flex-grow: 1;
+        margin: 10px;
+    }
+}
+
+// CUSTOM CONTACT FORM
+.grid.half {
+    & {
+    margin: 0 -10px;
+    }
+
+    .form-group {
+        flex-grow: 1;
+        margin: 10px;
+    }
+}
+
+.grid.full {
+    & {
+    margin: 0 -10px;
+    }
+
+    .form-group {
+        width: calc(100% - 20px);
+        margin: 10px;
+    }
+}
+
+.cell-group {
+    input[type=radio] {
+        display: none;
+    }
+}
+
+.select-style {
+    text-align: center;
+    font-family: 'Teko';
+    width: calc(100% - 20px);
+    padding: 10px;
+    display: block;
+    background: rgba(255, 255, 255, .6);
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    position: relative;
+    transition: .3s linear;
+
+    h3, h4, .price-range {
+        color: #BBB;
+        transition: .3s linear;
+    }
+
+    h3 {
+        font-size: 30pt;
+        font-weight: 400;
+        text-transform: uppercase;
+
+        b {
+            font-weight: 500;
+        }
+    }
+
+    h4 {
+        font-weight: 400;
+        font-size: 15pt;
+    }
+
+    &:hover {
+        opacity: 1;
+
+        h3, h4, .price-range {
+            color: #333;
+        }
+    }
+}
+
+.project-brief {
+    h1 {
+        font-family: 'Teko';
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+}
+
+.upload-note {
+    padding: 10px 5px;
+    font-size: 9pt;
+    text-transform: uppercase;
+
+    span {
+        display: inline-block;
+        padding-right: 10px;
+        border-right: 1px solid #333;
+        margin-right: 10px;
+    }
+
+    span:last-child {
+        border-right: none;
+    }
+}

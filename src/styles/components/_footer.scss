@@ -1,0 +1,141 @@
+@use '../base/variables' as *;
+footer {
+background:$dark1;
+ color:$dark3;
+ border-top:10px solid $light5;
+ padding:30px 0px 100px 0px;
+ position: relative;
+
+  &:before {
+    position: absolute;
+    opacity: .2;
+    filter:brightness(40%);
+    top:0; bottom:0;
+    left:0; right:0;
+    background: url('/images/file.svg');
+    background-repeat: repeat; /* optional */
+    background-size: 30rem; /* or cover/contain depending on desired look */
+    background-position: center;
+    content: '';
+  }
+
+  
+
+ > div:nth-child(1) {
+    margin-bottom:20px;
+ 
+ }
+ a {
+    color:#a0a0a0;
+    &:hover {color:$light5;}
+ }
+ .slogan {
+  font-size: 1.8rem;
+  line-height: 2.6rem;
+  margin-bottom:40px;
+  span {
+    color:$light5;
+  }
+ }
+ .grid:nth-child(2) > div {
+  border-right:2px dashed $light5;    
+ }
+ .grid > div:last-child {border-right:none;}
+ 
+ h3 {
+    font-size:1.5rem;
+    text-transform: uppercase;
+    margin-bottom:10px;
+    display:flex;
+    align-items: center;
+    i {margin-left:10px;}
+    .flip {transform:rotate(180deg);}
+ }
+ h4 {
+    margin-top:30px;
+    font-size:1.2rem;
+ }
+ 
+.credit {
+    margin-top:30px;
+}
+
+.links {
+ 
+padding:0;
+list-style: none;
+li {margin-bottom:5px;}
+li a {
+    color:#FFF;
+    padding:5px 0;
+    display: block;
+&:hover {color:$light5;}
+}
+
+}
+ 
+.contact-reveal {
+    display: flex;
+    flex-direction: column;
+    button {
+        margin:10px 0;
+    }
+}
+
+ .legal {
+    display:flex;
+    align-items: center;
+    i {margin-right:5px;}
+  span {
+   border-right:1px solid $light2;
+   margin-right:5px;
+   padding-right:10px;
+  &:last-child {
+   margin-right: 0;
+   padding-left:0;
+   border:none;
+  }
+  }
+  a {
+   color:$dark2;
+   opacity:.5;
+   &:hover {opacity: 1;}
+  }
+ }
+
+ }
+
+   .social-share {
+    display:flex; gap:.5rem; align-items:center; justify-content:flex-end; flex-wrap:wrap;
+  }
+  .btn-icon {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px; border-radius:999px;
+    border:1px solid #111; background:#444; color: #FFF;
+    text-decoration:none; line-height:1; cursor:pointer;
+  }
+  .btn-icon i { font-size:18px; line-height:1; }
+  .btn-icon:hover { filter: brightness(130%); }
+
+  // PAYMENT
+ .paynote {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+.sr-only {display:none;}
+.lock i {font-size:1.3rem; margin-right:5px; color:$light5;}
+.stripe {margin-left:10px;}
+.stripe i {font-size:4rem;} 
+}
+.anti-fraud {
+    margin-top:40px;
+    display:flex;
+    align-items: center;
+    a {
+        border-bottom:2px solid #444;
+        padding:2px 5px;
+        margin-left:5px;
+    }
+}

@@ -5,11 +5,26 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "astro preview --port 4321",
+    "pdf:membership": "npm run build && start-server-and-test 'npm run preview' http://localhost:4321/membership 'node scripts/pdf/generate-membership-pdf.mjs'",
+    "pdf:dev": "node scripts/pdf/generate-membership-pdf.mjs",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.8.0",
+    "@aws-sdk/client-s3": "^3.864.0",
+    "@aws-sdk/s3-request-presigner": "^3.864.0",
+    "@libsql/client": "^0.15.14",
+    "@sanity/client": "^7.8.2",
+    "@tailwindcss/postcss": "^4.1.7",
+    "@tailwindcss/vite": "^4.1.7",
+    "astro": "^5.12.5",
+    "better-sqlite3": "^12.2.0",
+    "groq": "^4.4.1",
     "next-auth": "^4.24.11"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.16.2",
+    "sass": "^1.89.0",
+    "start-server-and-test": "^2.0.13"
   }
 }

@@ -1,0 +1,19 @@
+---
+const { project } = Astro.props;
+// Expect shape from the GROQ above
+const cat = project?.category
+const sub = project?.subcategory
+const catHref = cat ? `/projects/category/${cat.slug}` : null
+const subHref = (cat && sub) ? `/projects/category/${cat.slug}/${sub.slug}` : null
+---
+<div class="tags">
+  {cat && (
+    <a class="tag tag--cat" href={catHref}>{cat.title}</a>
+  )}
+  {sub && (
+    <>
+      <span class="sep">/</span>
+      <a class="tag tag--sub" href={subHref}>{sub.title}</a>
+    </>
+  )}
+</div>

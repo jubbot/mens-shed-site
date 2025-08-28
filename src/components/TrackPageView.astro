@@ -1,0 +1,16 @@
+---
+// src/components/TrackPageView.astro
+export interface Props { key: string }
+const { key } = Astro.props;
+---
+<script is:inline>
+  (function(){
+    var k = {JSON.stringify(key)};
+    if (!k) return;
+    var tag = 'pv_page_' + k;
+    if (sessionStorage.getItem(tag)) return;
+    sessionStorage.setItem(tag, '1');
+    fetch('/api/analytics/track?kind=page&key=' + encodeURIComponent(k), { cache:'no-store' })
+      .catch(function(){});
+  })();
+</script>

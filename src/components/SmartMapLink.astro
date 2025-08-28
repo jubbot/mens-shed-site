@@ -1,0 +1,95 @@
+---
+/**
+ * SmartMapLink
+ * Props:
+ * - lat: number
+ * - lng: number
+ * - mode: 'place' | 'directions' (default: 'place')
+ * - variant: 'link' | 'button' (default: 'link')
+ * - class: string (optional) -> extra classes on the rendered element
+ */
+const {
+  lat,
+  lng,
+  mode = 'place',
+  variant = 'link',
+  class: extraClass = ''
+} = Astro.props;
+
+if (typeof lat !== 'number' || typeof lng !== 'number') {
+  throw new Error('SmartMapLink requires numeric lat and lng props');
+}
+
+const coords = `${lat},${lng}`;
+const googleHref =
+  mode === 'directions'
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
+
+const appleHref =
+  mode === 'directions'
+    ? `https://maps.apple.com/?daddr=${encodeURIComponent(coords)}`
+    : `https://maps.apple.com/?q=${encodeURIComponent(coords)}`;
+
+// detection is client-side; server fallback uses Google (safe)
+const baseAttrs = {
+  'data-google': googleHref,
+  'data-apple': appleHref,
+  'aria-label': mode === 'directions' ? 'Get directions' : 'Open in Maps',
+};
+---
+
+{variant === 'link' ? (
+  <a
+    class={`map-link ${extraClass}`}
+    href={googleHref}           /* no-JS fallback */
+    target="_blank"
+    rel="noopener"
+    {...baseAttrs}
+  >
+    <slot>{mode === 'directions' ? 'Get directions' : 'Open in Maps'}</slot>
+  </a>
+) : (
+  <button
+    type="button"
+    class={`map-btn ${extraClass}`}
+    {...baseAttrs}
+  >
+    <slot>{mode === 'directions' ? 'Get directions' : 'Open in Maps'}</slot>
+  </button>
+)}
+
+<script is:inline>
+  (function () {
+    const el = document.currentScript?.previousElementSibling;
+    if (!el) return;
+
+    const ua = navigator.userAgent || '';
+    const vendor = navigator.vendor || '';
+    const platform = navigator.platform || '';
+
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isMac = /Mac/.test(platform) || /Macintosh/.test(ua);
+    const isIPadDesktopMode = isMac && navigator.maxTouchPoints > 1;
+    const isApple = isIOS || isIPadDesktopMode || /Apple/i.test(vendor) || isMac;
+
+    // For <a>, swap href to Apple; for <button>, open correct URL on click
+    if (el.tagName === 'A') {
+      if (isApple) {
+        const apple = el.getAttribute('data-apple');
+        if (apple) el.setAttribute('href', apple);
+      }
+      return;
+    }
+
+    if (el.tagName === 'BUTTON') {
+      el.addEventListener('click', () => {
+        const apple = el.getAttribute('data-apple');
+        const google = el.getAttribute('data-google');
+        const url = (isApple ? apple : google) || google;
+        if (!url) return;
+        window.open(url, '_blank', 'noopener');
+      });
+    }
+  })();
+</script>

@@ -1,0 +1,8 @@
+@use '../base/variables' as *;
+
+// Notification
+.notification-banner {
+  background:$light1;
+  color:$dark2;
+  padding:10px;
+}

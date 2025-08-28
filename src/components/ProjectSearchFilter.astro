@@ -1,0 +1,32 @@
+---
+interface Props { action?: string }
+const { action } = Astro.props as Props;
+
+const url = new URL(Astro.request.url);
+const sp = url.searchParams;
+
+const qRaw = (sp.get('q') || '').trim();
+
+// preserve active category context
+const cat = sp.get('category') || '';
+const sub = sp.get('subcategory') || '';
+
+const formAction = action || url.pathname;
+
+// Build Reset href: keep category/subcategory; clear q
+function resetHref() {
+  const u = new URL(formAction, url.origin);
+  if (cat) u.searchParams.set('category', cat);
+  if (sub) u.searchParams.set('subcategory', sub);
+  return u.pathname + u.search;
+}
+---
+
+<form method="get" class="filters" id="project-filters" action={formAction}> 
+     <input id="q" name="q" type="search" placeholder="Search projects…" value={qRaw} />
+     <button type="submit" class="btn btn-search"><i class="wt-magnify"></i></button>
+      <a class="btn" href={resetHref()}><i class="wt-update"></i></a>
+    
+  {cat && <input type="hidden" name="category" value={cat} />}
+  {sub && <input type="hidden" name="subcategory" value={sub} />}
+</form>

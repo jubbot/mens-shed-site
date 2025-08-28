@@ -1,0 +1,133 @@
+---
+/**
+ * Lightweight popup newsletter modal
+ * - Opens once after delay
+ * - Close on ×, backdrop, or Esc
+ * - Stays closed via localStorage
+ */
+const {
+  delayMs = 6000,
+  cooloffDays = 30,
+  storageKey = 'ns_modal_v1',
+  title = 'Join our newsletter',
+  blurb = 'News, events, and projects—no spam.'
+} = Astro.props;
+
+import Newsletter from './newsletter.astro';
+---
+
+<div id="newsletter-modal" class="ns-root" hidden>
+  <div class="ns-backdrop" data-close></div>
+
+  <section
+    class="ns-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ns-title"
+    aria-describedby="ns-desc"
+    tabindex="-1"
+  >
+    <button type="button" class="ns-close" data-close aria-label="Close">×</button>
+
+    <header class="ns-head">
+      <h2 id="ns-title">{title}</h2>
+      <p id="ns-desc">{blurb}</p>
+    </header>
+
+    <div class="ns-body">
+      <Newsletter />
+    </div>
+
+    <p class="ns-note">
+      Unsubscribe anytime. Read our <a href="/privacy">privacy policy</a>.
+    </p>
+  </section>
+</div>
+
+<script is:inline>
+(() => {
+  // Guard against duplicate mounts
+  if (window.__NEWSLETTER_MODAL_INIT__) return;
+  window.__NEWSLETTER_MODAL_INIT__ = true;
+
+  const root = document.getElementById('newsletter-modal');
+  if (!root) return;
+
+  const delayMs = {delayMs};
+  const cooloffDays = {cooloffDays};
+  const storageKey = {JSON.stringify(storageKey)};
+
+  const LAST_KEY = storageKey + ':last';
+  const DISMISSED_KEY = storageKey + ':dismissed';
+  const DAY = 86400000;
+
+  const now = Date.now();
+  const last = Number(localStorage.getItem(LAST_KEY) || 0);
+  const dismissed = Number(localStorage.getItem(DISMISSED_KEY) || 0);
+
+  // Respect cooloff
+  if ((last && (now - last) < cooloffDays * DAY) ||
+      (dismissed && (now - dismissed) < cooloffDays * DAY)) {
+    return;
+  }
+
+  const dlg = root.querySelector('.ns-dialog');
+  let opened = false;
+  let timer = null;
+
+  const actuallyShow = () => {
+    // use both: remove hidden + add class
+    root.hidden = false;
+    root.classList.add('is-open');
+    document.body.classList.add('no-scroll');
+  };
+
+  const actuallyHide = () => {
+    root.classList.remove('is-open');
+    root.hidden = true; // relies on [hidden]{display:none!important}
+    document.body.classList.remove('no-scroll');
+  };
+
+  const open = () => {
+    if (opened) return;
+    opened = true;
+    actuallyShow();
+    dlg && dlg.focus();
+    localStorage.setItem(LAST_KEY, String(Date.now()));
+  };
+
+  const close = (persistDismiss = true) => {
+    if (!opened) return;
+    opened = false;
+    actuallyHide();
+    if (persistDismiss) localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    if (timer) { clearTimeout(timer); timer = null; }
+  };
+
+  // Open once after delay
+  timer = setTimeout(open, Math.max(0, delayMs));
+
+  // Close handlers (backdrop, ×, Esc)
+  root.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (t.closest('[data-close]')) close(true);
+  }, true);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close(true);
+  });
+
+  // Consider newsletter submit a dismissal
+  root.addEventListener('submit', (e) => {
+    if (e.target instanceof HTMLFormElement) {
+      localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    }
+  }, true);
+
+  // Expose helpers for testing
+  window.openNewsletterModal = open;
+  window.closeNewsletterModal = close;
+})();
+</script>
+ 

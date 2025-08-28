@@ -1,0 +1,83 @@
+@use '../base/variables' as *;
+
+// HERO
+.hero {
+ min-height: calc(100vh - 200px);
+}
+
+.hero-5 {
+  padding:5% 0;
+}
+
+.hero-5 {
+  border-top:1px solid $light5;
+  position:relative;
+      &:before {
+    position: absolute;
+    opacity: .2;
+     top:0; bottom:0; left:0; right:0;
+    background: url('/images/file.svg');
+    background-repeat: repeat; /* optional */
+    background-size: 17rem; /* or cover/contain depending on desired look */
+    background-position: center;
+    content: '';
+    z-index: -1;
+  }
+}
+.hero-1, .hero-2, .hero-3, .hero-4 {
+  min-height: 70vh;
+}
+
+.hero, .hero-1, .hero-2, .hero-3, .hero-4, .hero-5 {
+
+  .wrap {
+    padding:30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+.hero, .hero-2, .hero-4 {
+ background: #f3f3f3;
+}
+.hero-1 {
+  background:#FFF;
+
+  p {
+    margin:0; padding:10px 0;
+  }
+}
+
+.left-angle {
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 10%, 100% 90%, 0% 100%);
+}
+
+.statistic {
+  margin:20px 0;
+  .figure {
+    font-size:1.2rem;
+    margin-right:20px;
+    &:last-child {margin-right:0;}
+  
+    span {color:$light2; font-weight: 600;}
+  }
+}
+.txt-center {  text-align: center;}
+.txt-right {text-align: right;}
+
+
+// Member List
+.members-list {
+  list-style: none;
+  margin:20px 0;
+  padding:0;
+  display:flex;
+  flex-wrap: wrap;
+
+  li {
+    padding:10px;
+    margin:5px;
+    border-radius:5px;
+    background:$light5;
+  }
+}

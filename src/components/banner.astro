@@ -1,0 +1,55 @@
+---
+import { sanity } from '../lib/sanityClient';
+
+const query = `{
+  "membersTotal": count(*[_type=="member" && !(_id in path("drafts.**"))]),
+  "mentors": count(*[_type=="member" && !(_id in path("drafts.**")) && lower(role) == "mentor"]),
+  "projects": count(*[_type=="project" && !(_id in path("drafts.**"))])
+}`;
+
+let membersTotal = 0, mentors = 0, projects = 0;
+
+try {
+  const data = await sanity.fetch(query);
+  membersTotal = data?.membersTotal ?? 0;
+  mentors = data?.mentors ?? 0;
+  projects = data?.projects ?? 0;
+} catch (err) {
+  console.error('[banner] Sanity fetch failed:', err);
+}
+
+// Choose what to display as "Members":
+const members = membersTotal;           // total membership (includes mentors)
+// const members = membersTotal - mentors; // (optional) non-mentor members only
+
+const fmt = (n) => (typeof n === 'number' ? n.toLocaleString() : n);
+---
+
+ 
+  <div class="grid gap banner">
+    <div class="l-8 m-8 s-12">
+      <div class="crumpbet">
+        <span><a href="#">Projects</a></span>
+        <span>Results</span>
+      </div>
+
+      <h1 class="l-txt">Built by Blokes, Backed by the Community</h1>
+
+      <div class="statistic grid">
+        <div class="figure"><span>{fmt(members)}</span> Members</div>
+        <div class="figure"><span>{fmt(mentors)}</span> Mentors</div>
+        <div class="figure"><span>{fmt(projects)}</span> Projects</div>
+      </div>
+    </div>
+
+    <div class="l-4 m-4 s-4">
+      <div class="tipbox">
+        <h3>How to support us</h3>
+        <p>Townsville men generously volunteer their time
+          and expertise to support local community projects
+          — and they’re seeking your support to continue
+          making a difference.</p>
+        <a href="/support" class="btn btn-delta">Learn how to support us</a>
+      </div>
+    </div>
+  </div>

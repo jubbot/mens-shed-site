@@ -1,0 +1,18 @@
+.recent-events { display: grid; gap: .75rem; }
+.re-head { display: flex; align-items: center; justify-content: space-between; }
+.re-head h2 { margin: 0; font-size: 1.25rem; }
+.re-all { text-decoration: none; color: var(--link, #2c64d6); font-weight: 600; }
+.re-all:hover { text-decoration: underline; }
+
+.re-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin:0 0 100px 0; padding:0;
+  
+}
+@media (max-width: 920px) { .re-list { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .re-list { grid-template-columns: 1fr; } }
+
+.re-item { list-style: none; }
+.re-empty { color: #5f6b7a; }

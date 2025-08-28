@@ -1,0 +1,28 @@
+ // PAGINATION
+.pagination {
+     margin:50px 0;
+     display:flex;
+     flex-wrap:wrap;
+     width:100%;
+     justify-content: center;
+     list-style: none;
+     padding:0;
+        
+    
+     li {padding:5px 10px;}
+     li.active a {
+           background:#333;
+        color:#FFF;
+     }
+     span, a {
+         border:1px solid #333;
+         background:#FFF;
+         padding:5px 10px;
+         color:#333;
+         border-radius:0 5px 0 5px;
+     }
+     .page-item a {color:#333;}
+      li a:hover {background:#777; color:#FFF;}
+     .page-item.active span {background:#333; color:#FFF; cursor:crosshair;}
+     .page-item.disabled {opacity:.5; cursor:crosshair;}
+ }

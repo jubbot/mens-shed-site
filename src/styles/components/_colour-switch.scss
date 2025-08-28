@@ -1,0 +1,481 @@
+@use '../base/variables' as *;
+
+// LIGHT MODE
+html.lightmode body {
+    background: #fff;
+    color: #111;
+  
+    .wt-logo {fill: $light2;}
+  }
+  
+  // DARK MODE
+  html.darkmode body {
+    background: #222;
+    color: #eee;
+ 
+    &:after { opacity: .1;}
+
+    // BUTTON
+    .btn-beta {
+      color:$dark2;
+    }
+    #layout-header { background: $dark1;}
+    .wt-logo {fill: $dark3;}
+    .william-thomas {fill: $dark3;}
+
+    #layout-header nav {
+      .item.active a, .item.active a:hover {color:$dark4;}
+      .item a {color:$dark3;}
+      .item a:hover {color:$dark2;}
+    } 
+  .tagline {
+    color:$dark3;
+    &.highlight {
+      color: $dark4;
+    }
+  }
+
+  // TABSET 
+  .tab_label {
+    border-right: 1px solid $dark5;
+    
+    &:before { background: $dark1;} // Front TAB BG
+    &:after { background: $dark5;} // Back TAB BG
+    &:hover:before { background: linear-gradient(180deg, rgb(20, 20, 20) 0%, rgb(60, 60, 60) 100%);
+
+    }
+  }
+    #tab1:checked ~ #tabset .tab:nth-child(1) .tab_label:before,
+    #tab2:checked ~ #tabset .tab:nth-child(2) .tab_label:before,
+    #tab3:checked ~ #tabset .tab:nth-child(3) .tab_label:before {
+      background: linear-gradient(180deg, rgb(20, 20, 20) 0%, rgb(30, 30, 30) 100%);
+
+    }
+    #tabset_single .tab_label::before {
+      background: #1b1b1b;
+  }
+  #tabset_single .tab_label {
+    .knob a {color:$dark2;}
+  }
+   
+ // PROJECTS
+ .project-item {
+  background: $dark1;
+  border-color:$dark5;
+  &:hover {border-color:$dark6;}
+ }
+ .project-title { color:$dark3;}
+
+ // GREETING CARD
+.greeting-card {
+   background: $dark1;
+   color: $dark3;
+ 
+   &:hover {
+     border-color: #000;
+     background: $dark5;
+     i:before {
+       content: "\e95e";
+       color:#f5632e;
+     }
+   }
+   &:before {
+     background:url('#{$assets-url}/project_slide_bg_darkmode.svg');
+     opacity:.5; 
+   }
+   h2 { color:$dark2; text-shadow: none;}
+  }
+
+// FILTER 
+.filters {   
+  background-color:$dark5;
+  border-color:$dark5;
+  box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+    &:before {
+      background:url('#{$assets-url}/project_slide_bg_darkmode.svg');
+    }
+  }
+  .filter-group { 
+    label { color:$dark3;}
+    select, option, input[type="checkbox"] {
+      background:$dark5;
+      border-color:$dark1;
+      color:$dark2;
+     
+    }
+    input[type="checkbox"] {
+      position: relative;
+      &:before {
+        width:10px;
+        height: 10px;
+        position:absolute;
+        content:'';
+        top:0; left:0;
+        border:1px solid $dark1;
+        background:$dark5;
+        border-radius:3px;
+      }
+    }
+  }
+// FILTER MENU
+.filter-group.dropdown {
+  .dropdown-toggle {
+    background:$dark5;
+    border-color:$dark1;
+    color:$dark2;
+  }
+  .dropdown-content {
+    background:$dark5;
+    button {color:$dark2;}       
+    button:hover {background:$dark6;}
+    button.active {background:$dark6;}
+  }
+}
+
+// TOOLKITS
+.skill-item {
+  background:$dark7;
+&:before {background:$dark5;}
+&:hover:before { background:$dark6;}
+.legend-icon { border-color:$dark7; background:$dark7;}
+}
+
+// LEGEND 
+.skill-legend { 
+  background:$dark5;
+  color:$dark2;
+  border-color:$dark3;
+h3 {border-color:$dark3;}
+small {color:$dark3;}
+}
+
+// CALL TO ACTION
+.call-to-action {
+  color:$dark3;
+  a {color:$dark2;}
+}
+
+// PAGE HEADING
+.page-heading {
+  h1 {color:$dark3;}
+  .category-name {color:$dark2;}
+  p {color:$dark3; opacity:.6;}
+}
+
+// SPEECH BUBBLE
+.speech-bubble {
+  background:$dark5;
+  border-color:$dark1;
+  &:after {
+   background:$dark5;
+   border-color:$dark1;
+  }
+ }
+
+// CONTACT
+.contact-form {
+  max-width:1200px;
+   margin: 2rem auto;
+   display: grid;
+   padding:0 40px;
+   gap: 1.5rem;
+   position: relative;
+   z-index: 10;
+   margin-bottom:4rem;
+  button {
+   font-family: sans-serif;
+  }
+   .form-group {   
+     .input-wrapper {       
+       .input-icon { color:$dark4; 
+       }
+       input:focus,
+       textarea:focus,
+       select:focus {
+         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+       }
+      
+       input,
+       select,
+       textarea {
+         border-color:$dark6;
+         background:$dark1;
+         color:$dark3;
+         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+         &:focus {
+           border-color:$dark4;
+           background: $dark1;
+           color:$dark3;
+         }
+       }
+       
+     }
+   }    
+ }
+
+ // PROJECT SELECTOR
+ .project-type-selector {
+ .category-card {
+    background:$dark1;
+    border-color:$dark5; 
+    h3 { border-bottom-color:$dark5;}
+    .options {
+      button {
+        color:$dark2;
+        background:$dark1;
+        border-color:$dark6;
+        &:hover {background:$dark6;}
+        &.active {
+          background:$dark4;
+          color:$dark3;
+          small {color:$dark2;}
+        }
+        small { color:$dark3;}
+          }
+        }
+  }
+}
+
+.project-type-header {
+  #projectTypeCounter { color:$dark3;}
+}
+.options button[data-option^="custom-"] {
+  background:$dark1;
+  border-color:$dark4 important;
+  color:$dark5;
+}
+
+
+// DROPZONE
+.dropzone {
+  border-color:$dark5;
+  background:$dark7;
+  &:hover {background:$dark6;}
+  &.dragover {
+    border-color:$dark4;
+    background:$dark1;
+  }
+}
+// PRICE BUDGET RANGE 
+.slider-wrapper {
+
+  // Floating Budget Label
+  .budget-label {
+    color:$dark3;
+    background:$dark6;
+    border-color:$dark1;
+  }
+
+// Slider Track
+  input[type="range"] {
+    background: 
+      linear-gradient(
+        to right,
+        var(--slider-color, #df4d25) 0%,
+        var(--slider-color, #df4d25) var(--slider-fill, 50%),
+        $dark1 var(--slider-fill, 50%),
+        $dark6 100%
+      ),
+      linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(30, 30, 30, 0) 30%
+      );
+    border:1px solid $dark5;
+  }
+
+  // Tick Marks
+  datalist {
+    option {    
+      &::before {
+        content: "";
+        background:$dark7;
+        border-color:$dark3;
+      }
+      &.active::before {
+        background:$dark7;         
+      }
+    }
+  }
+}
+// CALENDAR
+.flatpickr-calendar {
+background:$dark7;
+border:1px solid $dark6;
+box-shadow:none !important;
+}
+.flatpickr-months .flatpickr-month {
+  background:$dark7;
+  color:$dark3;
+  fill:$dark3;
+}
+.flatpickr-weekday {
+  color:$dark3;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {   
+    color:$dark3;
+    fill:$dark3;
+}
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: $dark4;
+}
+.numInputWrapper span {border-color:$dark5;}
+.numInputWrapper span:hover {background:$dark4;}
+.numInputWrapper span:active {background:$dark4;}
+
+.flatpickr-current-month span.cur-month:hover {background:red;}
+.flatpickr-current-month .numInputWrapper span.arrowUp:after { border-bottom-color:$dark2;}
+.flatpickr-current-month .numInputWrapper span.arrowDown:after {border-top-color:$dark2;}
+.flatpickr-current-month input.cur-year[disabled],
+.flatpickr-current-month input.cur-year[disabled]:hover {
+    color:red;
+}
+.flatpickr-day.prevMonthDay.today {color:$dark4;}
+.flatpickr-day.prevMonthDay.flatpickr-disabled {color:$dark6;}
+
+.flatpickr-day:focus,
+.flatpickr-day.prevMonthDay:focus,
+.flatpickr-day.nextMonthDay:focus 
+.flatpickr-day.prevMonthDay:hover {background:none;}
+
+.flatpickr-day {
+  color: $dark8;
+&:hover {background:$dark9; color:$dark2; border-color:transparent;}
+&.flatpickr-disabled:hover {background:$dark1;}
+}
+
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
+.flatpickr-day.nextMonthDay.today.inRange
+{
+   background:red;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.selected.prevMonthDay,
+.flatpickr-day.startRange.prevMonthDay,
+.flatpickr-day.endRange.prevMonthDay,
+.flatpickr-day.selected.nextMonthDay,
+.flatpickr-day.startRange.nextMonthDay,
+.flatpickr-day.endRange.nextMonthDay {
+    background:$dark4;
+    color:$dark2;
+    border-color:$dark4;
+}
+ 
+
+// REFERRAL BUTTONS
+#referral-selector {
+  button { 
+  background:$dark7;
+  border-color:$dark6;
+  color:$dark3;
+   &:hover {background:$dark6;}
+   &.active {
+     background:$dark4;
+     color:$dark2;
+   }
+ }
+ }
+
+ //PROJECT
+
+ // Crumpbets 
+.crumbs { 
+ border-bottom-color:$dark6;
+ background:$dark7;
+span {
+  color:$dark5;
+  border-right-color:$dark6;
+&:last-child {
+  color:$dark2;
+}
+a {
+  color:$dark3;
+  &:hover {color:$dark4;}
+}
+}
+}
+
+// Project Tabs 
+.project-tabs {
+  .tab-buttons {
+    button {
+      background:$dark1;
+      border-color:$dark5;
+      color:$dark3;
+    &:hover {background:$dark5;}  
+    &.active { color:#ff5c21;}
+    }
+  }
+}
+
+// Explore NAVigation
+.explore-nav {
+   .item {
+     border-color:$dark5;
+     background:$dark1;
+   }
+   h4 {font-size:1.8rem; line-height:1.8rem; font-weight: 200; text-transform: uppercase;}
+   .status {color:$dark6;
+   }
+ }
+
+}
+  
+  // THEME TOGGLE
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+  
+  .theme-toggle .track {
+    position: relative;
+    width: 40px;
+    height: 10px;
+    background: #666;
+    border-radius:5px;
+    transition: background 0.3s;
+  }
+  
+  .theme-toggle .handle {
+    position: absolute;
+    top: -2px;
+    left: 0px;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.3s;
+  }
+  
+  html.darkmode body {
+    .theme-toggle .handle {
+    left: 25px;
+    background: #eee;
+    }
+    .theme-toggle .track {background:#222;}
+  }
+  

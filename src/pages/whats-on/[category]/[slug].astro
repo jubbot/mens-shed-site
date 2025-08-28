@@ -1,0 +1,116 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import { sanity } from '../../../lib/sanityClient';
+
+const { category, slug } = Astro.params;
+
+const SEGMENT_TO_TYPE = {
+  'social-event': 'socialEvent',
+  'workshop': 'workshop',
+  'creative-activity': 'creative',
+};
+const TYPE_LABEL = {
+  socialEvent: 'Social Events',
+  workshop: 'Workshops & Skill Building',
+  creative: 'Creative Activities',
+};
+const type = SEGMENT_TO_TYPE[category];
+
+const QUERY = `*[_type == "whatsOn" && slug.current == $slug][0]{
+  _id,
+  title,
+  "slug": slug.current,
+  type,
+  location,
+  startTime,
+  endTime,
+  description,
+  hasSeatLimit,
+  seatCapacity,
+  seatsReserved,
+  allowWaitlist,
+  firstThumbnail{asset->{url}, alt},
+  secondThumbnail{asset->{url}, alt}
+}`;
+
+let event = null;
+try {
+  event = await sanity.fetch(QUERY, { slug });
+} catch (e) {
+  event = null;
+}
+
+if (!event) {
+  throw new Error('Not Found');
+}
+
+// if URL category doesn't match the document type, you can still render;
+// (optional) you could add a canonical URL hint or a redirect if you want.
+event.spotsLeft = event.hasSeatLimit
+  ? Math.max(0, Number(event.seatCapacity || 0) - Number(event.seatsReserved || 0))
+  : null;
+event.isSoldOut = !!event.hasSeatLimit && (event.spotsLeft ?? 0) <= 0;
+
+const tz = 'Australia/Brisbane';
+const fmtDate = (d) => new Date(d).toLocaleDateString('en-AU', { weekday:'short', day:'numeric', month:'short', year:'numeric', timeZone: tz });
+const fmtTime = (d) => new Date(d).toLocaleTimeString('en-AU', { hour:'2-digit', minute:'2-digit', timeZone: tz });
+---
+
+<Layout title={event.title}>
+  <div class="wrapper event-detail">
+    <nav class="crumbs">
+      <a href="/whats-on">What’s On</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/whats-on/${category}`}>{TYPE_LABEL[type] ?? 'Category'}</a>
+      <span aria-hidden="true">/</span>
+      <strong>{event.title}</strong>
+    </nav>
+
+    <article>
+      <header class="hero">
+        <picture class="poster">
+          {event.firstThumbnail?.asset?.url ? (
+            <img src={event.firstThumbnail.asset.url} alt={event.firstThumbnail?.alt || event.title} loading="eager" />
+          ) : null}
+        </picture>
+
+        <div class="meta">
+          <h1>{event.title}</h1>
+          <ul class="facts">
+            {event.location ? <li><strong>Location:</strong> {event.location}</li> : null}
+            <li><strong>Date:</strong> {fmtDate(event.startTime)}</li>
+            <li><strong>Time:</strong> {fmtTime(event.startTime)}{event.endTime ? ` – ${fmtTime(event.endTime)}` : ''}</li>
+            {event.hasSeatLimit ? (
+              <li>
+                <strong>Spots left:</strong> {event.spotsLeft}
+                {event.isSoldOut ? ' (Sold out)' : ''}
+                {(!event.isSoldOut && event.allowWaitlist) ? ' · Waitlist available' : ''}
+              </li>
+            ) : <li><strong>Seats:</strong> No limit</li>}
+          </ul>
+        </div>
+      </header>
+
+      {event.description ? (
+        <section class="desc">
+          <h2>About this event</h2>
+          <p>{event.description}</p>
+        </section>
+      ) : null}
+
+      {event.secondThumbnail?.asset?.url ? (
+        <figure class="secondary">
+          <img src={event.secondThumbnail.asset.url} alt={event.secondThumbnail?.alt || event.title} loading="lazy" />
+        </figure>
+      ) : null}
+    </article>
+  </div>
+  <script is:inline>
+  import { trackHit } from '../../../../lib/track.ts';
+  const cat = Astro.params.category;
+  const slug = Astro.params.slug;
+  trackHit({ section: 'whats-on', category: cat, slug, path: location.pathname });
+</script>
+</Layout>

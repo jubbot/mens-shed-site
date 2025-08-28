@@ -1,0 +1,39 @@
+@use "./components/header";
+@use "./components/footer";
+@use "./layouts/grid";
+@use "./components/hero";
+@use "./components/buttons";
+@use "./components/projects";
+@use "./components/project";
+@use "./components/section";
+@use "./components/carousel";
+@use "./components/crumpbet";
+@use "./components/contact";
+@use "./components/form";
+@use "./components/card";
+@use "./components/productCard";
+@use "./components/categoryAccordion";
+@use "./components/projectSearchFilters";
+@use "./components/notification";
+@use "./components/recentEvents";
+@use "./components/newsletter";
+//@use "./components/print";
+@use "./components/dashboard";
+
+
+@use "./base/reset";
+@use "./base/font";
+
+
+.l-txt {font-size:2.2rem;}
+.l-txt-x {font-size:3rem;}
+.m-txt {font-size:1.5rem;}
+.s-txt {font-size:1.3rem;}
+
+// EXTRAS
+
+.support-list {
+  list-style: none;
+  margin:10px 0; padding:0;
+  li {margin-bottom:1rem;}
+}

@@ -1,0 +1,24 @@
+ // Project Filter
+
+ .filters {
+     
+    border-radius:5px;
+    
+   margin-bottom:20px;
+padding:10px;
+display: flex;
+align-items: center;
+
+button, a {
+  width:10px;
+}
+button {
+  background:none;
+  border:none;
+  outline:0;
+}
+input[type="search"] {
+ width:100%;
+} 
+ 
+}

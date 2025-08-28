@@ -1,0 +1,45 @@
+---
+import {sanity} from '../../../lib/sanityClient'
+
+
+// Return array of strings (category slugs)
+export async function getStaticPaths() {
+  const slugs = await sanity.fetch<string[]>(
+    `*[_type=="category" && defined(slug.current)].slug.current`
+  )
+
+  // Keep only truthy strings
+  return slugs
+    .filter((s): s is string => typeof s === 'string' && s.length > 0)
+    .map((categorySlug) => ({ params: { categorySlug } }))
+}
+
+const { categorySlug } = Astro.params as { categorySlug: string }
+
+const projects = await sanity.fetch(
+  `*[_type=="project" && category->slug.current == $categorySlug]{
+    _id, title, "slug": slug.current,
+    category->{title, "slug": slug.current},
+    subcategory->{title, "slug": slug.current, parent->{ "slug": slug.current }}
+  } | order(title asc)`,
+  { categorySlug }
+)
+
+const category = await sanity.fetch(
+  `*[_type=="category" && slug.current==$slug][0]{title}`,
+  { slug: categorySlug }
+)
+
+export const prerender = true
+---
+<h1>Category: {category?.title}</h1>
+
+{projects.length === 0 ? (
+  <p>No projects in this category yet.</p>
+) : (
+  <ul>
+    {projects.map((p) => (
+      <li><a href={`/projects/${p.slug}`}>{p.title}</a></li>
+    ))}
+  </ul>
+)}

@@ -1,0 +1,85 @@
+@use 'variables' as *;
+
+html {
+    min-width: 300px;
+    font-size: 16px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+  font-family:$font1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background:#f8f8f8;
+  &:before {
+    position: fixed;
+    opacity: .1;
+    top:0; bottom:0;
+    left:0; right:0;
+    background: url('/images/file.svg');
+    background-repeat: repeat; /* optional */
+    background-size: 20rem; /* or cover/contain depending on desired look */
+    background-position: center;
+    content: '';
+    z-index: -1;
+  }
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+main {
+  flex: 1;
+  position:relative;
+  z-index: 1;
+
+}
+
+
+h1, h2, h3, h4, h5 {
+    margin: 0;
+    padding: 0;
+}
+
+.sticky {
+    position: sticky;
+    top: 20px;
+}
+
+a {
+    text-decoration: none;
+    transition: .3s linear;
+  color:$light3;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+picture {
+    display: block;
+}
+
+// HIDE ELEMENTS
+@media all and (min-width: 768px) {
+    .webctl {
+        display: none;
+    }
+}
+
+
+iframe {
+  width:100%;
+}

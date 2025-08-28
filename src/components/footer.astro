@@ -1,0 +1,117 @@
+---
+import SocialShare from "../components/SocialShare.astro";
+import PaymentMethods from "../components/PaymentMethods.astro";
+import ContactReveal from "../components/ContactReveal.astro";
+import LegalIds from "../components/LegalIds.astro";
+import SmartMapLink from "../components/SmartMapLink.astro";
+---
+<footer>
+  <div class="wrapper">
+  <div class="grid">
+    <div class="l-8 m-8 s-12">
+      <div class="slogan">Build Mateship<br/><span>One Project at a Time</span></div>
+    </div>
+    <div class="l-4 m-4 s-12">
+      <SocialShare class="justify-end" />
+      <PaymentMethods class="mt-2" showNetworks={false} />
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="l-3 m-3 s-12">
+      <div class="box">
+        <h3>Visit us <i class="wt-pinmap"></i></h3>
+  <address>
+  <SmartMapLink
+    lat={-19.26920036602045}
+    lng={146.80581755020592}
+    class="addr-link"
+  >
+    1 Charters Towers Road<br />Townsville, QLD 4810
+  </SmartMapLink>
+
+  <div class="mt-2">
+    <SmartMapLink
+      lat={-19.26920036602045}
+      lng={146.80581755020592}
+      mode="directions"
+      class="btn-link"
+    >
+      Get directions
+    </SmartMapLink>
+  </div>
+</address>
+
+        <h4 class="mt-2">Open Hours <i class="wt-clock"></i></h4>
+        <p><strong>8:00 AM – 12:00 PM</strong><br>Mon / Tues / Wed / Thurs / Fri</p>
+      </div>
+    </div>
+
+    <div class="l-3 m-3 s-12 grid content-center">
+      <div class="box">
+        <h3>Contact <i class="wt-headphone"></i></h3>
+        <ContactReveal />
+      </div>
+    </div>
+
+    <div class="l-3 m-3 s-12 grid content-center">
+      <div class="box">
+        <h3>Explore <i class="wt-mountain"></i></h3>
+        <ul class="links">
+          <li><a href="/projects">Projects</a></li>
+          <li><a href="/store">Store</a></li>
+          <li><a href="/whats-on">What’s On</a></li>
+          <li><a href="/whats-on/social-event">Social Events</a></li>
+          <li><a href="/whats-on/workshop">Workshops</a></li>
+          <li><a href="/whats-on/creative-activity">Creative Activities</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="l-3 m-3 s-12 grid content-center">
+      <div class="box">
+        <h3>About <i class="wt-hardware flip"></i></h3>
+        <ul class="links">
+          <li><a href="/membership">Membership</a></li>
+          <li><a href="/job-form">Start Job</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/membership-policy">Membership Policy</a></li>
+          <li><a href="/newsletter">Newsletter</a></li>
+           <li><a href="/legal">Legal</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+<div class="grid credit">
+    <div class="l-8 m-8 s-12">
+      <div class="legal">
+        <span><i class="wt-copyright"></i> Men's Shed Townsville 2025</span>
+        <LegalIds abn="37 356 132 362" acncUrl="https://www.acnc.gov.au/charity/your-entry" dgr={true} />
+      </div>
+    </div>
+    <div class="l-4 m-4 s-12 grid content-end">
+      <span>Website by <a href="https://williamthomas.au">William Thomas</a></span>
+    </div>
+  </div>
+
+  <div class="anti-fraud">
+    We never request payments or codes via SMS, email, or DMs. If you receive a suspicious message, report it via the
+    <a href="/contact">contact page</a>.
+  </div>
+</div>
+</footer>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NonprofitOrganization",
+  "name": "Men's Shed Townsville",
+  "url": "https://your-domain.example",
+  "identifier": [
+    { "@type": "PropertyValue", "propertyID": "ABN", "value": "37 356 132 362" },
+    { "@type": "PropertyValue", "propertyID": "ACNC", "value": "Registered Charity" }
+  ],
+  "nonprofitStatus": "NonprofitType",
+  "areaServed": "AU"
+}
+</script>

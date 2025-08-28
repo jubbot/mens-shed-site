@@ -1,0 +1,201 @@
+@use '../base/variables' as *;
+
+// HERO PROJECT
+@supports (height: 100dvh) {
+    .hero-project {
+      height: calc(100dvh - 140px); // preferred modern behavior
+    }
+  }
+.hero-project {
+   width:auto;
+   display:flex;
+   overflow: hidden;
+ 
+   .badge {
+    position: absolute;
+    right:20px;
+    top:20px;
+    text-transform: uppercase;
+    color:$dark3;
+    background:$dark1;
+    border:1px solid $dark5;
+    padding:5px 8px;
+    i {margin-right:10px;}
+   }
+.overlay {
+ 
+    position:absolute;
+    top:0; 
+    right:0;
+    display:flex;
+    align-items: flex-end;
+    color:$dark2;
+    overflow: hidden;
+}
+.item {
+    background:#111;
+    border:1px solid $dark6;
+    height:auto;
+    width:25%;
+    transition:.3s ease;
+    margin-right:20px;
+    opacity:.7;
+    position: relative;
+    background-size:cover;
+    background-position:center center;
+    cursor: pointer;
+    &:last-child {
+        margin-right:0;
+        clip-path: polygon(
+            0% 0%,        /* top-left */
+            calc(100% - 20px) 0%, /* top-right chamfer start */
+            100% 30px,    /* top-right chamfer end */
+            100% 100%,    /* bottom-right */
+            0% 100%       /* bottom-left */
+          );
+    }
+    &:last-child::after {
+        clip-path: polygon(
+            0% 0%,        /* top-left */
+            calc(100% - 20px) 0%, /* top-right chamfer start */
+            100% 30px,    /* top-right chamfer end */
+            100% 100%,    /* bottom-right */
+            0% 100%       /* bottom-left */
+          );
+    }
+    &:before {
+        position: absolute;
+        content:'';
+        top:0; 
+        right:0; bottom:0;
+        width:40%;
+        background: linear-gradient(to left, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+        z-index: 1;
+        pointer-events: none;
+        transition:.3s ease;
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        
+        backdrop-filter: blur(10px);     // frosted effect
+        opacity: 1;
+        transition: opacity 0.3s ease;
+        z-index: 2;
+        pointer-events: none;
+      }
+   
+    h2 {
+        font-weight: 200;
+        text-transform: uppercase;
+        color:$dark3;
+        display:flex;
+        align-items: center;
+
+        &:after {
+            content:'';
+            width:5px;
+            height:20px;
+            margin-left:5px;
+            margin-bottom:5px;
+            background:$dark4;
+            transform: skewX(-20deg);
+            display:inline-flex;
+            transition:.2s ease;
+        }
+    }
+    h1 {
+
+        font-weight: 200;
+      ;
+    }
+    p {
+        margin:0; padding:0;
+    }
+    .btn {
+        margin-top:40px;
+        position:relative;
+        transform: translateY(20px); 
+        opacity:0;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        transition-delay: 0s;
+    }
+}
+.item.active {
+   width:75%;
+   opacity:1;   
+    cursor: auto;
+   &:before {
+    width:0%;
+    background:none;
+    pointer-events: auto;
+}
+&::after {
+    background:transparent;
+    backdrop-filter:none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: auto;
+  }
+   h2 {
+    &:after {
+    transform: skewX(20deg);
+    }
+}
+.btn { transform: translateY(0); opacity:1;   transition-delay: 0.5s; }
+}
+}
+ 
+ 
+
+ .hero-project {
+        @media all and (min-width: 1200px) {
+            height:calc(100vh - 140px);
+            margin:20px;
+            h1 {
+                font-size: calc(5rem + .6vw);
+                line-height: calc(5rem + .6vw);
+                white-space: nowrap
+            }
+
+            h2 {
+                font-size: calc(1rem + 1vw);
+                line-height: calc(1rem + 1vw);
+            }
+
+            p {
+                font-size: calc(2rem + .6vw);
+                line-height: calc(2rem + .6vw);
+            }
+            .overlay {
+                padding:20px;
+                left:30px;
+                bottom:30px; 
+            }
+        }
+
+        @media all and (max-width: 1200px) {
+            height:calc(100vh - 310px);
+            margin:10px;
+            h1 {
+                font-size: calc(3rem + .6vw);
+                line-height: calc(3rem + .6vw);
+            }
+
+            h2 {
+                font-size: calc(1rem + .6vw);
+                line-height: calc(1rem + .6vw);
+            }
+
+            p {
+                font-size: calc(1.3rem + .6vw);
+                line-height: calc(1.3rem + .6vw);
+            }
+            .overlay {
+                padding:10px;
+                left:10px;
+                bottom:10px; 
+            }
+        }
+    }

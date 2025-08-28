@@ -1,0 +1,289 @@
+---
+// src/pages/projects/[category]/[subcategory]/[slug].astro
+export const prerender = false;
+
+import ProjectBanner from '../../../../components/projectBanner.astro';
+import ProjectMeta from '../../../../components/ProjectMeta.astro';
+import ProjectGallery from '../../../../components/ProjectGallery.astro';
+import ProjectCard from '../../../../components/ProjectCard2.astro';
+import ProjectShare from '../../../../components/ProjectShare.astro';
+import Layout from '../../../../layouts/Layout.astro';
+import { sanity } from '../../../../lib/sanityClient';
+import { totalsForKeys } from '../../../../lib/analytics';
+
+const { category, subcategory, slug } = Astro.params;
+
+const QUERY = `*[_type == "project" && slug.current == $slug][0]{
+  _id,
+  title,
+  "slug": slug.current,
+  category->{ title, "slug": slug.current },
+  subcategory->{ title, "slug": slug.current },
+
+  startedAt,
+  volunteers,
+
+  kickstartedBy{
+    kind,
+    name,
+    member->{ firstName, lastName, _id }
+  },
+  assignees[]->{ firstName, lastName, _id },
+
+  summary,
+  jobId,
+  materials,
+  woodTools,
+  metalTools,
+
+  thumbnail{ alt, caption, asset->{ url } },
+  gallery[]{ alt, caption, asset->{ url } },
+
+  _updatedAt
+}`;
+
+let proj: any = null;
+try { proj = await sanity.fetch(QUERY, { slug }); } catch {}
+
+if (!proj) {
+  return Astro.response.redirect('/projects', 302);
+}
+
+// Canonical redirect if URL segments don't match document
+const catSlug = proj?.category?.slug;
+const subSlug = proj?.subcategory?.slug;
+if ((catSlug && category && catSlug !== category) || (subSlug && subcategory && subSlug !== subcategory)) {
+  const target = subSlug
+    ? `/projects/${catSlug}/${subSlug}/${proj.slug}`
+    : `/projects/${catSlug}/${proj.slug}`;
+  return Astro.response.redirect(target, 301);
+}
+
+// ---------- Read-only views for banner ----------
+const safeSlug: string = proj.slug || slug;
+let projectViews = 0;
+try {
+  const rows = totalsForKeys('project', [safeSlug]);
+  projectViews = rows?.[0]?.total ?? 0;
+} catch { /* ignore */ }
+
+const viewsCompact = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1
+}).format(projectViews);
+
+// ---------- Breadcrumb/page title fallbacks ----------
+const routeCat = category ? { title: category.replace(/-/g, ' '), slug: category } : null;
+const routeSub = subcategory ? { title: subcategory.replace(/-/g, ' '), slug: subcategory } : null;
+
+const catForTitle = proj?.category ?? routeCat;
+const subForTitle = proj?.subcategory ?? routeSub;
+
+const pageTitle = [catForTitle?.title, subForTitle?.title, proj?.title]
+  .filter(Boolean).join(' — ') || (proj?.title ?? 'Project');
+
+// Pass a lean object to the banner (includes views)
+const projectForBanner = proj && {
+  title: proj.title,
+  slug: proj.slug,
+  category: proj.category,
+  subcategory: proj.subcategory,
+  startedAt: proj.startedAt,
+  volunteers: proj.volunteers,
+  views: projectViews,  // ← server read-only value for first paint
+  kickstartedBy: proj.kickstartedBy,
+  assignees: proj.assignees,
+};
+
+// ---------- Gallery build ----------
+const imgs: { url: string; alt?: string; caption?: string }[] = [];
+const seen = new Set<string>();
+const pushImg = (url?: string, alt?: string, caption?: string) => {
+  if (!url || seen.has(url)) return;
+  seen.add(url);
+  imgs.push({ url, alt, caption });
+};
+pushImg(proj?.thumbnail?.asset?.url, proj?.thumbnail?.alt || proj?.title, proj?.thumbnail?.caption);
+if (Array.isArray(proj?.gallery)) proj.gallery.forEach((g: any) => pushImg(g?.asset?.url, g?.alt || proj?.title, g?.caption));
+
+const preloadHref = imgs[0]?.url || null;
+
+const relatedHeading = (catForTitle?.title && subForTitle?.title)
+  ? `Similar projects from ${catForTitle.title} | ${subForTitle.title}`
+  : `Similar projects from ${catForTitle?.title ?? 'this category'}`;
+
+// ---------- Related ----------
+const REL_SUB_Q = `*[_type == "project"
+  && slug.current != $slug
+  && defined(category) && defined(subcategory)
+  && subcategory->slug.current == $subSlug]
+  | order(startedAt desc, _updatedAt desc, title asc)[0...6]{
+    title,
+    "slug": slug.current,
+    startedAt,
+    "thumb": { "url": coalesce(thumbnail.asset->url, gallery[0].asset->url),
+               "alt": coalesce(thumbnail.alt,        gallery[0].alt) },
+    "href": "/projects/" + category->slug.current + "/" + subcategory->slug.current + "/" + slug.current
+}`;
+
+const REL_CAT_Q = `*[_type == "project"
+  && slug.current != $slug
+  && defined(category) && defined(subcategory)
+  && category->slug.current == $catSlug]
+  | order(startedAt desc, _updatedAt desc, title asc)[0...6]{
+    title,
+    "slug": slug.current,
+    startedAt,
+    "thumb": { "url": coalesce(thumbnail.asset->url, gallery[0].asset->url),
+               "alt": coalesce(thumbnail.alt,        gallery[0].alt) },
+    "href": "/projects/" + category->slug.current + "/" + subcategory->slug.current + "/" + slug.current
+}`;
+
+let relSub: any[] = [];
+let relCat: any[] = [];
+try {
+  if (subSlug) relSub = await sanity.fetch(REL_SUB_Q, { slug, subSlug });
+  if (catSlug) relCat = await sanity.fetch(REL_CAT_Q, { slug, catSlug });
+} catch {}
+
+function dedupeBySlug(arr: any[]) {
+  const s = new Set<string>(); const out: any[] = [];
+  for (const p of arr) { if (!p?.slug || s.has(p.slug)) continue; s.add(p.slug); out.push(p); }
+  return out;
+}
+relSub = dedupeBySlug(relSub);
+relCat = dedupeBySlug(relCat);
+
+// Interleave to three cards
+const TARGET = 3;
+const pattern: ('sub'|'cat')[] = ['sub', 'sub', 'cat'];
+let iSub = 0, iCat = 0;
+const related: any[] = [];
+const globalSeen = new Set<string>();
+function takeNext(kind: 'sub'|'cat') {
+  if (kind === 'sub') {
+    while (iSub < relSub.length) {
+      const p = relSub[iSub++]; if (!p?.slug || globalSeen.has(p.slug)) continue;
+      globalSeen.add(p.slug); return p;
+    }
+  } else {
+    while (iCat < relCat.length) {
+      const p = relCat[iCat++]; if (!p?.slug || globalSeen.has(p.slug)) continue;
+      globalSeen.add(p.slug); return p;
+    }
+  }
+  return null;
+}
+for (const want of pattern) {
+  if (related.length >= TARGET) break;
+  let picked = takeNext(want) || takeNext(want === 'sub' ? 'cat' : 'sub');
+  if (picked) related.push(picked);
+}
+while (related.length < TARGET && (iSub < relSub.length || iCat < relCat.length)) {
+  const picked = takeNext('sub') || takeNext('cat');
+  if (!picked) break;
+  related.push(picked);
+}
+
+// Summary helpers
+const summary = (proj?.summary ?? '').trim();
+const needsToggle = summary.length > 280;
+const canonicalUrl = Astro.url?.href ?? '';
+---
+
+<Layout
+  title={pageTitle}
+  description={proj?.summary ?? "Community project by Men's Shed Townsville"}
+  image={imgs[0]?.url}
+  imageAlt={imgs[0]?.alt ?? proj?.title}
+  ogType="article"
+>
+  {preloadHref && <link rel="preload" as="image" href={preloadHref} />}
+
+  <div class="wrapper project-detail">
+    {projectForBanner ? (
+      <ProjectBanner
+        project={projectForBanner}
+        fallbackCategorySlug={category}
+        fallbackSubcategorySlug={subcategory}
+      />
+    ) : (
+      <div class="grid gap banner">
+        <div class="l-12">
+          <nav class="crumpbet" aria-label="Breadcrumb">
+            <span><a href="/projects">Projects</a></span>
+            {routeCat && <span><a href={`/projects?category=${routeCat.slug}`}>{routeCat.title}</a></span>}
+            {routeSub && <span><a href={`/projects?subcategory=${routeSub.slug}`}>{routeSub.title}</a></span>}
+            <span aria-current="page">{slug.replace(/-/g,' ')}</span>
+          </nav>
+          <h1 class="l-txt">{slug.replace(/-/g,' ')}</h1>
+          <p class="muted">We couldn’t load this project right now.</p>
+        </div>
+      </div>
+    )}
+
+    {imgs.length > 0 && (
+      <div class="grid project-detail">
+        <div class="l-12 m-12 s-12">
+          <ProjectGallery images={imgs} hoverCaptions={true} />
+        </div>
+      </div>
+    )}
+
+    <div class="grid">
+      <div class="l-8 m-8 s-12">
+        {summary && (
+          <section class="project-summary">
+            <h2>Project summary</h2>
+            <p class={`summary-text${needsToggle ? ' is-clamped' : ''}`} data-expanded="false">
+              {summary}
+            </p>
+            {needsToggle && (
+              <button class="btn-link js-summary-toggle" type="button" aria-expanded="false">Read more</button>
+            )}
+          </section>
+        )}
+      </div>
+
+      <div class="l-4 m-4 s-12">
+        {proj && <ProjectMeta project={proj} />}
+
+        <ProjectShare
+          title={proj?.title ?? slug.replace(/-/g,' ')}
+          summary={proj?.summary}
+          url={canonicalUrl}
+        />
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="similar">
+        <h2 class="h2">
+          Similar projects from {catForTitle?.title ?? 'this category'}
+          {subForTitle?.title && <> | <span class="subcat">{subForTitle.title}</span></>}
+        </h2>
+        <div class="cards-3">
+          {related.map(p => <ProjectCard project={p} />)}
+        </div>
+      </section>
+    )}
+  </div>
+</Layout>
+
+<script is:inline>
+  (function () {
+    // Toggle for summary "Read more"
+    var btn = document.querySelector('.js-summary-toggle');
+    if (!btn) return;
+    var p = document.querySelector('.project-summary .summary-text');
+    if (!p) return;
+
+    btn.addEventListener('click', function () {
+      var expanded = p.getAttribute('data-expanded') === 'true';
+      p.setAttribute('data-expanded', String(!expanded));
+      p.classList.toggle('is-clamped', expanded);
+      btn.textContent = expanded ? 'Read more' : 'Show less';
+      btn.setAttribute('aria-expanded', String(!expanded));
+    });
+  })();
+</script>

@@ -1,0 +1,27 @@
+// CRUMPBET
+@use '../base/variables' as *;
+
+.crumpbet {
+  margin-bottom:10px;
+  display:flex;
+  span {
+    text-transform: uppercase;
+    font-size:.8rem;
+    color:$light4;
+    display:flex;
+    align-items: center;
+    position: relative;
+    &:after {
+      content:'';
+      width:3px;
+      height: 15px;
+      transform:skewX(-15deg);
+      background:$light2;
+      opacity:.4;
+      display:inline-flex;
+      margin:0 10px;
+    }
+    &:last-child:after {display:none; margin:0;}
+  }
+  a {font-weight: 400;}
+}

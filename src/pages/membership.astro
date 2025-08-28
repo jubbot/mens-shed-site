@@ -1,0 +1,451 @@
+---
+import Layout from '../layouts/Layout.astro'
+import TrackPageView from '../components/TrackPageView.astro'
+---
+
+<Layout title="Membership">
+  <div id="membership-print-area" class="wrapper paper">
+    <form id="membership-form" novalidate>
+      <div class="form-header">
+        <h1>Join Men's Shed Townsville – $80 Annual Membership</h1>
+        <p class="subtitle">For just $80 a year, access workshops, tools, activities, and a great group of like‑minded blokes.</p>
+      </div>
+
+      <!-- Error summary (for accessibility) -->
+      <div id="error-summary" class="sr-only" aria-live="assertive"></div>
+
+      <!-- 1) CONTACT DETAILS -->
+      <fieldset class="section">
+        <legend><i>1</i> Contact Details</legend>
+        <p>These details help us keep in touch and reach you in case of updates or emergencies.</p>
+        
+        <div class="grid form-group">
+          <div class="l-4 m-4 s-12">
+            <label for="firstName">First Name<span aria-hidden="true">*</span></label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name" required />
+          </div>
+
+          <div class="l-4 m-4 s-12">
+            <label for="middleName">Middle Name (optional)</label>
+            <input type="text" id="middleName" name="middleName" autocomplete="additional-name" />
+          </div>
+
+          <div class="l-4 m-4 s-12">
+            <label for="lastName">Last Name<span aria-hidden="true">*</span></label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <div class="grid form-group">
+            <div class="l-4 m-4 s-12">
+                <label for="dateOfBirth">Date of Birth<span aria-hidden="true">*</span></label>
+                <input type="date" id="dateOfBirth" name="dateOfBirth" required />
+            </div>
+
+          <div class="l-8 m-8 s-12">
+            <label for="occupation">Occupation (optional)</label>
+            <input type="text" id="occupation" name="occupation" placeholder="e.g. Carpenter, Retired Teacher" />
+          </div>
+        </div>
+
+        <div class="grid form-group">
+            <div class="l-6 m-6 s-12">
+                <label for="address">Address<span aria-hidden="true">*</span></label>
+                <input type="text" id="address" name="address" autocomplete="street-address" placeholder="e.g. 42 Example St" required />
+            </div>
+
+          <div class="l-3 m-3 s-12">
+            <label for="suburb">Suburb<span aria-hidden="true">*</span></label>
+            <select id="suburb" name="suburb" required>
+              <option value="">-- Select Suburb --</option>
+              <option value="Aitkenvale">Aitkenvale</option>
+              <option value="Annandale">Annandale</option>
+              <option value="Belgian Gardens">Belgian Gardens</option>
+              <option value="Bohle">Bohle</option>
+              <option value="Bohle Plains">Bohle Plains</option>
+              <option value="Castle Hill">Castle Hill</option>
+              <option value="Cluden">Cluden</option>
+              <option value="Condon">Condon</option>
+              <option value="Cranbrook">Cranbrook</option>
+              <option value="Currajong">Currajong</option>
+              <option value="Douglas">Douglas</option>
+              <option value="Garbutt">Garbutt</option>
+              <option value="Gulliver">Gulliver</option>
+              <option value="Heatley">Heatley</option>
+              <option value="Hermit Park">Hermit Park</option>
+              <option value="Hyde Park">Hyde Park</option>
+              <option value="Idalia">Idalia</option>
+              <option value="Kelso">Kelso</option>
+              <option value="Kirwan">Kirwan</option>
+              <option value="Mount Louisa">Mount Louisa</option>
+              <option value="Mount St John">Mount St John</option>
+              <option value="Mount Stuart">Mount Stuart</option>
+              <option value="Mundingburra">Mundingburra</option>
+              <option value="Murray">Murray</option>
+              <option value="Mysterton">Mysterton</option>
+              <option value="North Ward">North Ward</option>
+              <option value="Oonoonba">Oonoonba</option>
+              <option value="Pallarenda">Pallarenda</option>
+              <option value="Pimlico">Pimlico</option>
+              <option value="Railway Estate">Railway Estate</option>
+              <option value="Rasmussen">Rasmussen</option>
+              <option value="Rosslea">Rosslea</option>
+              <option value="Rowes Bay">Rowes Bay</option>
+              <option value="South Townsville">South Townsville</option>
+              <option value="Stuart">Stuart</option>
+              <option value="Town Common">Town Common</option>
+              <option value="Townsville City">Townsville City</option>
+              <option value="Vincent">Vincent</option>
+              <option value="West End">West End</option>
+              <option value="Wulguru">Wulguru</option>
+              <option value="Alligator Creek">Alligator Creek</option>
+              <option value="Arcadia">Arcadia</option>
+              <option value="Balgal Beach">Balgal Beach</option>
+              <option value="Beach Holm">Beach Holm</option>
+              <option value="Black River">Black River</option>
+              <option value="Bluewater">Bluewater</option>
+              <option value="Bluewater Park">Bluewater Park</option>
+              <option value="Brookhill">Brookhill</option>
+              <option value="Burdell">Burdell</option>
+              <option value="Bushland Beach">Bushland Beach</option>
+              <option value="Calcium">Calcium</option>
+              <option value="Cape Cleveland">Cape Cleveland</option>
+              <option value="Clemant">Clemant</option>
+              <option value="Crystal Creek">Crystal Creek</option>
+              <option value="Cungulla">Cungulla</option>
+              <option value="Granite Vale">Granite Vale</option>
+              <option value="Gumlow">Gumlow</option>
+              <option value="Hervey Range">Hervey Range</option>
+              <option value="Julago">Julago</option>
+              <option value="Lynam">Lynam</option>
+              <option value="Majors Creek">Majors Creek</option>
+              <option value="Mutarnee">Mutarnee</option>
+              <option value="Nome">Nome</option>
+              <option value="Orpheus Island">Orpheus Island</option>
+              <option value="Palm Island">Palm Island</option>
+              <option value="Paluma">Paluma</option>
+              <option value="Picnic Bay">Picnic Bay</option>
+              <option value="Roseneath">Roseneath</option>
+              <option value="Yabulu">Yabulu</option>
+            </select>
+          </div>
+
+          <div class="l-3 m-3 s-12">
+            <label for="postcode">Postcode<span aria-hidden="true">*</span></label>
+            <select id="postcode" name="postcode" required>
+              <option value="">-- Select Postcode --</option>
+              <option value="4810">4810</option>
+              <option value="4811">4811</option>
+              <option value="4812">4812</option>
+              <option value="4814">4814</option>
+              <option value="4815">4815</option>
+              <option value="4816">4816</option>
+              <option value="4817">4817</option>
+              <option value="4818">4818</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid form-group">
+          <div class="l-6 m-6 s-12"> 
+            <label for="email">Email<span aria-hidden="true">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+
+          <div class="l-6 m-6 s-12">
+            <label for="phone">Phone<span aria-hidden="true">*</span></label>
+            <input type="tel" id="phone" name="phone" inputmode="tel" pattern="[-0-9 +()]{8,}" placeholder="Landline or mobile number" required />
+          </div> 
+        </div>
+      </fieldset>
+
+      <!-- 2) MEDICAL CONDITIONS -->
+      <fieldset class="section">
+        <legend><i>2</i> Medical Conditions</legend>
+        <p>Are there any medical conditions we should be aware of to help ensure your safety at Men’s Shed Townsville?</p>
+        
+        <div class="grid form-group">
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="diabetes"><input type="checkbox" id="diabetes" name="medicalConditions[]" value="Diabetes" /> Diabetes</label>
+            <label for="heart"><input type="checkbox" id="heart" name="medicalConditions[]" value="Heart Disease" /> Heart Disease</label>
+            <label for="highBP"><input type="checkbox" id="highBP" name="medicalConditions[]" value="High Blood Pressure" /> High Blood Pressure</label>
+            <label for="cholesterol"><input type="checkbox" id="cholesterol" name="medicalConditions[]" value="High Cholesterol" /> High Cholesterol</label>
+            <label for="hearing"><input type="checkbox" id="hearing" name="medicalConditions[]" value="Hearing Loss" /> Hearing Loss</label>
+          </div>
+
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="arthritis"><input type="checkbox" id="arthritis" name="medicalConditions[]" value="Arthritis" /> Arthritis</label>
+            <label for="asthma"><input type="checkbox" id="asthma" name="medicalConditions[]" value="Asthma" /> Asthma</label>
+            <label for="copd"><input type="checkbox" id="copd" name="medicalConditions[]" value="COPD" /> Chronic Lung Condition (COPD)</label>
+            <label for="prostate"><input type="checkbox" id="prostate" name="medicalConditions[]" value="Prostate Issues" /> Prostate Issues</label>
+            <label for="mobility"><input type="checkbox" id="mobility" name="medicalConditions[]" value="Mobility Issues" /> Mobility Issues</label>
+          </div>
+
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="vision"><input type="checkbox" id="vision" name="medicalConditions[]" value="Vision Impairment" /> Vision Impairment</label>
+            <label for="mentalHealth"><input type="checkbox" id="mentalHealth" name="medicalConditions[]" value="Mental Health" /> Mental Health (e.g. Depression, Anxiety)</label>
+            <label for="none"><input type="checkbox" id="none" name="medicalConditions[]" value="None" /> No known conditions</label>
+          </div>
+          
+          <div class="l-12 m-12 s-12 select-other">
+            <label for="otherCondition">Other (please specify below)</label>
+            <input type="text" id="otherCondition" name="otherCondition" placeholder="Other condition..." />
+          </div>
+
+          <div class="l-12 m-12 s-12 select-other">
+            <label for="emergencyNotes">Additional Medical or Emergency Info (Optional)</label>
+            <textarea id="emergencyNotes" name="emergencyNotes" rows="4" placeholder="e.g. Allergy to penicillin, wears hearing aid, etc."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 3) NEXT OF KIN -->
+      <fieldset class="section">
+        <legend><i>3</i> Next of Kin</legend>
+        <p>Who should we contact in an emergency?</p>
+        
+        <div class="grid form-group">
+          <div class="l-4 m-6 s-12">
+            <label for="kinName">Full Name<span aria-hidden="true">*</span></label>
+            <input type="text" id="kinName" name="kinName" required />
+          </div>
+          <div class="l-4 m-6 s-12">
+            <label for="kinRelationship">Relationship<span aria-hidden="true">*</span></label>
+            <input type="text" id="kinRelationship" name="kinRelationship" placeholder="e.g. Wife, Son, Friend" required />
+          </div>
+          <div class="l-4 m-6 s-12">
+            <label for="kinPhone">Phone Number<span aria-hidden="true">*</span></label>
+            <input type="tel" id="kinPhone" name="kinPhone" inputmode="tel" pattern="[-0-9 +()]{8,}" required />
+          </div>
+          </div>
+          <div class="grid form-group">          
+          <div class="l-4 m-6 s-12">
+            <label for="kinEmail">Email (optional)</label>
+            <input type="email" id="kinEmail" name="kinEmail" />
+          </div>
+          <div class="l-8 m-6 s-12">
+            <label for="kinAddress">Address (optional)</label>
+            <input type="text" id="kinAddress" name="kinAddress" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 4) INTERESTS -->
+      <fieldset class="section">
+        <legend><i>4</i> Your Interests</legend>
+        <p>Let us know what you're interested in or would like to learn more about at Men's Shed Townsville.</p>
+        <div class="grid form-group">
+          <div class="l-6 m-6 s-12 select-group">
+            <label for="woodworkingInterest"><input type="checkbox" id="woodworkingInterest" name="interests[]" value="Woodworking" /> Wood Working</label>
+            <label for="metalworkInterest"><input type="checkbox" id="metalworkInterest" name="interests[]" value="Metalworking" /> Metal Working</label>
+            <label for="laserInterest"><input type="checkbox" id="laserInterest" name="interests[]" value="Laser" /> Laser Engraver / Cutting</label>
+          </div>
+          <div class="l-6 m-6 s-12 select-group">
+            <label for="3dprintingInterest"><input type="checkbox" id="3dprintingInterest" name="interests[]" value="3D Printing" /> 3D Printing</label>
+            <label for="repairsInterest"><input type="checkbox" id="repairsInterest" name="interests[]" value="Repairs" /> Fixing / Repairs</label>
+            <label for="modelMakingInterest"><input type="checkbox" id="modelMakingInterest" name="interests[]" value="Model Making" /> Model Making</label>
+          </div>
+          <div class="l-12 m-12 s-12 select-other">
+              <label>Other Interests</label>
+              <input type="text" id="otherInterest" name="otherInterest" placeholder="Other hobbies or activities..." />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 5) SKILLS & EXPERIENCE -->
+      <fieldset class="section">
+        <legend><i>5</i> Skills & Experience</legend>
+        <p>Tell us about your experience, past work, or hobbies in the following areas:</p>
+        <div class="grid form-group">
+          <div class="l-4 m-6 s-12">
+            <label>Wood Shed</label>
+            <textarea id="skillsWood" name="skillsWood" cols="30" rows="8" placeholder="e.g. Wood turning, cabinet making, sanding, building furniture"></textarea>
+          </div>
+          <div class="l-4 m-6 s-12">
+            <label>Metal Shed</label>
+            <textarea id="skillsMetal" name="skillsMetal" cols="30" rows="8" placeholder="e.g. Welding, machining, grinding, sheet metal work"></textarea>
+          </div>
+          <div class="l-4 m-6 s-12">
+            <label>Other Skills</label>
+            <textarea id="skillsOther" name="skillsOther" cols="30" rows="8" placeholder="e.g. Cooking, bookkeeping, IT help, organising events"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 6) TOOLS & MACHINERY -->
+      <fieldset class="section">
+        <legend><i>6</i> Power Tools & Machinery Experience</legend>
+        <p>Please tick any equipment you’re comfortable using or would like to learn:</p>
+        <div class="grid form-group">
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="dropSaw"><input type="checkbox" id="dropSaw" name="tools[]" value="Drop Saw" /> Drop Saw</label>
+            <label for="bandSaw"><input type="checkbox" id="bandSaw" name="tools[]" value="Band Saw" /> Band Saw</label>
+            <label for="benchDrill"><input type="checkbox" id="benchDrill" name="tools[]" value="Bench Drill" /> Bench Drill</label>
+            <label for="latheWood"><input type="checkbox" id="latheWood" name="tools[]" value="Wood Lathe" /> Wood Lathe</label>
+          </div>
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="latheMetal"><input type="checkbox" id="latheMetal" name="tools[]" value="Metal Lathe" /> Metal Lathe</label>
+            <label for="grinder"><input type="checkbox" id="grinder" name="tools[]" value="Bench Grinder" /> Bench Grinder</label>
+            <label for="sander"><input type="checkbox" id="sander" name="tools[]" value="Sander" /> Belt / Disc Sander</label>
+            <label for="router"><input type="checkbox" id="router" name="tools[]" value="Router" /> Router</label>
+          </div>
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="weldMig"><input type="checkbox" id="weldMig" name="tools[]" value="MIG Welder" /> MIG Welder</label>
+            <label for="weldArc"><input type="checkbox" id="weldArc" name="tools[]" value="Arc Welder" /> Arc Welder</label>
+            <label for="angleGrinder"><input type="checkbox" id="angleGrinder" name="tools[]" value="Angle Grinder" /> Angle Grinder</label>
+            <label for="cordlessDrill"><input type="checkbox" id="cordlessDrill" name="tools[]" value="Cordless Drill" /> Cordless Drill</label>
+          </div>
+          <div class="l-12 s-12 select-other">
+            <label for="toolsOther">Other tools or machines you’ve used</label>
+            <input type="text" id="toolsOther" name="toolsOther" placeholder="Please specify..." />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 7) REFERRAL -->
+      <fieldset class="section">
+        <legend><i>7</i> How Did You Hear About Us?</legend>
+        <p>Select all the ways you found out about Men's Shed Townsville:</p>
+        <div class="grid form-group">
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="heardFriend"><input type="checkbox" id="heardFriend" name="referralSource[]" value="Friend or Family" /> Friend or Family</label>
+            <label for="heardFlyer"><input type="checkbox" id="heardFlyer" name="referralSource[]" value="Flyer or Poster" /> Flyer or Poster</label>
+            <label for="heardSocialMedia"><input type="checkbox" id="heardSocialMedia" name="referralSource[]" value="Facebook or Social Media" /> Facebook or Social Media</label>
+          </div>
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="heardWebsite"><input type="checkbox" id="heardWebsite" name="referralSource[]" value="Website" /> Our Website</label>
+            <label for="heardEvent"><input type="checkbox" id="heardEvent" name="referralSource[]" value="Community Event" /> Community Event</label>
+            <label for="heardCouncil"><input type="checkbox" id="heardCouncil" name="referralSource[]" value="Local Council" /> Local Council</label>
+          </div>
+          <div class="l-4 m-4 s-12 select-group">
+            <label for="heardRadio"><input type="checkbox" id="heardRadio" name="referralSource[]" value="Radio or Newspaper" /> Radio or Newspaper</label>
+            <label for="heardHealth"><input type="checkbox" id="heardHealth" name="referralSource[]" value="Health Professional" /> Health Professional</label>
+            <label for="heardOther"><input type="checkbox" id="heardOther" name="referralSource[]" value="Other" /> Other</label>
+          </div>
+          <div class="l-12 m-12 s-12 select-other" id="referral-other-wrap" hidden>
+            <label for="referralOtherText">If Other, please specify:</label>
+            <input type="text" id="referralOtherText" name="referralOtherText" placeholder="e.g. Men's Health Group, Expo..." />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 8) SAFETY / TERMS / CONSENT -->
+      <fieldset class="section">
+        <legend><i>8</i> Safety, Terms & Consent</legend>
+        <div class="grid">
+          <div class="l-12 m-12 s-12">
+            <div class="form-group select-inline">
+              <input type="checkbox" id="safetyAgreement" name="safetyAgreement" required />
+              <label for="safetyAgreement">
+                I agree to wear long pants, long sleeves, <strong>enclosed shoes</strong> and my name tag before entering the Wood or Metal Workshop.
+              </label>
+            </div>
+          </div>
+          <div class="l-12 m-12 s-12">
+            <div class="form-group select-inline">
+              <input type="checkbox" id="termsAgree" name="termsAgree" required />
+              <label for="termsAgree">
+                I agree to the <a href="/terms" target="_blank" rel="noopener">terms and conditions</a> of becoming a member.
+              </label>
+            </div>
+          </div>
+          <div class="l-12 m-12 s-12">
+            <div class="form-group select-inline">
+              <input type="checkbox" id="mediaConsent" name="mediaConsent" />
+              <label for="mediaConsent">
+                I give permission for photos or videos of me to be used in promotional materials or on social media for Men's Shed Townsville.
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 9) ACTIONS / SUBMIT -->
+      <fieldset class="section">
+        <legend><i>9</i> Submit</legend>
+        <p class="sm-txt muted">*Membership payment can be made in person at the Shed or via bank transfer. Details will be sent to your email after submitting this form.</p>
+        <div class="grid form-actions">
+          <div class="l-6 m-6 s-12"><div class="form-group">
+            <button type="button" id="btnPrint" class="btn btn-delta"><i class="wt-printer"></i> Print</button>
+          </div></div>
+          <div class="l-6 m-6 s-12"><div class="form-group" style="text-align:right">
+            <button type="reset" class="btn btn-delta"><i class="wt-update"></i> Clear</button>
+            <button type="submit" class="btn btn-alpha"><i class="wt-mail"></i> Submit Request</button>
+          </div></div>
+        </div>
+      </fieldset>
+
+      <!-- Honeypot for spam bots -->
+      <input type="text" name="website" id="website" tabindex="-1" autocomplete="off" hidden>
+    </form>
+  </div>
+
+  <script src="https://printjs-4de6.kxcdn.com/print.min.js" defer></script>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('membership-form');
+
+      // Print
+      const btn = document.getElementById('btnPrint');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const siteCss = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.href).filter(Boolean);
+          window.printJS({
+            printable: 'membership-print-area',
+            type: 'html',
+            css: [...siteCss, '/print.css'],
+            targetStyles: ['*'],
+            documentTitle: "Men's Shed Townsville – Membership Form",
+          });
+        });
+      }
+
+      // Medical: make "None" exclusive
+      const none = document.getElementById('none');
+      const medChecks = Array.from(document.querySelectorAll('input[name="medicalConditions[]"]'));
+      if (none) {
+        none.addEventListener('change', () => {
+          if (none.checked) {
+            medChecks.forEach(cb => { if (cb !== none) { cb.checked = false; cb.disabled = true; } });
+          } else {
+            medChecks.forEach(cb => { if (cb !== none) cb.disabled = false; });
+          }
+        });
+      }
+
+      // Referral: reveal Other textbox when Other is checked
+      const heardOther = document.getElementById('heardOther');
+      const otherWrap = document.getElementById('referral-other-wrap');
+      function syncOther() { if (otherWrap) otherWrap.hidden = !heardOther?.checked; }
+      if (heardOther) { heardOther.addEventListener('change', syncOther); syncOther(); }
+
+      // Simple client‑side error summary on submit
+      const summary = document.getElementById('error-summary');
+      if (form) {
+        form.addEventListener('submit', (ev) => {
+          if (!form.checkValidity()) {
+            ev.preventDefault();
+            const invalids = Array.from(form.querySelectorAll(':invalid'));
+            const msgs = invalids.map(el => {
+              const label = form.querySelector(`label[for="${el.id}"]`);
+              return label ? label.textContent.replace('*','').trim() : el.name;
+            }).slice(0, 6);
+            if (summary) {
+              summary.classList.remove('sr-only');
+              summary.classList.add('notice');
+              summary.innerHTML = `<strong>Please check the form:</strong> ${msgs.join(', ')}.`;
+              summary.focus?.();
+            }
+            const first = invalids[0];
+            first?.scrollIntoView({behavior: 'smooth', block: 'center'});
+            first?.focus();
+          }
+        });
+      }
+    });
+  </script>
+
+ <TrackPageView key="membership" />
+</Layout>

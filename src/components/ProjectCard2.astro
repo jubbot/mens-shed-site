@@ -1,0 +1,38 @@
+---
+interface Card {
+  title: string;
+  href: string;
+  thumb?: { url?: string; alt?: string };
+  startedAt?: string;
+}
+
+const { project } = Astro.props as { project: Card };
+
+const date = project.startedAt
+  ? new Date(project.startedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+  : null;
+---
+
+<a class="proj-card" href={project.href}>
+  <div class="thumb">
+    {project.thumb?.url
+      ? <img src={project.thumb.url} alt={project.thumb?.alt ?? ''} loading="lazy" />
+      : <div class="thumb--ph" aria-hidden="true"></div>}
+  </div>
+  <h3 class="title">{project.title}</h3>
+  {date && <div class="meta">{date}</div>}
+</a>
+
+<style>
+  .proj-card {
+    display:block; text-decoration:none;
+    border:1px solid var(--border,#e5e5e5); border-radius:.75rem; overflow:hidden;  
+    background:#FFF;
+  }
+ 
+  .thumb { aspect-ratio:16/9; background:var(--bg-weak,#f6f6f6); overflow:hidden; }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb--ph { width:100%; height:100%; background:repeating-linear-gradient(45deg,#eee,#eee 10px,#f6f6f6 10px,#f6f6f6 20px); }
+  .title { padding:5px 10px 0 10px; margin:.6rem 0 .25rem; font-size:1rem; line-height:1.2; }
+  .meta { font-size:.85rem; padding:0 10px 20px 10px; }
+</style>

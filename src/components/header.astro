@@ -1,0 +1,72 @@
+---
+const normalize = (p: string) => (p.endsWith('/') && p !== '/' ? p.slice(0, -1) : p) || '/';
+const current = normalize(Astro.url.pathname);
+
+const isActive = (href: string, { deep = false } = {}) => {
+  const h = normalize(href);
+  return deep ? (current === h || current.startsWith(h + '/')) : current === h;
+};
+---
+
+<header class="primary">
+  <div class="width-fixed grid gap align-bottom">
+    <div class="l-4 m-4 s-12">
+      <a href="/" class="brand">
+        <img src="/images/mensshed-logo-coloured.svg" alt="Men’s Shed Townsville Logo" width="150" height="auto" />
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <div class="l-8 m-8 s-12">
+      <div class="topbar grid align-center content-end">
+        <span><i class="wt-phone"></i>07 4772 4422</span>
+        <span><i class="wt-pin"></i> Townsville QLD</span>
+        <span><a href="/job-form"><i class="wt-clipboard"></i> Start Job</a></span>
+        <span><a href="/membership"><i class="wt-user1"> </i> Become a member</a></span>
+        <span><a href="/dashboard" class={isActive('/dashboard', { deep: true }) ? 'active' : ''} aria-current={isActive('/dashboard', { deep: true }) ? 'page' : undefined}><i class="wt-mountain"> </i> Dashboard</a></span>
+      </div>
+
+      <nav class="grid content-end">
+        <div class="has-dropmenu">
+          <a
+            href="/projects"
+            class={isActive('/projects', { deep: true }) ? 'active' : ''}
+            aria-current={isActive('/projects', { deep: true }) ? 'page' : undefined}
+          >Projects</a>
+        </div>
+
+        <div>
+          <a
+            href="/support"
+            class={isActive('/support') ? 'active' : ''}
+            aria-current={isActive('/support') ? 'page' : undefined}
+          >Support</a>
+        </div>
+
+        <div>
+          <a
+            href="/store"
+            class={isActive('/store', { deep: true }) ? 'active' : ''}
+            aria-current={isActive('/store', { deep: true }) ? 'page' : undefined}
+          >Store</a>
+        </div>
+
+        <div>
+          <a
+            href="/whats-on"
+            class={isActive('/whats-on', { deep: true }) ? 'active' : ''}
+            aria-current={isActive('/whats-on', { deep: true }) ? 'page' : undefined}
+          >What's on</a>
+        </div>
+
+        <div>
+          <a
+            href="/contact"
+            class={isActive('/contact') ? 'active' : ''}
+            aria-current={isActive('/contact') ? 'page' : undefined}
+          >Contact</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>

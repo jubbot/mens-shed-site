@@ -1,0 +1,83 @@
+// TABLET - DESKTOP MEDIA
+@media all and (min-width: 768px) {
+.search__wrapper {
+    display:flex;
+    flex-direction:row-reverse;
+form, #search__box {
+    display:none;
+}
+
+form {
+     width:335px;
+}
+
+form input[type="text"], form button {pointer-events: none;}
+label {
+    outline:none;
+    border:0;
+    cursor:pointer;
+    transition:.3s;
+}
+ #search__box:checked ~ label ~ form {
+        display:block;
+        padding-right:10px;
+    }
+ #search__box:checked ~ label ~ form {
+     button,input[type="text"] {
+     pointer-events: auto;
+ }
+}
+}
+}
+// MOBILE MEDIA
+@media all and (max-width: 768px) {
+.search__wrapper { 
+#search__box, label {display:none;}
+}
+}
+
+// SEARCH RESULTS
+.search__results {
+    .wrap {
+       border:1px solid #333;
+       background:#FFF;
+       font-family:'Teko';
+       font-weight: 100;
+    }
+    .btm-bar {
+        h4 {
+           font-weight: 100;
+           font-size:22pt;
+           padding-bottom:0;
+           line-height: 22pt;
+           padding:10px;
+           a {
+               display:block;
+               color:#333;
+           }
+           span {
+               text-transform: uppercase;
+               font-size:15pt;
+               line-height:15pt;
+           }
+        }
+        p {
+            margin:0;
+            padding:0 10px;
+            font-family:'Arial';
+            font-size:11pt;
+            line-height:13pt; 
+        }
+        .btm-right {
+            display:flex;
+            padding:10px;
+            border-top:1px solid #333;
+            margin-top:10px;
+            a {
+                font-size:15pt;
+                color:#333;
+                
+            }
+        }
+    }
+}

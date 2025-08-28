@@ -1,0 +1,29 @@
+.mall-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(0,0,0,.5);
+    transition: .3s ease;
+    transition-property: opacity,visibility;
+    overflow-y: scroll;
+    opacity: 0;
+    pointer-events: none;
+    
+    &.mall-modal--visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.mall-modal__inner {
+    width: 600px;
+    max-width: 95%;
+    margin: 2rem auto;
+    
+    padding: 2rem;
+    background: #fff;
+    border-radius: 3px;
+}
+}

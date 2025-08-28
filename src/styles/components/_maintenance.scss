@@ -1,0 +1,29 @@
+.maintenance {
+      width:100%;
+      text-align: center;
+      background:url('@{assets-url}/images/bg-grid-grey.svg');
+      background-size:20px;
+      & {
+      min-height: 800px;
+      }
+    .interactive {
+        background:#333;
+        height:100%;
+        width:100%;
+        max-height:50%;
+    }
+    h2 {
+        font-family:'Teko';
+        font-size:50pt;
+        font-weight: 400;
+        display:block;
+        text-align: center;
+        padding:20px 10px;
+    }
+        p {
+            font-size:18pt;
+            display:block;
+          max-width: 70%;
+          margin:0 auto;
+    }
+} 

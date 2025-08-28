@@ -1,0 +1,101 @@
+.axis-user-account {
+    nav {
+      background:#FFF;
+      & {
+      border-bottom:1px solid #CCC;
+      }
+  .nav-item {
+      padding:10px 20px;
+      &.active a {font-weight: 700;}
+      &.active span {color:#DF4D25;}
+      &:hover a {color:#333;}
+  }
+   span {
+       width:100%; 
+       display:block;
+       text-align: center;
+       font-size:22pt;
+       padding-bottom:10px;
+   }
+   a {
+       color:#777;
+       font-size:9pt;
+       text-transform:uppercase;
+       display:block;
+   }
+    }
+}
+
+
+
+
+// Customer Order list
+.axis-table {
+    width:100%;
+    background:white;
+    & {
+    border:1px solid #DDD;
+    }
+   
+    .axis-order-item {
+        cursor: pointer;
+    } 
+    .axis-order-item td {
+        padding:10px;
+    }
+    thead {
+        text-align: left;
+        font-size:9pt;
+
+    }
+}
+.axis-order-status {
+    .item {
+        flex-grow: 1;
+        margin:5px;
+        border:1px solid #333;
+        text-align: center;
+        
+        > div {
+            
+            justify-content: center;
+            align-items: center;
+            padding:10px 0;
+            }
+    }
+    .tracking {
+        span {display:block; padding:10px 0; font-size:9pt;}
+    }
+
+    h5 {
+        margin:0; 
+        display: block;
+        background:#222;
+        color:#FFF;
+        padding:5px 10px;
+        font-size:8pt;
+        text-transform:uppercase;
+    }
+}
+
+ .axis-product-list {
+   table { width:100%;
+}
+}
+// Payment Status Button
+ 
+.btn-paid,  .btn-Payment {
+    font-size:9pt;
+}
+.btn-paid {
+    background:#40C70A;
+}
+.btn-Payment {
+    background:#eaeaea;
+    color:#333;
+     
+&.failed {
+   background:#C70A0A; 
+   color:#FFF;
+}    
+}

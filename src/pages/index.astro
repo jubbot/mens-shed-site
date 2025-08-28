@@ -1,11 +1,81 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import TrackPageView from '../components/TrackPageView.astro';
 ---
 
 <Layout>
-	<Welcome />
+	<section class="hero align-center grid">
+		<div class="wrap">
+		<div class="l-6 m-6 s-6">
+			<h1 class="l-txt-x">Men's Shed Townsville is a not-for-profit community organisation dedicated to supporting the health and wellbeing of adult men.</h1>
+		<div class="statistic grid">
+			<div class="figure"><span>350</span> Members</div>
+			<div class="figure"><span>10</span> Mentors</div>
+			<div class="figure"><span>4</span> Workshops</div>
+		</div>
+
+	</div>
+		<div class="l-6 m-6 s-6">
+		<div class="graphical-elements">
+			<div class="item-s"></div>
+			<div class="item-m"></div>
+			<div class="item-l"></div>
+		</div>
+		</div>
+		</div>
+	</section>
+ 
+	<section class="hero-1 grid align-center">
+		<div class="l-6 m-6 s-12">
+			<picture class="left-angle">
+				<img src="https://placehold.co/600x400"/>
+			</picture>
+		</div>
+
+		<div class="l-6 m-6 s-12 grid">
+		<div class="wrap">
+		<h2 class="l-txt">Townsville Men's Shed provides
+				a supportive environment for
+				men to participate in practical
+				activities, build friendships, and
+				foster a sense of purpose
+				through project work, training,
+				and lifelong learning."</h2>
+		<p class="m-txt">We provide well-equipped machines and ample workspace
+			to accommodate a variety of projects and skill levels.</p>
+		</div>
+	</div>
+
+	</section>
+
+	<section class="hero-2 grid align-center">
+		<div class="wrap">
+		<h2 class="l-txt">We offer fully equipped workspaces with tools and
+			machinery for both woodwork and metalwork projects.</h2>
+			<div class="btn-group">
+			<a href="/membership" class="btn md-txt btn-alpha">Yearly Membership</a>
+			<a href="/contact" class="btn md-txt btn-delta">Visit us to learn more</a>
+			</div>
+		</div>
+	</section>
+
+
+
+	<section class="hero-3 grid">
+		<div class="l-7 m-7 s-12">sdf</div>	
+		
+		<div class="l-5 m-5 s-12 center-center grid">
+			<div>
+			<h4 class="l-txt">How to support us</h4>
+				<p class="m-txt">Townsville men generously volunteer their time and expertise to
+					support local community projects — and they’re seeking your support
+					to continue making a difference.</p>
+				<a href="/support" class="btn s-txt btn-delta">Learn how to support us</a>
+		</div>
+		</div>
+	</section>
+
+
+	<TrackPageView key="home" />
+	
 </Layout>

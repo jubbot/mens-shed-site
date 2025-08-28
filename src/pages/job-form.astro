@@ -1,0 +1,521 @@
+---
+import Layout from '../layouts/Layout.astro'
+import TrackPageView from '../components/TrackPageView.astro'
+---
+
+<Layout title="Job Form">
+    <div class="wrapper paper">
+<!-- Client Job Request / Intake Form – Men's Shed Townsville -->
+<form id="mst-client-job-form" class="job-form" action="#" method="post" enctype="multipart/form-data">
+  <div class="grid form-header">
+    <div class="l-9 m-8 s-12">
+      <h1>Job Request / Intake Form</h1>
+      <p class="subtitle">For customers, community groups, and organisations requesting help from Men's Shed Townsville.</p>
+    </div>
+    <div class="l-3 m-4 s-12">
+      <div class="form-group">
+        <label for="jobRef">Job Ref</label>
+        <input id="jobRef" name="jobRef" type="text" placeholder="MST-YYYY-####" readonly>
+        <small class="help">Auto-generated on load; final reference confirmed by staff.</small>
+      </div>
+    </div>
+</div>
+
+  <!-- CLIENT DETAILS -->
+  <fieldset class="section">
+    <legend ><i>1</i> Client Details</legend>
+    <div class="grid form-group">
+      <div class="l-6 m-6 s-12">
+        <label for="clientName">Full name / Organisation <span aria-hidden="true">*</span></label>
+        <input id="clientName" name="clientName" type="text" required>
+      </div>
+      <div class="l-3 m-6 s-12">
+        <label for="abn">ABN (if organisation)</label>
+        <input id="abn" name="abn" type="text" inputmode="numeric" pattern="[0-9\s]{11,}" placeholder="11 digits">
+      </div>
+      <div class="l-3 m-12 s-12">
+        <label for="contactPref">Preferred contact</label>
+        <select id="contactPref" name="contactPref"><option>Email</option><option>Phone</option><option>Either</option></select>
+      </div>
+    </div>
+    <div class="grid form-group">
+      <div class="l-8 m-8 s-12">
+        <label for="email">Email <span aria-hidden="true">*</span></label>
+        <input id="email" name="email" type="email" required>
+      </div>
+      <div class="l-4 m-4 s-12">
+        <label for="phone">Phone <span aria-hidden="true">*</span></label>
+        <input id="phone" name="phone" type="tel" pattern="[0-9\s+()\-]{8,}" required placeholder="e.g., 04xx xxx xxx">
+      </div>
+    </div>
+    
+    <div class="grid form-group">
+        <label for="billingAddress">Billing address</label>
+        <textarea id="billingAddress" name="billingAddress" rows="2" placeholder="Street, Suburb, State, Postcode"></textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- JOB TYPE -->
+  <fieldset class="section">
+    <legend><i>2</i> Job Type (select all that apply)</legend>
+    <div class="grid form-group">
+      <div class="l-6 m-6 s-12 select-group">
+        <label><input type="checkbox" name="jobType" value="repair" data-reveals="#repair-section"> Repair / Restoration</label>
+        <label><input type="checkbox" name="jobType" value="rebuild"> Rebuild / Modify</label>
+        <label><input type="checkbox" name="jobType" value="newbuild"> New Build / Fabrication</label>
+      </div>
+      <div class="l-6 m-6 s-12 select-group">
+         <label><input type="checkbox" name="jobType" value="3d" data-reveals="#print3d-section"> 3D Printing</label>
+        <label><input type="checkbox" name="jobType" value="laser" data-reveals="#laser-section"> Laser Cutting / Engraving</label>
+        <label><input type="checkbox" name="jobType" value="electronics"> Electronics</label>
+      </div>
+      <div class="l-12 m-12 s-12 select-other">
+         <label for="jobOther">Other (optional)</label><input id="jobOther" name="jobOther" type="text" placeholder="If not listed, describe here">
+    </div>
+    </div>
+  </fieldset>
+
+  <!-- PROJECT OVERVIEW -->
+  <fieldset class="section">
+    <legend><i>3</i> Project Overview</legend>
+    <div class="grid form-group">
+      <div class="l-8 m-12 s-12">
+        <label for="title">Project title <span aria-hidden="true">*</span></label>
+        <input id="title" name="title" type="text" required placeholder="e.g., Repair outdoor bench, make replacement slats">
+      </div>
+      <div class="l-4 m-12 s-12">
+        <label for="deadline">Deadline (if any)</label>
+        <input id="deadline" name="deadline" type="date">
+      </div>
+    </div>
+
+    <div class="grid form-group">
+        <label for="overview">Brief description</label>
+        <textarea id="overview" name="overview" rows="4" placeholder="What do you need and why? Include key measurements or goals."></textarea>
+    </div>
+
+    <div class="grid form-group">
+      <div class="l-4 m-6 s-12">
+        <label for="dimensionL">Length (mm)</label>
+        <input id="dimensionL" name="dimensionL" type="number" inputmode="decimal" min="0" step="0.1">
+      </div>
+      <div class="l-4 m-6 s-12">
+        <label for="dimensionW">Width (mm)</label>
+        <input id="dimensionW" name="dimensionW" type="number" inputmode="decimal" min="0" step="0.1">
+      </div>
+      <div class="l-4 m-12 s-12">
+        <label for="dimensionH">Height (mm)</label>
+        <input id="dimensionH" name="dimensionH" type="number" inputmode="decimal" min="0" step="0.1">
+      </div>
+    </div>
+
+    <div class="grid form-group">
+    <div class="l-6 m-6 s-12">
+        <label for="tolerance">Tolerance (mm)</label>
+        <input id="tolerance" name="tolerance" type="text" placeholder="e.g., ±0.5 mm">
+    </div>
+    <div class="l-6 m-6 s-12">
+        <label for="finish">Finish / appearance</label>
+        <input id="finish" name="finish" type="text" placeholder="e.g., clear coat satin, matte black paint, raw">
+    </div>
+  </div>
+
+  <div class="grid form-group">
+    <div class="l-6 m-6 s-12">
+        <label for="environment">Use environment</label>
+        <select id="environment" name="environment"><option>Indoors</option><option>Outdoors</option><option>Heat / UV exposure</option><option>Food contact</option></select>
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label for="budgetCap">Budget cap / approval (AUD)</label>
+        <input id="budgetCap" name="budgetCap" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00">
+        <small class="help">Tick below if you require a formal quote first.</small>
+      </div>
+  </div>
+
+  <div class="grid form-group">
+      <div class="l-12 m-12 s-12">
+        <label><input type="checkbox" id="needQuote" name="needQuote"> Quote required before work begins</label>
+      </div>
+  </div>
+
+    <div class="grid form-group">
+        <label for="photos">Photos / sketches (optional)</label>
+        <input id="photos" name="photos" type="file" accept="image/*,application/pdf" multiple>
+    </div>
+  </fieldset>
+
+  <!-- MATERIALS -->
+  <fieldset class="section">
+    <legend><i>4</i> Materials</legend>
+    <div class="grid form-group">
+      <div class="l-6 m-12 s-12">
+        <label for="materialsClient">Materials supplied by client</label>
+        <textarea id="materialsClient" name="materialsClient" rows="3" placeholder="Species/grade, sizes, quantities"></textarea>
+      </div>
+      <div class="l-6 m-12 s-12">
+        <label for="materialsShed">Materials to be supplied by Shed</label>
+        <textarea id="materialsShed" name="materialsShed" rows="3" placeholder="List items or write 'TBD – please estimate'"></textarea>
+      </div>
+      </div>
+      <div class="grid form-group">
+      <div class="l-6 m-6 s-12">
+        <label><input type="checkbox" id="subsAllowed" name="subsAllowed"> Substitutions OK (similar material/colour if original unavailable)</label>
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label for="preferredSuppliers">Preferred suppliers (optional)</label>
+        <input id="preferredSuppliers" name="preferredSuppliers" type="text" placeholder="e.g., Bunnings, local timber yard">
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- 3D PRINTING SPECIFICS -->
+  <fieldset id="print3d-section" class="section" hidden>
+    <legend><i>2A</i> 3D Printing Details</legend>
+    <div class="grid form-group">
+      <div class="l-6 m-12 s-12">
+        <label for="stlFiles">Upload 3D files (STL/STEP/OBJ)</label>
+        <input id="stlFiles" name="stlFiles" type="file" accept=".stl,.step,.stp,.obj,model/*,application/octet-stream" multiple>
+      </div>
+      <div class="l-6 m-12 s-12">
+        <label for="printMaterial">Material</label>
+        <select id="printMaterial" name="printMaterial">
+          <option>PLA</option><option>PETG</option><option>ABS</option><option>ASA</option><option>TPU (flex)</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid form-group">
+      <div class="l-4 m-4 s-12">
+        <label for="layerHeight">Layer height (mm)</label>
+        <input id="layerHeight" name="layerHeight" type="number" step="0.01" min="0.08" max="0.4" placeholder="0.2">
+      </div>
+      <div class="l-4 m-4 s-12">
+        <label for="infill">Infill (%)</label>
+        <input id="infill" name="infill" type="number" min="0" max="100" step="1" placeholder="20">
+      </div>
+      <div class="l-4 m-4 s-12">
+        <label for="walls">Walls / perimeters</label>
+        <input id="walls" name="walls" type="number" min="1" max="10" step="1" placeholder="3">
+      </div>
+    </div>
+
+    <div class="grid form-group">
+      <div class="l-4 m-6 s-12">
+        <label for="supports">Supports</label>
+        <select id="supports" name="supports"><option>Auto</option><option>Yes</option><option>No</option></select>
+      </div>
+      <div class="l-8 m-6 s-12">
+        <label for="orientation">Orientation / notes</label>
+        <input id="orientation" name="orientation" type="text" placeholder="Faces up/down, keep holes round, etc.">
+      </div>
+    </div>
+    
+    <div class="grid form-group">
+    <div class="l-6 m-6 s-12">
+        <label for="fit">Fit / tolerance</label>
+        <select id="fit" name="fit"><option>Decorative (loose)</option><option>Sliding fit</option><option>Press fit</option></select>
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label for="postProcess">Post-processing</label>
+        <input id="postProcess" name="postProcess" type="text" placeholder="Sanding, priming, painting, smoothing">
+      </div>
+    </div>
+
+      <div class="grid form-group">
+        <div class="notice">
+          <strong>Notes:</strong> 3D prints are not food-safe unless specified. Heat/UV resistance depends on material. Typical dimensional variance ±0.3–0.5 mm depending on geometry.
+        </div>
+    </div>
+  </fieldset>
+
+  <!-- LASER CUTTING / ENGRAVING -->
+  <fieldset id="laser-section" class="section" hidden>
+    <legend><i>2B</i> Laser Cutting / Engraving Details</legend>
+    
+    <div class="grid form-group">
+      <div class="l-6 m-12 s-12">
+        <label for="laserFiles">Upload vector files (SVG/DXF/PDF preferred)</label>
+        <input id="laserFiles" name="laserFiles" type="file" accept=".svg,.dxf,.pdf,image/*" multiple>
+      </div>
+      <div class="l-6 m-12 s-12">
+        <label>Operation</label>
+        <div>
+          <label><input type="radio" name="laserOp" value="cut"> Cut</label>
+          <label><input type="radio" name="laserOp" value="engrave"> Engrave</label>
+          <label><input type="radio" name="laserOp" value="both" checked> Both</label>
+      </div>
+    </div>
+    </div>
+    <div class="grid form-group"> 
+    <div class="l-4 m-6 s-12">
+        <label for="laserMaterial">Material</label>
+        <input id="laserMaterial" name="laserMaterial" type="text" placeholder="e.g., plywood (birch), acrylic (cast), leather, anodised alum.">
+      </div>
+      <div class="l-4 m-3 s-12">
+        <label for="laserThickness">Thickness (mm)</label>
+        <input id="laserThickness" name="laserThickness" type="number" step="0.5" min="0">
+      </div>
+      <div class="l-4 m-3 s-12">
+        <label for="laserDPI">Engraving resolution (DPI)</label>
+        <input id="laserDPI" name="laserDPI" type="number" step="50" min="100" placeholder="e.g., 300">
+      </div>
+    </div>
+
+    <div class="grid form-group">
+      <div class="l-6 m-6 s-12">
+        <label for="panelSize">Panel size (mm)</label>
+        <input id="panelSize" name="panelSize" type="text" placeholder="e.g., 600 x 400">
+        <small class="help">Bed max: <span id="laserBedMax">(fill with your machine limits)</span></small>
+      </div>
+      <div class="l-6 m-6 s-12 content-bottom">
+        <label><input type="checkbox" id="allowNesting" name="allowNesting"> Allow nesting/tiling for best yield</label>
+      </div>
+    </div>
+
+      <div class="grid form-group">
+        <label for="engraveText">Engraving text (exact spelling)</label>
+        <input id="engraveText" name="engraveText" type="text">
+      </div>
+
+      <div class="grid form-group">
+        <div class="notice warning">
+          <strong>Safety:</strong> We <u>do not cut PVC or unknown plastics</u>. By submitting, you confirm the material is safe and correctly identified.
+        </div>
+        <label><input type="checkbox" id="laserSafeAck" name="laserSafeAck" required> I confirm the material is not PVC and is safe to laser.</label>
+      </div>
+  </fieldset>
+
+  <!-- REPAIR / RESTORE -->
+  <fieldset id="repair-section" class="section" hidden>
+    <legend><i>2C</i> Repair / Restoration Details</legend>
+    
+    <div class="grid form-group">
+      <div class="l-4 m-6 s-12">
+        <label for="makeModel">Make / Model</label>
+        <input id="makeModel" name="makeModel" type="text">
+      </div>
+      <div class="l-4 m-6 s-12">
+        <label for="serialId">Serial / ID (if any)</label>
+        <input id="serialId" name="serialId" type="text">
+      </div>
+      <div class="l-4 m-12 s-12">
+        <label for="repairHistory">Previous repairs / attempts</label>
+        <input id="repairHistory" name="repairHistory" type="text" placeholder="What’s been tried so far">
+      </div>
+    </div>
+
+
+    <div class="grid form-group">
+        <label for="faultDesc">Problem description</label>
+        <textarea id="faultDesc" name="faultDesc" rows="3"></textarea>
+    </div>
+
+    <div class="grid form-group">
+    <div class="l-6 m-6 s-12">
+        <label>Parts sourcing</label>
+        <div>
+          <label><input type="radio" name="partsSource" value="shed" checked> Shed to source</label>
+          <label><input type="radio" name="partsSource" value="client"> Client to supply</label>
+          <label><input type="radio" name="partsSource" value="either"> Either</label>
+        </div>
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label>If unrepairable</label>
+        <div>
+          <label><input type="radio" name="unrepairable" value="return" checked> Return as-is</label>
+          <label><input type="radio" name="unrepairable" value="recycle"> Recycle / dispose with permission</label>
+        </div>
+      </div>
+    </div>
+    <div class="grid form-group">
+        <label><input type="checkbox" id="hiddenDamageAck" name="hiddenDamageAck" required> I understand hidden faults may be discovered during disassembly and may affect cost/time.</label>
+      </div>
+  </fieldset>
+
+  <!-- QUOTE / PRICING -->
+  <fieldset class="section">
+    <legend><i>5</i> Quote, Pricing & Approvals</legend>
+    <div class="grid form-group">
+      <div class="l-4 m-6 s-12">
+        <label>Pricing basis</label>
+        <div>
+          <label><input type="radio" name="pricing" value="donation" checked> Donation + materials</label>
+          <label><input type="radio" name="pricing" value="fixed"> Fixed quote</label>
+          <label><input type="radio" name="pricing" value="hourly"> Hourly estimate</label>
+        </div>
+      </div>
+     
+      <div class="l-4 m-6 s-12">
+        <label for="labourRate">Labour (guide) AUD/hr</label>
+        <input id="labourRate" name="labourRate" type="number" min="0" step="1" placeholder="e.g., 25">
+      </div>
+
+      <div class="l-4 m-12 s-12">
+        <label for="materialsEstimate">Materials estimate (AUD)</label>
+        <input id="materialsEstimate" name="materialsEstimate" type="number" min="0" step="0.01" placeholder="Range or single value">
+      </div>
+    </div>
+
+    <div class="grid form-group">  
+    <div class="l-6 m-6 s-12">
+        <label for="approvalLimit">Approval threshold (AUD)</label>
+        <input id="approvalLimit" name="approvalLimit" type="number" min="0" step="0.01" placeholder="Work pauses if cost exceeds this">
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label for="deposit">Deposit (optional)</label>
+        <input id="deposit" name="deposit" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- LOGISTICS -->
+  <fieldset class="section">
+    <legend><i>6</i> Logistics</legend>
+    <div class="grid form-group">
+      <div class="l-4 m-6 s-12">
+        <label for="dropoffDate">Drop‑off date</label>
+        <input id="dropoffDate" name="dropoffDate" type="date">
+      </div>
+      <div class="l-4 m-6 s-12">
+        <label for="pickupMethod">Pickup method</label>
+        <select id="pickupMethod" name="pickupMethod"><option>Client pickup</option><option>Courier</option><option>Delivery by Shed</option></select>
+      </div>
+      <div class="l-4 m-12 s-12">
+        <label for="deliveryAddress">Delivery address (if applicable)</label>
+        <input id="deliveryAddress" name="deliveryAddress" type="text">
+      </div>
+    </div>
+    
+    <div class="grid form-group">
+        <label for="logisticsNotes">Access / packaging notes</label>
+        <textarea id="logisticsNotes" name="logisticsNotes" rows="3" placeholder="Gate codes, lift access, fragile, bulk packaging, etc."></textarea>
+    </div>
+  </fieldset>
+
+  <!-- PERMISSIONS & PUBLICITY -->
+  <fieldset class="section">
+    <legend><i>7</i> Permissions & Publicity</legend>
+    <div class="grid form-group">
+        <label><input type="checkbox" id="ipAck" name="ipAck" required> I confirm I own the uploaded designs/files or have permission to use them.</label>
+      </div>
+    <div class="grid form-group">  
+      <div class="l-6 m-6 s-12">
+        <label>Permission to photograph project for website/social</label>
+        <div>
+          <label><input type="radio" name="mediaConsent" value="yes"> Yes</label>
+          <label><input type="radio" name="mediaConsent" value="no" checked> No</label>
+        </div>
+      </div>
+      <div class="l-6 m-6 s-12">
+        <label for="creditHow">How should we credit?</label>
+        <input id="creditHow" name="creditHow" type="text" placeholder="e.g., Built by Men's Shed Townsville for &hellip;">
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- TERMS / WARRANTY ACKS -->
+  <fieldset class="section">
+    <legend><i>8</i> Risk, Safety & Warranty</legend>
+    <div class="grid form-group"> 
+      <ul class="list">
+          <li>Natural material variability (e.g., timber knots/warping) may affect final appearance.</li>
+          <li>3D printed & laser‑cut parts are used at client’s risk; ensure suitability for your use case.</li>
+          <li>We may refuse hazardous/unknown materials (e.g., PVC for laser cutting).</li>
+          <li>Limited warranty on workmanship only; excludes misuse, weathering, and supplied materials defects.</li>
+          <li>Liability is limited to amounts paid for the job.</li>
+        </ul>
+        </div>
+        <label><input type="checkbox" id="termsAck" name="termsAck" required> I have read and accept these terms.</label>
+  </fieldset>
+
+  <!-- SIGN-OFF -->
+  <fieldset class="section">
+    <legend><i>9</i> Sign‑off</legend>
+    <div class="grid form-group">
+      <div class="l-6 m-6 s-12">
+        <label for="signedName">Printed name <span aria-hidden="true">*</span></label>
+        <input id="signedName" name="signedName" type="text" required>
+      </div>
+      <div class="l-3 m-6 s-12">
+        <label for="signDate">Date <span aria-hidden="true">*</span></label>
+        <input id="signDate" name="signDate" type="date" required>
+      </div>
+      <div class="l-3 m-12 s-12">
+        <label for="receivedBy">Received by (staff)</label>
+        <input id="receivedBy" name="receivedBy" type="text" placeholder="Staff name">
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- ACTIONS -->
+  <div class="grid form-group form-actions">
+    <div class="l-6 m-6 s-12">
+      <button type="button" id="btnPrint" class="btn btn-delta"><i class="wt-printer"></i> Print</button>
+    </div>
+    <div class="l-6 m-6 s-12" style="text-align:right">
+      <button type="reset" class="btn btn-delta"><i class="wt-update"></i> Clear</button>
+      <button type="submit" class="btn btn-alpha"><i class="wt-mail"></i> Submit Request</button>
+    </div>
+  </div>
+</form>
+    </div>
+    <!-- Optional: visually-hidden helper class if your system doesn't already ship one -->
+<style>
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .notice{padding:.75rem;border:1px solid #ddd;border-radius:6px}
+  .notice.warning{border-color:#d99}
+</style>
+    <script>
+(function(){
+  // Generate a simple job reference like MST-YYYY-#### (not authoritative)
+  const ref = document.getElementById('jobRef');
+  if (ref && !ref.value) {
+    const d = new Date();
+    const year = d.getFullYear();
+    const rand = Math.floor(1000 + Math.random()*9000);
+    ref.value = `MST-${year}-${rand}`;
+  }
+
+  // Toggle conditional sections based on jobType checkboxes
+  const typeBoxes = Array.from(document.querySelectorAll('input[name="jobType"][type="checkbox"]'));
+  function applyReveals(){
+    typeBoxes.forEach(cb => {
+      const selector = cb.getAttribute('data-reveals');
+      if (!selector) return;
+      const sec = document.querySelector(selector);
+      if (!sec) return;
+      sec.hidden = !cb.checked;
+    });
+  }
+  typeBoxes.forEach(cb => cb.addEventListener('change', applyReveals));
+  applyReveals();
+
+  // Fill laser bed size hint from config if present
+  const bedSpan = document.getElementById('laserBedMax');
+  if (bedSpan && window.mstConfig && window.mstConfig.laserBed){
+    bedSpan.textContent = window.mstConfig.laserBed; // e.g., "600 × 400 mm"
+  }
+
+  // Simple client-side guardrails for 3D print fragility
+  const infill = document.getElementById('infill');
+  const layer = document.getElementById('layerHeight');
+  function checkPrintHints(){
+    if (!infill || !layer) return;
+    const i = Number(infill.value || 0);
+    const lh = Number(layer.value || 0);
+    if (i && i < 15) infill.setCustomValidity('Infill below 15% may be fragile. Increase or ignore to proceed.'); else infill.setCustomValidity('');
+    if (lh && lh > 0.28) layer.setCustomValidity('Layer height above 0.28 mm reduces detail. Lower or ignore to proceed.'); else layer.setCustomValidity('');
+  }
+  if (infill) infill.addEventListener('input', checkPrintHints);
+  if (layer) layer.addEventListener('input', checkPrintHints);
+
+  // Print button (uses browser print)
+  const btnPrint = document.getElementById('btnPrint');
+  if (btnPrint) btnPrint.addEventListener('click', () => window.print());
+})();
+</script>
+
+<TrackPageView key="job-form" />
+
+    </Layout>

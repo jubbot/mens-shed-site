@@ -1,0 +1,188 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import { sanity } from '../../../lib/sanityClient';
+import { totalsForKeys } from '../../../lib/analytics'; // ← read views from your SQLite analytics
+
+const { category, slug } = Astro.params;
+
+const QUERY = `*[_type=="product" && slug.current==$slug && !(_id in path("drafts.**"))][0]{
+  _id, title, "slug": slug.current, sku, shortDescription,
+  price, currency, buyUrl, isSubscription, recurringInterval,
+  inStock, localPickup, flatShipping, shippingNote,
+  shipAustraliaWide, condition, stockQty, tags,
+  "category": storeCategory->{_id, title, "slug": slug.current},
+  "image": mainImage{ "url": asset->url, "alt": coalesce(alt, "") },
+  "gallery": coalesce(gallery[]{ "url": asset->url, "alt": coalesce(alt, "") }, [])
+}`;
+
+const product = await sanity.fetch(QUERY, { slug });
+
+if (!product) {
+  return Astro.response.redirect('/store', 302);
+}
+
+// redirect to canonical category path if URL category doesn't match
+const prodCat = product?.category?.slug;
+if (prodCat && prodCat !== category) {
+  return Astro.response.redirect(`/store/${prodCat}/${product.slug}`, 301);
+}
+
+// convenience
+const imageUrl = product?.image?.url ?? product?.gallery?.[0]?.url ?? 'https://placehold.co/1200x900';
+const imageAlt = product?.image?.alt || product?.gallery?.[0]?.alt || product?.title || 'Product image';
+
+const toMoney = (value: number, cur = product?.currency || 'AUD') =>
+  new Intl.NumberFormat('en-AU', { style: 'currency', currency: cur }).format(value);
+
+const hasPrice = typeof product?.price === 'number' && Number.isFinite(product.price);
+const isFree = hasPrice && product.price <= 0;
+const isSubscription = !!product?.isSubscription;
+const interval = String(product?.recurringInterval || '').toLowerCase(); // 'month' | 'year'
+const subLabel = isSubscription ? (interval === 'year' ? '/year' : interval === 'month' ? '/month' : '/billing') : '';
+
+const hasShipping = (typeof product?.flatShipping === 'number') || !!product?.shipAustraliaWide;
+const pickupOnly = product?.localPickup && !hasShipping;
+
+const shippingBadges: string[] = [];
+if (pickupOnly) {
+  shippingBadges.push('Pickup only');
+} else {
+  if (product?.localPickup) shippingBadges.push('Local pickup');
+  if (typeof product?.flatShipping === 'number') {
+    shippingBadges.push(product.flatShipping > 0 ? `Flat shipping ${toMoney(product.flatShipping)}` : 'Free shipping');
+  } else if (product?.shipAustraliaWide) {
+    shippingBadges.push('Ships Australia-wide');
+  }
+}
+if (product?.shippingNote) shippingBadges.push(product.shippingNote);
+
+const canBuy = !!product?.buyUrl && (product?.inStock !== false);
+
+// 🔹 Read current product views from analytics DB (keyed by slug)
+let productViews = 0;
+try {
+  const rows = totalsForKeys('product', [product.slug]); // sync read from SQLite
+  productViews = rows?.[0]?.total ?? 0;
+} catch { /* ignore and show 0 */ }
+
+// compact views text (from analytics, not Sanity)
+const viewsCompact = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1
+}).format(productViews);
+
+const ldJson = hasPrice ? {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.title,
+  sku: product.sku,
+  image: imageUrl,
+  category: product?.category?.title,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: product?.currency || 'AUD',
+    price: product.price,
+    availability: (product?.inStock !== false) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    url: product?.buyUrl
+  }
+} : null;
+---
+
+<Layout title={`${product.title} – Store`}>
+  <!-- expose id + slug for the tracker -->
+  <div class="wrapper product-detail" data-product-id={product._id} data-product-slug={product.slug}>
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/store">Store</a>
+      {product?.category && <span aria-hidden="true">/</span>}
+      {product?.category && <a href={`/store#${product.category.slug}`}>{product.category.title}</a>}
+      <span aria-hidden="true">/</span>
+      <span class="current" aria-current="page">{product.title}</span>
+    </nav>
+
+    <article class="sheet">
+      <div class="media">
+        <img src={imageUrl} alt={imageAlt} loading="eager" decoding="async" />
+        {product?.condition && product.condition !== 'new' && (
+          <span class="pill pill-cond">{product.condition === 'used' ? 'Used' : 'Refurbished'}</span>
+        )}
+        {product?.inStock === false && <span class="pill pill-out">Out of stock</span>}
+        {isSubscription && <span class="pill pill-sub">{interval === 'year' ? 'Annual' : 'Subscription'}</span>}
+      </div>
+
+      <div class="info">
+        <h1 class="title">{product.title}</h1>
+        {product?.sku && <div class="sku">SKU: <span>{product.sku}</span></div>}
+        {product?.shortDescription && <p class="desc">{product.shortDescription}</p>}
+
+        <!-- Views (from analytics DB) -->
+        <div class="product-detail__meta">
+          <span class="views">
+            <span data-views>{productViews}</span> views
+          </span>
+          <span class="views-compact" aria-hidden="true">{viewsCompact}</span>
+        </div>
+
+        <div class="stack">
+          <div class="price">
+            {hasPrice
+              ? (<strong>{isFree ? 'Free' : toMoney(product.price)}</strong>)
+              : (<em>Price shown at checkout</em>)
+            }
+            {isSubscription && hasPrice && !isFree && <small class="interval"> {subLabel}</small>}
+          </div>
+
+          {shippingBadges?.length > 0 && (
+            <ul class="badges">
+              {shippingBadges.map((b) => <li class="badge">{b}</li>)}
+            </ul>
+          )}
+
+          <div class="actions">
+            {canBuy ? (
+              <a href={product.buyUrl} target="_blank" rel="noopener noreferrer" class="btn btn-buy">
+                {isSubscription ? 'Subscribe' : hasPrice ? 'Buy now' : 'Pay now'}
+              </a>
+            ) : (
+              <button class="btn" disabled>{product?.inStock === false ? 'Out of stock' : 'Unavailable'}</button>
+            )}
+            <a href="/store" class="btn btn-ghost">Back to store</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    {ldJson && (
+      <script type="application/ld+json">
+        {JSON.stringify(ldJson)}
+      </script>
+    )}
+  </div>
+
+  <!-- Track a view (read-only analytics) with optimistic +1 in UI -->
+  <script is:inline>
+    (function(){
+      const root = document.querySelector('.product-detail');
+      const slug = root?.getAttribute('data-product-slug');
+      if (!slug) return;
+
+      // throttle per tab session
+      const key = `pv_${slug}`;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+
+      // optimistic UI bump
+      const el = root.querySelector('[data-views]');
+      if (el) {
+        const n = parseInt(el.textContent || '0', 10);
+        if (!Number.isNaN(n)) el.textContent = String(n + 1);
+      }
+
+      // fire tracker
+      fetch(`/api/analytics/track?kind=product&key=${encodeURIComponent(slug)}`, { cache: 'no-store' })
+        .catch(()=>{});
+    })();
+  </script>
+</Layout>

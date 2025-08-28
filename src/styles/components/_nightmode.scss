@@ -1,0 +1,228 @@
+// Dark THEME 
+$night-colour1: #173f4a;
+$night-colour2: #42edf8;
+$night-colour3: #131a21;
+$night-colour4: #37c7d1;
+$night-colour5: #111;
+$night-colour6: #212d38;
+
+body.dark-mode {
+  // Style Scrollbar
+  .cell:hover, .cell-overflow:hover, .project-modules:hover {
+    &::-webkit-scrollbar-track { background: #0d242b; }
+    &::-webkit-scrollbar-thumb { background: $night-colour1; }
+  }
+  background: $night-colour5;
+  color: #33b3bb;
+  &:before {
+    background: url('#{$assets-url}/images/bg-grid-grey.svg');
+    background-size: 20px;
+    position: absolute;
+    opacity: .1;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    content: '';
+  }
+  .brand svg {
+    .B { fill: $night-colour2; fill-rule: nonzero; }
+    .d { fill: #CCC; fill-rule: nonzero; }
+  }
+  input[type=text], input[type=email], textarea {
+    background: $night-colour1;
+    border-color: $night-colour3;
+    &:focus {
+      border-color: $night-colour2;
+    }
+    &:hover {
+      background: #1a4e5c;
+    }
+  }
+  // Radio Controlled Navbar
+  #tab1:checked ~ header .project1 a,
+  #tab2:checked ~ header .project2 a,
+  #tab3:checked ~ header .project3 a,
+  #layout-header {
+    color: $night-colour2 !important;
+  }
+  .btn-chamfer {
+    filter: none;
+  }
+  .chamfer-shadow {
+    filter: none;
+  }
+  #main-slider {
+    z-index: 1;
+  }
+  header {
+    .mode-toggle {
+      background: $night-colour3;
+    }
+  }
+  // BODY 
+  // HEADER
+  #layout-header,
+  .social, .wrapper.page,
+  .chamfer.border:before,
+  .chamfer .slot-subtitle, .chamfer .slot-title {
+    background: $night-colour3;
+  }
+  // TABSET
+  // BACKGROUND COLOUR
+  .tab_label, #tabset_single:before, .tab:before,
+  .flickity-page-dots .dot.is-selected,
+  .chamfer.border {
+    background: $night-colour2; 
+  }
+  #tabset_single .tab_label:before, .tab_label:before,
+  header nav .nav-item:first-child:before {
+    background: $night-colour6;
+  }
+  .header nav .nav-item:first-child:before, .tab_label {
+    background-color: $night-colour2;
+  }
+  .title-heading h2:after { background: $night-colour1; }
+  // TEXT COLOUR
+  .title-heading, .wrapper.page h1, .wrapper.page h2,
+  #tab1:checked ~ #tabset .tab:nth-child(1) .knob i,
+  #tab2:checked ~ #tabset .tab:nth-child(2) .knob i,
+  #tab3:checked ~ #tabset .tab:nth-child(3) .knob i,
+  #tabset_single .knob i,
+  .social a, .chamfer .slot-subtitle, .chamfer .slot-title {
+    color: $night-colour2;
+  }
+  #layout-header nav label, #layout-header nav a {
+    color: #33b3bb;
+  }
+  .chamfer .btn-cham {
+    background: #216f74;
+  }
+  &.page-frontpage {
+    #tab1:checked ~ header nav .nav-item:nth-child(1) a,
+    #tab2:checked ~ header nav .nav-item:nth-child(2) a,
+    #tab3:checked ~ header nav .nav-item:nth-child(3) a {
+      color: $night-colour2 !important;
+    }
+  }
+  .tab:hover .knob i {
+    animation: darkpulse 2s infinite; 
+  }
+  @keyframes darkpulse {
+    0% {
+      color: #33b3bb;
+    }
+    50% {
+      color: $night-colour2;
+    }
+    100% {
+      color: #33b3bb;
+    }
+  }
+  // BORDER COLOUR
+  .tabset .tab .bottom {
+    border-color: $night-colour6;
+  }
+  .tabset .tab .marker span:after {
+    border-color: $night-colour6;
+  }
+  .tabset .tab,
+  .wrap-scroll,
+  .tabset .tab {
+    border-color: $night-colour2;   
+  }
+  .social, .tab_label, .panel {
+    border-color: $night-colour2 !important;
+  }
+  // TAB - HOVER
+  $tab-hover: $night-colour1;
+  #tab1:checked ~ #tabset .tab:nth-child(1) .tab_label:before,
+  #tab2:checked ~ #tabset .tab:nth-child(2) .tab_label:before,
+  #tab3:checked ~ #tabset .tab:nth-child(3) .tab_label:before {
+    background: $tab-hover;
+  }
+  // FOOTER
+  // CARDS
+  .project-slide, .contact-form .static-3 { 
+    background: #1f3032;
+    &:before, &:after {
+      background: url('#{$assets-url}/images/project_slide_bg_darkmode.svg') center repeat-y;
+      opacity: .5;
+    }
+  }
+  // SINGLE PROJECT   
+  .project-slide { 
+    .stamp b {
+      color: $night-colour2;
+    }
+    .project-title, h2 {
+      text-shadow: none;
+      color: $night-colour2;
+      font-weight: 400;
+    }
+    .project-tags span {
+      background: $night-colour1;
+      &:hover {
+        background: #18676a;
+      }
+    }
+  }
+  .project-module {
+    .cell { background: rgba(19,26,33,.5); border-color: #1e6b70; }
+    .cell:nth-child(odd) {
+      .module-heading { background: #18676a; }
+      &:hover .module-heading { background: #27b3b9; } 
+    }
+    .subheading, .compare_label {
+      background: $night-colour3;
+      border-color: #1e6b70;
+    }
+    .compare_label {
+      outline-color: #1e6b70;
+    }
+    .project-image-slider #compare1:checked ~ .compare1, .project-image-slider #compare2:checked ~ .compare2 {
+      background: #18676a;
+      color: $night-colour2;
+    }
+    .summary h3 {
+      color: $night-colour2;
+    }
+    .browser {
+      & {
+      border-color: #1e6b70;
+      }
+      .ctl, i {
+        background: $night-colour3;
+        border-color: #1e6b70;
+      }
+    }
+  }
+  .btn-chamfer {
+    &.orange span {
+      background: $night-colour2;
+      color: #18676a;
+    }
+  }
+  // Contact Form 
+  .cell-group .cell-heading {
+    background: $night-colour2;
+    color: #2e99a0;
+  }
+  .select-style {
+    background: rgba(19,26,33,.4);
+    h3 { color: #2e99a0; font-weight: 300; }
+    h3 b { font-weight: 500; }
+    &:hover {
+      h3 { color: $night-colour2; }
+      h4 { color: #CCC; }
+    }
+  }
+  #project-a:checked ~ .project-a, #project-b:checked ~ .project-b, #project-c:checked ~ .project-c, #project-d:checked ~ .project-d, #project-e:checked ~ .project-e, #project-f:checked ~ .project-f {
+    background: rgba(19,26,33,.9);
+    h3 { color: $night-colour2; font-weight: 300; }
+    h4 { color: #eaeaea; }
+  }
+  #project-a:checked ~ .project-a:before, #project-b:checked ~ .project-b:before, #project-c:checked ~ .project-c:before, #project-d:checked ~ .project-d:before, #project-e:checked ~ .project-e:before, #project-f:checked ~ .project-f:before {
+    background-color: $night-colour2;
+  }
+  // END NIGHTMODE
+}

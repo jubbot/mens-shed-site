@@ -1,0 +1,49 @@
+---
+/**
+ * Props:
+ * - showNetworks: boolean  -> also show card/wallet icons (default: false)
+ * - methods: string[]      -> keys: visa, mastercard, amex, applepay, googlepay, afterpay, zip
+ * - always: boolean        -> show on all pages (default: true); when false, auto-show only on store pages
+ * - class: string          -> extra classes
+ */
+const {
+  showNetworks = false,
+  methods = ['visa','mastercard','amex','applepay','googlepay'],
+  always = true,
+  class: extraClass = ''
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const shouldShow = always || /^\/(store|products?|donations?)/.test(path);
+
+// Map method -> your icon class (adjust to your set)
+const iconFor = (m: string) => ({
+  stripe: 'wt-stripe',       // add this to your font set; fallback below if missing
+  visa: 'wt-visa',
+  mastercard: 'wt-mastercard',
+  amex: 'wt-amex',
+  applepay: 'wt-applepay',
+  googlepay: 'wt-googlepay',
+  afterpay: 'wt-afterpay',
+  zip: 'wt-zip',
+}[m] ?? 'wt-creditcard');
+---
+
+{shouldShow && (
+  <div class={`paynote ${extraClass}`}>
+    <span class="lock" aria-hidden="true"><i class="wt-padlock"></i></span>
+    <span class="text">Secure checkout via</span>
+    <span class="stripe">
+      <i class={iconFor('stripe')} aria-hidden="true"></i>
+      <span class="sr-only">Stripe</span>
+    </span>
+
+    {showNetworks && (
+      <span class="nets" aria-label="Accepted payment methods">
+        {methods.map((m) => (
+          <span class="badge" title={m}><i class={iconFor(m)} aria-hidden="true"></i><span class="sr-only">{m}</span></span>
+        ))}
+      </span>
+    )}
+  </div>
+)}

@@ -1,0 +1,147 @@
+// STORE NAVIGATION
+
+.store-nav:before, .store-nav:after {
+    content: '';
+    height: 3px;
+    background: #555;
+    position: absolute;
+}
+
+.store-nav:before {
+    right: 0;
+    bottom: 0;
+    width: 50px;
+}
+
+.store-nav:after {
+    right: 0;
+    bottom: 8px;
+    width: 30px;
+}
+
+.store-nav {
+    background: #FFF;
+    border-bottom: 1px solid #333;
+    position: relative;
+    z-index: 5;
+    font-family: 'Teko';
+    font-weight: 200;
+    text-transform: uppercase;
+    font-size: 17pt;
+    width: 100%;
+    & {
+    padding: 10px 0;
+    }
+
+    .left {
+        overflow: hidden;
+        height: 40px;
+    }
+
+    .scroll {
+        overflow-y: auto;
+        display: flex;
+        white-space: nowrap;
+    }
+
+    @media all and (max-width: 768px) {
+        position: sticky;
+        top: 0px;
+        & {
+        z-index: 1;
+        }
+
+        .left {
+            width: 100% !important;
+        }
+
+        .right {
+            display: none;
+        }
+    }
+
+    h2 {
+        font-weight: 100;
+    }
+
+    .left, .right {
+        margin: 0 10px;
+        align-items: center;
+    }
+
+    .left {
+        & {
+        width: calc(100% - 240px);
+        }
+
+        .nav-item {
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            color: #333;
+            padding: 0 10px;
+        }
+    }
+
+    .right {
+        width: 200px;
+        justify-content: center;
+        padding: 5px 0;
+
+        a, .mall-selectbox-sm {
+            font-family: 'Teko';
+            font-size: 17pt;
+            font-weight: 200;
+            color: #333;
+        }
+
+        .mall-selectbox-sm select {
+            padding: 0 !important;
+            display: none;
+        }
+    }
+
+    .dropdown:hover .dropdown-menu {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .nav-link:hover {
+        color: #ff5d24 !important;
+    }
+
+    .dropdown-menu {
+        background: #333;
+        position: absolute;
+        left: 0;
+        right: 0;
+        visibility: hidden;
+        transition: .1s ease-in;
+        opacity: 0;
+        height: 100%;
+        top: 0;
+        & {
+        padding-left: 10px;
+        }
+
+        .grid {
+            align-items: center;
+            height: 100%;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            display: block;
+            color: #CCC;
+
+            &:hover {
+                color: #FFF;
+            }
+        }
+    }
+
+    .nav-item.active a {
+        color: #ff5d24;
+    }
+}

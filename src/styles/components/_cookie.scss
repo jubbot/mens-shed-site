@@ -1,0 +1,57 @@
+// COOKIE BAR
+ @media all and (min-width: 768px) {  
+#frontpage {
+#sg-cookiesBar {
+ left:0;
+ right:0;
+}
+}
+#tabset_single {
+#sg-cookiesBar {
+ left:80px;
+}
+}
+ }
+ @media all and (max-width: 768px) {  
+#sg-cookiesBar {
+ left:0;
+}
+ }
+#sg-cookiesBar {
+  position:fixed;
+  bottom:0;
+  right:0;
+  z-index: 100;
+ }
+#cookies-bar {
+  background-image: linear-gradient(45deg, #171717 25%, #212121 25%, #212121 50%, #171717 50%, #171717 75%, #212121 75%, #212121 100%);
+  background-size: 56.57px 56.57px;
+  display:flex;
+  flex-wrap:wrap;
+  color:#eaeaea;
+  padding:20px 10px;
+  justify-content: center;
+  align-items: center;
+    h3 {display:none;}
+    p {margin:0; padding:10px 0; font-family:'Teko'; font-size:15pt; text-align: center;}
+    .content {max-width:900px;}
+    .btn {margin-right:10px;}
+ }
+ #sg-cookiesManage {
+   border:1px solid #333;
+   background:#FFF;
+   padding:20px;
+   font-family:'Teko';
+#cookies-manage-save {
+ font-size:15pt;
+ cursor: pointer;
+ transition:.1s linear;
+ font-family: 'Teko';
+ text-transform: uppercase;
+ border-radius:3px;
+ background:#ff6232;
+ color:#FFF;
+ border:1px solid transparent;
+ &:hover {background:#ff4200;}
+ }
+} 

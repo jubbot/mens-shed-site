@@ -1,0 +1,153 @@
+---
+interface Subcat { title: string; slug: string; count?: number }
+interface Cat {
+  _id: string; title: string; slug: string; icon?: any; count?: number; subcategories?: Subcat[]
+}
+interface Props {
+  categories: Cat[];
+  allowMultiple?: boolean;     // default false = single-open
+  totalCount?: number;         // optional; if not provided, we sum from categories
+}
+
+const { categories = [], allowMultiple = false, totalCount } = Astro.props as Props;
+
+const url = new URL(Astro.request.url);
+const sp = url.searchParams;
+
+// Active state from URL
+const q         = (sp.get('q') || '').trim();
+const activeCat = sp.get('category') || '';
+const activeSub = sp.get('subcategory') || '';
+
+// Compute total (prefer prop, else sum)
+const computedTotal =
+  typeof totalCount === 'number'
+    ? totalCount
+    : categories.reduce((n, c) => n + (typeof c.count === 'number' ? c.count : 0), 0);
+
+const nf = new Intl.NumberFormat('en-AU');
+
+const makeAllHref = () => {
+  const u = new URL('/projects', url.origin);
+  if (q) u.searchParams.set('q', q);
+  return u.pathname + u.search;
+};
+const makeCatHref = (slug: string) => {
+  const u = new URL('/projects', url.origin);
+  if (q) u.searchParams.set('q', q);
+  u.searchParams.set('category', slug);
+  return u.pathname + u.search;
+};
+const makeSubHref = (catSlug: string, subSlug: string) => {
+  const u = new URL('/projects', url.origin);
+  if (q) u.searchParams.set('q', q);
+  u.searchParams.set('category', catSlug);
+  u.searchParams.set('subcategory', subSlug);
+  return u.pathname + u.search;
+};
+---
+
+<div class="cat-accordion" data-allow-multiple={allowMultiple ? 'true' : 'false'}>
+  <!-- Top: View all projects + total counter -->
+  <div class="all-row">
+    <a class="all-link" href={makeAllHref()}>
+      <span>View all projects</span>
+      <span class="count-badge" aria-label={`${computedTotal} total projects`}>
+        {nf.format(computedTotal)}
+      </span>
+    </a>
+  </div>
+
+  {categories.map((c) => {
+    const isOpen = c.slug === activeCat;
+    const panelId = `panel-${c.slug}`;
+    return (
+      <div class={`cat${isOpen ? ' is-open' : ''}`} data-cat={c.slug}>
+        <div class="cat-header">
+          <button
+            type="button"
+            class="toggle"
+            aria-expanded={isOpen ? 'true' : 'false'}
+            aria-controls={panelId}
+            data-cat={c.slug}
+          >
+            <span class="title">{c.title}</span>
+            {typeof c.count === 'number' && (
+              <span class="count" aria-label={`${c.count} projects`}>{nf.format(c.count)}</span>
+            )}
+            <span class="chev" aria-hidden="true">▾</span>
+          </button>
+
+          <a class="cat-link" href={makeCatHref(c.slug)} aria-label={`View all ${c.title} projects`}>
+            View all
+          </a>
+        </div>
+
+        <div id={panelId} class="panel" hidden={!isOpen}>
+          <ul class="sub-list" role="list">
+            {(c.subcategories || []).map((s) => {
+              const isActiveSub = isOpen && s.slug === activeSub;
+              return (
+                <li class={`sub-item${isActiveSub ? ' is-active' : ''}`}>
+                  <a href={makeSubHref(c.slug, s.slug)}>
+                    <span class="name">{s.title}</span>
+                    {typeof s.count === 'number' && <span class="count">{nf.format(s.count)}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+<script is:inline>
+(() => {
+  const root = document.querySelector('.cat-accordion');
+  if (!root) return;
+
+  const allowMultiple = root.getAttribute('data-allow-multiple') === 'true';
+
+  root.addEventListener('click', (e) => {
+    const btn = (e.target instanceof Element) && e.target.closest('button.toggle');
+    if (!btn) return;
+
+    const catSlug = btn.getAttribute('data-cat');
+    const item = catSlug && root.querySelector(`.cat[data-cat="${CSS.escape(catSlug)}"]`);
+    if (!item) return;
+
+    const panelId = btn.getAttribute('aria-controls');
+    const panel = panelId && document.getElementById(panelId);
+    if (!panel) return;
+
+    const willOpen = panel.hasAttribute('hidden');
+
+    if (!allowMultiple) {
+      root.querySelectorAll('.cat.is-open').forEach((el) => {
+        if (el !== item) {
+          el.classList.remove('is-open');
+          const b = el.querySelector('button.toggle');
+          const pid = b && b.getAttribute('aria-controls');
+          const p = pid && document.getElementById(pid);
+          if (b) b.setAttribute('aria-expanded', 'false');
+          if (p) p.setAttribute('hidden', '');
+        }
+      });
+    }
+
+    if (willOpen) {
+      item.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+      panel.removeAttribute('hidden');
+    } else {
+      item.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('hidden', '');
+    }
+  });
+})();
+</script>
+
+ 

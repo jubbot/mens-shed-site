@@ -1,0 +1,84 @@
+---
+/**
+ * Props (all optional):
+ * - title: string  -> Share text; falls back to document.title
+ * - url: string    -> Absolute URL; falls back to location.href
+ * - via: string    -> X/Twitter "via" handle without @ (default: 'MensShedTSV')
+ * - class: string  -> Extra classes for wrapper
+ */
+const {
+  title: propTitle,
+  url: propUrl,
+  via = 'MensShedTSV',
+  class: extraClass = ''
+} = Astro.props;
+
+const serverTitle = propTitle ?? 'Men’s Shed Townsville';
+const serverUrl   = propUrl ?? Astro.url.href;
+---
+
+<div class={`social-share ${extraClass}`} data-title={serverTitle} data-url={serverUrl} data-via={via}>
+  <a class="btn-icon" data-net="facebook" aria-label="Share on Facebook" title="Facebook" rel="noopener noreferrer">
+    <i class="wt-facebook"></i>
+  </a>
+
+  <a class="btn-icon" data-net="x" aria-label="Share on X" title="X" rel="noopener noreferrer">
+    <i class="wt-x"></i>
+  </a>
+
+  <a class="btn-icon" data-net="linkedin" aria-label="Share on LinkedIn" title="LinkedIn" rel="noopener noreferrer">
+    <i class="wt-linkedin"></i>
+  </a>
+
+  <a class="btn-icon" data-net="email" aria-label="Share via email" title="Email">
+    <i class="wt-mail"></i>
+  </a>
+</div>
+
+<script is:inline>
+  const root = document.currentScript?.previousElementSibling || document.querySelector('.social-share');
+  if (!root) return;
+
+  const via = root.getAttribute('data-via') || 'MensShedTSV';
+  const url = root.getAttribute('data-url') || window.location.href;
+  const title = root.getAttribute('data-title') || document.title || 'Check this out';
+
+  const enc = encodeURIComponent;
+  const make = {
+    facebook: () => `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`,
+    x:        () => `https://twitter.com/intent/tweet?text=${enc(title)}&url=${enc(url)}&via=${enc(via)}`,
+    linkedin: () => `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
+    email:    () => `mailto:?subject=${enc(title)}&body=${enc(url)}`
+  };
+
+  // Populate hrefs for no-JS fallback and set target only for non-email
+  root.querySelectorAll('a[data-net]').forEach(a => {
+    const net = a.getAttribute('data-net');
+    const href = make[net]?.();
+    if (!href) return;
+    a.setAttribute('href', href);
+    if (net !== 'email') {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+    }
+  });
+
+  const openPopup = (href) => {
+    const w = 600, h = 520;
+    const y = window.top?.outerHeight ? Math.max(0, (window.top.outerHeight - h) / 2) : 100;
+    const x = window.top?.outerWidth  ? Math.max(0, (window.top.outerWidth  - w) / 2) : 100;
+    window.open(href, 'share', `width=${w},height=${h},left=${x},top=${y},noopener`);
+  };
+
+  // Use a popup for FB/X/LinkedIn; let mailto behave normally
+  root.addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-net]');
+    if (!a) return;
+    const net = a.getAttribute('data-net');
+    if (!net || net === 'email') return; // allow default for email
+    const href = a.getAttribute('href');
+    if (!href) return;
+    e.preventDefault();
+    openPopup(href);
+  });
+</script>
