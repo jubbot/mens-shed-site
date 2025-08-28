@@ -7,25 +7,26 @@ import RotatingQuotes from '../../components/RotatingQuotes.astro';
 const COORDS = { lat: -19.26920036602045, lng: 146.80581755020592 };
 const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${COORDS.lat},${COORDS.lng}`)}`;
 ---
-
 <Layout title="Contact">
   <div class="wrapper contact">
-      <p id="form-status" class="status" role="status" aria-live="polite"></p>
-   <div class="grid gap banner">
-        <div>
+    <!-- inline status lives near the form; stays visible after submit -->
+    <p id="form-status" class="status" role="status" aria-live="polite"></p>
+
+    <div class="grid gap banner">
+      <div>
         <nav class="crumbset" aria-label="Breadcrumb">
           <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/contact">Contact</a>
         </nav>
 
         <h1 id="contact-title" class="l-txt">Get in Touch</h1>
         <h3>Have a question, want to visit the shed, or looking to get involved? We’d love to hear from you.</h3>
-        </div>
-</div>
+      </div>
+    </div>
 
-    <section>
-    <div class="grid">
-<div class="l-6 m-6 s-12" aria-labelledby="contact-title">
-        <!-- Primary actions (revealed on click to reduce scraping) -->
+    <!-- TWO COLUMNS IN ONE GRID -->
+    <section class="grid gap">
+      <!-- LEFT column -->
+      <div class="l-6 m-6 s-12" aria-labelledby="contact-title">
         <div class="contact-actions">
           <button type="button" class="btn btn-alpha" data-reveal="phone"><i class="wt-phone"></i> Call us</button>
           <button type="button" class="btn btn-delta" data-reveal="email"><i class="wt-mail"></i> Email us</button>
@@ -34,103 +35,108 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
           </a>
         </div>
 
-        <!-- Quick info -->
         <div class="grid info-cards">
           <div class="l-6 m-6 s-12">
+            <div class="info-card">
             <h4><i class="wt-clock"></i> Open Hours</h4>
             <p><strong>8:00 AM – 12:00 PM</strong><br/>Mon · Tue · Wed · Thu · Fri</p>
           </div>
+          </div>
           <div class="l-6 m-6 s-12">
+            <div class="info-card">
             <h4><i class="wt-pin"></i> Visit</h4>
             <p>
               <a class="addr-link" href={googlePlace} target="_blank" rel="noopener">
                 1 Charters Towers Road<br/>Townsville, QLD 4810
               </a>
             </p>
+            </div>
           </div>
         </div>
-      
 
-      <aside>
-        <h2 id="support-title" class="sr-only">Ways to support the Shed</h2>
-        <ul class="support-list">
-          <li><strong>Make a Donation</strong><br/>Every dollar helps us buy materials, maintain tools, and keep the lights on.</li>
-          <li><strong>Become a Sponsor</strong><br/>Support local men’s mental health and community work while promoting your business.</li>
-          <li><strong>Donate Tools or Materials</strong><br/>Quality tools, timber, and hardware are always needed and appreciated.</li>
-          <li><strong>Join a Fundraiser</strong><br/>Get involved in BBQs, raffles, and events that help keep the shed running.</li>
-          <li><strong>Fund a Project or Workshop</strong><br/>Help us deliver free training, repair services, or build items for the community.</li>
-          <li><strong>Spread the Word</strong><br/>Share our work, attend events, or refer someone who might benefit from the shed.</li>
-        </ul>
+        <aside>
+          <h2 id="support-title" class="sr-only">Ways to support the Shed</h2>
+          <ul class="support-list">
+            <li><strong>Make a Donation</strong><br/>Every dollar helps us buy materials, maintain tools, and keep the lights on.</li>
+            <li><strong>Become a Sponsor</strong><br/>Support local men’s mental health and community work while promoting your business.</li>
+            <li><strong>Donate Tools or Materials</strong><br/>Quality tools, timber, and hardware are always needed and appreciated.</li>
+            <li><strong>Join a Fundraiser</strong><br/>Get involved in BBQs, raffles, and events that help keep the shed running.</li>
+            <li><strong>Fund a Project or Workshop</strong><br/>Help us deliver free training, repair services, or build items for the community.</li>
+            <li><strong>Spread the Word</strong><br/>Share our work, attend events, or refer someone who might benefit from the shed.</li>
+          </ul>
 
-        <!-- Friendly rotating quote (auto every 10s) -->
-        <div class="quotes">
-          <RotatingQuotes intervalMs={10000} />
-        </div>
-      </aside>
-</div>
-<div class="l-6 m-6 s-12">
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="company" data-netlify-recaptcha="true">
-    <!-- Required hidden input so Netlify can match posts -->
-    <input type="hidden" name="form-name" value="contact" />
-
-    <!-- Honeypot: keep *visible* in HTML but offscreen -->
-    <p class="hp" aria-hidden="true">
-      <label>Company <input name="company" tabindex="-1" autocomplete="off" /></label>
-    </p>
-
-    <!-- Your fields (unchanged, but keep `name=`s!) -->
-    <div class="form-group">
-      <label for="contact-fullName">Full Name <span class="req">*</span></label>
-      <input type="text" id="contact-fullName" name="fullName" required autocomplete="name" placeholder="Jane Citizen" />
-    </div>
-
-    <div class="form-group">
-      <label for="contact-email">Email <span class="req">*</span></label>
-      <input type="email" id="contact-email" name="email" required autocomplete="email" inputmode="email" placeholder="you@example.com" />
-    </div>
-
-    <div class="form-group">
-      <label for="contact-phone">Phone Number</label>
-      <input type="tel" id="contact-phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="07 4772 4422" pattern="^[0-9 +()-]{6,}$" />
-    </div>
-
-    <fieldset class="form-group">
-      <legend class="form-label">General Enquiry</legend>
-      <div class="radio-group-inline" role="radiogroup" aria-label="General Enquiry">
-        <label class="radio-option"><input type="radio" name="enquiryType" value="membership" /> <span>Membership Information</span></label>
-        <label class="radio-option"><input type="radio" name="enquiryType" value="volunteering" /> <span>Volunteering Opportunities</span></label>
-        <label class="radio-option"><input type="radio" name="enquiryType" value="donation" /> <span>Donations & Support</span></label>
-        <label class="radio-option"><input type="radio" name="enquiryType" value="workshop" /> <span>Workshop or Project Ideas</span></label>
-        <label class="radio-option"><input type="radio" name="enquiryType" value="other" /> <span>Other</span></label>
+          <div class="quotes">
+            <RotatingQuotes intervalMs={10000} />
+          </div>
+        </aside>
       </div>
-    </fieldset>
 
-    <div class="form-group">
-      <label for="contact-message">How can Men’s Shed Townsville help?</label>
-      <textarea id="contact-message" name="message" rows="6" spellcheck="true" placeholder="Tell us a little about your enquiry…"></textarea>
-    </div>
+      <!-- RIGHT column (form) -->
+      <div class="l-6 m-6 s-12">
+        <form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="company"
+          data-netlify-recaptcha="true"
+          /* remove action for inline-Thanks; add action="/contact/thanks" if you want redirect */
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hp" aria-hidden="true">
+            <label>Company <input name="company" tabindex="-1" autocomplete="off" /></label>
+          </p>
 
-    <div class="form-group">
-      <label class="checkbox">
-        <input type="checkbox" name="consent" required />
-        <span>I agree to be contacted about my enquiry. See our <a href="/privacy" target="_blank" rel="noopener">privacy policy</a>.</span>
-      </label>
-    </div>
-    <div class="form-group">
-        <div data-netlify-recaptcha="true"></div>
-    </div>
-    <div class="actions">
-      <button type="submit" class="btn btn-alpha">
-        <i class="wt-mail"></i> Pass the message along
-      </button>
-    </div>
-  </form>
-</div>
-</div>
-</section>
+          <div class="form-group">
+            <label for="contact-fullName">Full Name <span class="req">*</span></label>
+            <input type="text" id="contact-fullName" name="fullName" required autocomplete="name" placeholder="Jane Citizen" />
+          </div>
 
-  
-   
+          <div class="form-group">
+            <label for="contact-email">Email <span class="req">*</span></label>
+            <input type="email" id="contact-email" name="email" required autocomplete="email" inputmode="email" placeholder="you@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="contact-phone">Phone Number</label>
+            <input type="tel" id="contact-phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="07 4772 4422" pattern="^[0-9 +()-]{6,}$" />
+          </div>
+
+          <fieldset class="form-group">
+            <legend class="form-label">General Enquiry</legend>
+            <div class="radio-group-inline" role="radiogroup" aria-label="General Enquiry">
+              <label class="radio-option"><input type="radio" name="enquiryType" value="membership" /> <span>Membership Information</span></label>
+              <label class="radio-option"><input type="radio" name="enquiryType" value="volunteering" /> <span>Volunteering Opportunities</span></label>
+              <label class="radio-option"><input type="radio" name="enquiryType" value="donation" /> <span>Donations & Support</span></label>
+              <label class="radio-option"><input type="radio" name="enquiryType" value="workshop" /> <span>Workshop or Project Ideas</span></label>
+              <label class="radio-option"><input type="radio" name="enquiryType" value="other" /> <span>Other</span></label>
+            </div>
+          </fieldset>
+
+          <div class="form-group">
+            <label for="contact-message">How can Men’s Shed Townsville help?</label>
+            <textarea id="contact-message" name="message" rows="6" spellcheck="true" placeholder="Tell us a little about your enquiry…"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox">
+              <input type="checkbox" name="consent" required />
+              <span>I agree to be contacted about my enquiry. See our <a href="/privacy" target="_blank" rel="noopener">privacy policy</a>.</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <div data-netlify-recaptcha="true"></div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-alpha">
+              <i class="wt-mail"></i> Pass the message along
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <!-- Map -->
     <section class="direction">
       <iframe
@@ -143,50 +149,46 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
         allowfullscreen
       ></iframe>
     </section>
-
   </div>
 
- 
-<script is:inline>
-(() => {
-  const form = document.querySelector('form[name="contact"]');
-  const status = document.getElementById('form-status');
-  if (!form || !status || !window.fetch) return;
-
-  const encode = (data) =>
-    Object.keys(data)
-      .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-      .join('&');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    status.textContent = 'Sending…';
-
-    const fd = new FormData(form);
-    // Netlify requires form-name as part of the payload
-    fd.append('form-name', form.getAttribute('name'));
-
-    try {
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(Object.fromEntries(fd))
-      });
-      if (!res.ok) throw new Error('Network');
-      status.textContent = 'Thanks! We’ll be in touch shortly.';
-      form.reset();
-    } catch {
-      status.textContent = 'Sorry, something went wrong. Please try again or email us directly.';
-    }
-  });
-})();
-</script>
-
-
-  <!-- Reveal phone/email + progressive enhancement submit -->
+  <!-- AJAX submit to Netlify (inline “Thanks”) -->
   <script is:inline>
     (() => {
-      // Reveal handlers (reduce scraping of raw text)
+      const form = document.forms.namedItem('contact');
+      const status = document.getElementById('form-status');
+      if (!form || !status || !window.fetch) return;
+
+      const encode = (data) =>
+        Object.keys(data).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k])).join('&');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        status.textContent = 'Sending…';
+
+        const fd = new FormData(form);
+        fd.append('form-name', form.getAttribute('name') || 'contact'); // Netlify needs this
+
+        try {
+          const res = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: encode(Object.fromEntries(fd))
+          });
+          if (!res.ok) throw new Error('Network');
+          status.textContent = 'Thanks! We’ll be in touch shortly.';
+          form.reset();
+          status.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (err) {
+          console.error(err);
+          status.textContent = 'Sorry, something went wrong. Please try again or email us directly.';
+        }
+      });
+    })();
+  </script>
+
+  <!-- ONLY keep the reveal handlers (removed the duplicate submit code) -->
+  <script is:inline>
+    (() => {
       const phoneBtn = document.querySelector('[data-reveal="phone"]');
       const emailBtn = document.querySelector('[data-reveal="email"]');
       const phoneHuman = '07 4772 4422';
@@ -203,41 +205,6 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
         emailBtn.innerHTML = '<i class="wt-mail"></i> ' + addr;
         window.location.href = 'mailto:' + addr;
       });
-
-      // Progressive enhancement for form submit: try fetch to /api/contact; otherwise fall back to normal POST
-      const form = document.getElementById('contact-form');
-      const status = document.getElementById('form-status');
-
-      form?.addEventListener('submit', async (e) => {
-        // honeypot check
-        const hp = (form.querySelector('input[name="company"]') || {}).value || '';
-        if (hp.trim() !== '') return; // bots: let server discard
-
-        if (!window.fetch) return; // no JS enhancement; let browser submit
-
-        e.preventDefault();
-        status.textContent = 'Sending…';
-
-        const data = Object.fromEntries(new FormData(form));
-        try {
-          const res = await fetch(form.getAttribute('action') || '/api/contact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-          const j = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(j?.error || 'Failed');
-
-          status.textContent = 'Thanks! We’ll be in touch shortly.';
-          form.reset();
-          // Optional: scroll to status
-          status.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } catch (err) {
-          console.error(err);
-          status.textContent = 'Sorry, something went wrong. Please try again or email us directly.';
-        }
-      });
     })();
   </script>
- 
 </Layout>

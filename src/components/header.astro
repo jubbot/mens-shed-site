@@ -19,8 +19,6 @@ const isActive = (href: string, { deep = false } = {}) => {
     <!-- Navigation -->
     <div class="l-8 m-8 s-12">
       <div class="topbar grid align-center content-end">
-        <span><i class="wt-phone"></i>07 4772 4422</span>
-        <span><i class="wt-pin"></i> Townsville QLD</span>
         <span><a href="/job-form"><i class="wt-clipboard"></i> Start Job</a></span>
         <span><a href="/membership"><i class="wt-user1"> </i> Become a member</a></span>
         <span><a href="/dashboard" class={isActive('/dashboard', { deep: true }) ? 'active' : ''} aria-current={isActive('/dashboard', { deep: true }) ? 'page' : undefined}><i class="wt-mountain"> </i> Dashboard</a></span>
