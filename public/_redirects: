@@ -10,4 +10,4 @@
 # /studio/*       /studio/:splat     200
 
 # Everything else → maintenance page
-                /maintenance       200!
+/*                /maintenance       200!

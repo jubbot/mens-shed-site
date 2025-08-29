@@ -1,11 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-const PHONE = '07 4772 4422';
-const EMAIL = 'townsvillemensshed@gmail.com';
+import Layout from '../layouts/LockLayout.astro';
+ 
 ---
 
 <Layout title="Site maintenance">
-  <div class="wrapper" style="min-height:60vh;display:grid;place-items:center">
+  <div class="wrapper grid full-height center-center">
     <section style="max-width:680px;text-align:center;padding:2rem 1rem">
       <h1 style="margin:0 0 .5rem">We’ll be back soon</h1>
       <p style="opacity:.85">
@@ -15,9 +14,7 @@ const EMAIL = 'townsvillemensshed@gmail.com';
 
       <div style="margin:1rem 0 1.25rem;opacity:.75">
         <p>
-          Need something urgent?<br/>
-          <a href={"tel:" + PHONE.replace(/\s/g,'')}>{PHONE}</a> ·
-          <a href={"mailto:" + EMAIL}>{EMAIL}</a>
+         
         </p>
       </div>
 
