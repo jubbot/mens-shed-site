@@ -73,14 +73,7 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
 
       <!-- RIGHT column (form) -->
       <div class="l-6 m-6 s-12">
-        <form
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          netlify-honeypot="company"
-          data-netlify-recaptcha="true"
-          /* remove action for inline-Thanks; add action="/contact/thanks" if you want redirect */
-        >
+        <form name="contact" netlify>
           <input type="hidden" name="form-name" value="contact" />
           <p class="hp" aria-hidden="true">
             <label>Company <input name="company" tabindex="-1" autocomplete="off" /></label>
