@@ -1,0 +1,48 @@
+---
+export interface FAQItem { q: string; a: string }
+const { items = [], allowMultiple = false, id = 'faq', openFirst = true } = Astro.props;
+
+const DEFAULTS: FAQItem[] = [
+  { q: 'When are you open?', a: '<p>Mon–Fri, <strong>8:00 AM – 12:00 PM</strong>. See <a href="/events">What’s On</a>.</p>' },
+  { q: 'Where are you located?', a: '<p>1 Charters Towers Road, Townsville QLD 4810. <a href="https://www.google.com/maps/search/?api=1&query=-19.26920036602045,146.80581755020592" target="_blank" rel="noopener">Get directions</a>.</p>' },
+  { q: 'How do I join?', a: '<p>Complete the <a href="/membership">membership form</a> or visit during open hours.</p>' },
+  { q: 'What does membership cost?', a: '<p><strong>$80 per year</strong>. Concessions/hardship support available.</p>' },
+  { q: 'Do I need experience?', a: '<p>No—mentors help you start safely at your own pace.</p>' },
+  { q: 'Can I donate tools or timber?', a: '<p>Yes! See our <a href="/support#in-kind">wish list</a>. Clean, working items only.</p>' },
+  { q: 'Are donations tax-deductible?', a: '<p>See <a href="/support#faqs">Support FAQs</a> for DGR status. Receipts on request.</p>' },
+  { q: 'How can businesses support?', a: '<p>Become a sponsor or fund a project—see <a href="/support#sponsor">Sponsor</a>.</p>' },
+  { q: 'Is the Shed accessible?', a: '<p>We aim to be accessible—tell us your requirements (ramps, seating, assistance).</p>' },
+  { q: 'How do I volunteer?', a: '<p>Use the <a href="/support#volunteer">Volunteer Sign-Up</a> or talk to a committee member.</p>' },
+];
+const DATA: FAQItem[] = items.length ? items : DEFAULTS;
+
+const type = allowMultiple ? 'checkbox' : 'radio';
+const groupName = `${id}-group`;
+const safeId = (i:number) => `${id}-item-${i}`;
+---
+
+<section class="faq panel" aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`} class="heading"><i class="wt-bubbleresponse"></i> Frequently Asked Questions</h2>
+
+  <div class="accordion" role="group" aria-label="FAQ list">
+    {DATA.map((item, i) => (
+      <div class="accordion-item">
+        <input
+          class="acc-input"
+          type={type}
+          id={`${safeId(i)}-toggle`}
+          name={allowMultiple ? `${safeId(i)}-name` : groupName}
+          checked={openFirst && i === 0 && !allowMultiple}
+        />
+        <label class="acc-label" id={`${safeId(i)}-label`} for={`${safeId(i)}-toggle`}>
+          <span class="q">{item.q}</span>
+          <i class="wt-arrow" aria-hidden="true"></i>
+        </label>
+        <div class="accordion-panel" id={`${safeId(i)}-panel`} role="region" aria-labelledby={`${safeId(i)}-label`}>
+          <div class="a" set:html={item.a}></div>
+        </div>
+      </div>
+    ))}
+  </div>
+ 
+</section>

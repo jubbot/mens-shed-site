@@ -1,0 +1,62 @@
+---
+export const prerender = true;
+import Layout from '../layouts/Layout.astro';
+
+const links = [
+  { href: '/', label: 'Home', icon: 'wt-home' },
+  { href: '/projects', label: 'Projects', icon: 'wt-cube' },
+  { href: '/events', label: "What's On", icon: 'wt-calendar' },
+  { href: '/store', label: 'Store', icon: 'wt-storagedrive' },
+  { href: '/contact', label: 'Contact', icon: 'wt-mail' },
+];
+---
+
+<Layout title="404 – Page not found">
+  <main class="wrapper notfound">
+   
+        <div class="grid gap banner">
+      <div>
+        <nav class="crumbset" aria-label="Breadcrumb">
+          <a href="/">Home</a> <span aria-hidden="true">/</span>
+          <span aria-current="page">404</span>
+        </nav>
+
+        <h1 class="l-txt">Hmm, we couldn’t find that page.</h1>
+        <h3>The link might be broken or the page may have moved.</h3>
+
+        <div class="quick-links" style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem">
+          {links.map((l) => (
+            <a class="btn btn-delta" href={l.href}><i class={l.icon}></i> {l.label}</a>
+          ))}
+          <button id="go-back" type="button" class="btn btn-alpha">
+            <i class="wt-arrow-left"></i> Go back
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section class="grid gap">
+      <div class="l-8 m-8 s-12">
+        <div class="panel">
+          <h3>Need help?</h3>
+          <p>
+            If you think this is a mistake, please <a href="/contact">contact us</a> and let us
+            know which link you clicked so we can fix it.
+          </p>
+          <ul>
+            <li>Check the URL for typos.</li>
+            <li>Use the buttons above to navigate.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+ 
+  </main>
+
+  <script is:inline>
+    document.getElementById('go-back')?.addEventListener('click', () => {
+      if (history.length > 1) history.back();
+      else location.href = '/';
+    });
+  </script>
+</Layout>

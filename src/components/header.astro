@@ -1,10 +1,90 @@
 ---
+import { sanity } from '../lib/sanityClient'; // adjust if needed
+
+// URL helpers
 const normalize = (p: string) => (p.endsWith('/') && p !== '/' ? p.slice(0, -1) : p) || '/';
 const current = normalize(Astro.url.pathname);
-
 const isActive = (href: string, { deep = false } = {}) => {
   const h = normalize(href);
   return deep ? (current === h || current.startsWith(h + '/')) : current === h;
+};
+
+// SUPPORT — unchanged
+const supportLinks = [
+  { href: '/support/donate',    label: 'Donate',                    icon: 'wt-donate' },
+  { href: '/support/sponsor',   label: 'Become a Sponsor',          icon: 'wt-users' },
+  { href: '/support/volunteer', label: 'Volunteer',                 icon: 'wt-user1' },
+  { href: '/support/wishlist',  label: 'Wish List',                 icon: 'wt-clipboard' },
+  { href: '/support/inkind',    label: 'Donate Tools & Materials',  icon: 'wt-product' },
+];
+const supportIsOpen = isActive('/support', { deep: true });
+
+// QUERIES
+// Projects: level-one categories (include optional icon if present in schema)
+const PROJ_TOP_QUERY = `*[_type == "category" && defined(slug.current)]{
+  title, "slug": slug.current, icon
+} | order(title asc)`;
+
+// Store: level-one categories (your storeCategory schema)
+const STORE_TOP_QUERY = `*[_type == "storeCategory" && defined(slug.current)]{
+  title, "slug": slug.current, icon
+} | order(title asc)`;
+
+// What's on: event types array (strings)
+const EVENT_TYPES_QUERY = `array::unique(*[_type=="whatsOn" && defined(type)].type)`;
+
+// Fetch data
+let projectTopCats = [];
+let storeTopCats   = [];
+let eventTypes     = [];
+try { projectTopCats = await sanity.fetch(PROJ_TOP_QUERY); } catch {}
+try { storeTopCats   = await sanity.fetch(STORE_TOP_QUERY); } catch {}
+try { eventTypes     = (await sanity.fetch(EVENT_TYPES_QUERY)) ?? []; } catch {}
+
+const projectsOpen = isActive('/projects', { deep: true });
+const storeOpen    = isActive('/store', { deep: true });
+const eventsOpen   = isActive('/whats-on', { deep: true });
+const currentType  = Astro.url.searchParams.get('type') || '';
+
+// ICON HELPERS (override mappings to taste)
+const catIcon = (cat: any) => {
+  if (cat?.icon) return cat.icon;
+  const map: Record<string,string> = {
+    woodshed: 'wt-mountain',
+    metalshed: 'wt-hardware',
+    'art-and-craft': 'wt-paintbrush1',
+    
+  };
+  return map[cat?.slug] || 'wt-product';
+};
+
+const storeIcon = (cat: any) => {
+  if (cat?.icon) return cat.icon; // in case you add icon to storeCategory later
+  const map: Record<string,string> = {
+    tools: 'wt-product',
+    timber: 'wt-tree',
+    hardware: 'wt-bolt',
+    finishes: 'wt-paint',
+    apparel: 'wt-shirt',
+    gifts: 'wt-gift',
+  };
+  return map[cat?.slug] || 'wt-product';
+};
+
+const eventTypeIcon = (t: string) => {
+  const key = (t || '').toLowerCase();
+  const map: Record<string,string> = {
+    workshop: 'wt-users',
+    'open day': 'wt-door',
+    socialevent: 'wt-users',
+    bbq: 'wt-flame',
+    fundraiser: 'wt-dollar',
+    class: 'wt-book',
+    market: 'wt-store',
+    exhibition: 'wt-image',
+    talk: 'wt-mic',
+  };
+  return map[key] || 'wt-product';
 };
 ---
 
@@ -21,42 +101,144 @@ const isActive = (href: string, { deep = false } = {}) => {
       <div class="topbar grid align-center content-end">
         <span><a href="/job-form"><i class="wt-clipboard"></i> Start Job</a></span>
         <span><a href="/membership"><i class="wt-user1"> </i> Become a member</a></span>
-        <span><a href="/dashboard" class={isActive('/dashboard', { deep: true }) ? 'active' : ''} aria-current={isActive('/dashboard', { deep: true }) ? 'page' : undefined}><i class="wt-mountain"> </i> Dashboard</a></span>
+        <span>
+          <a
+            href="/dashboard"
+            class={isActive('/dashboard', { deep: true }) ? 'active' : ''}
+            aria-current={isActive('/dashboard', { deep: true }) ? 'page' : undefined}
+          ><i class="wt-mountain"> </i> Dashboard</a>
+        </span>
       </div>
 
       <nav class="grid content-end">
+        <!-- Projects: LEVEL-ONE with icons -->
         <div class="has-dropmenu">
           <a
             href="/projects"
-            class={isActive('/projects', { deep: true }) ? 'active' : ''}
-            aria-current={isActive('/projects', { deep: true }) ? 'page' : undefined}
+            class={projectsOpen ? 'active' : ''}
+            aria-current={isActive('/projects') ? 'page' : undefined}
+            aria-haspopup="true"
+            aria-expanded={projectsOpen ? 'true' : 'false'}
           >Projects</a>
+
+          <ul class="dropmenu" aria-label="Projects submenu">
+            <li>
+              <a href="/projects" class={isActive('/projects') ? 'active' : ''}>
+                <i class="wt-grid" aria-hidden="true"></i><span>All projects</span>
+              </a>
+            </li>
+
+            {projectTopCats.map((cat) => (
+              <li>
+                <a
+                  href={`/projects/${cat.slug}`}
+                  class={isActive(`/projects/${cat.slug}`, { deep: true }) ? 'active' : ''}
+                >
+                  <i class={catIcon(cat)} aria-hidden="true"></i>
+                  <span>{cat.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div>
+        <!-- Support (icons already present) -->
+        <div class="has-dropmenu">
           <a
             href="/support"
-            class={isActive('/support') ? 'active' : ''}
+            class={supportIsOpen ? 'active' : ''}
             aria-current={isActive('/support') ? 'page' : undefined}
+            aria-haspopup="true"
+            aria-expanded={supportIsOpen ? 'true' : 'false'}
           >Support</a>
+
+          <ul class="dropmenu" aria-label="Support submenu">
+            <li>
+              <a
+                href="/support"
+                class={isActive('/support') ? 'active' : ''}
+                aria-current={isActive('/support') ? 'page' : undefined}
+              >
+                <i class="wt-info" aria-hidden="true"></i>
+                <span>Overview</span>
+              </a>
+            </li>
+            {supportLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class={isActive(item.href, { deep: true }) ? 'active' : ''}
+                  aria-current={isActive(item.href, { deep: true }) ? 'page' : undefined}
+                >
+                  <i class={item.icon} aria-hidden="true"></i>
+                  <span>{item.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div>
+        <!-- Store: LEVEL-ONE with icons -->
+        <div class="has-dropmenu">
           <a
             href="/store"
-            class={isActive('/store', { deep: true }) ? 'active' : ''}
-            aria-current={isActive('/store', { deep: true }) ? 'page' : undefined}
+            class={storeOpen ? 'active' : ''}
+            aria-current={isActive('/store') ? 'page' : undefined}
+            aria-haspopup="true"
+            aria-expanded={storeOpen ? 'true' : 'false'}
           >Store</a>
+
+          <ul class="dropmenu" aria-label="Store submenu">
+            <li>
+              <a href="/store" class={isActive('/store') ? 'active' : ''}>
+                <i class="wt-store" aria-hidden="true"></i><span>All products</span>
+              </a>
+            </li>
+            {storeTopCats.map((cat) => (
+              <li>
+                <a
+                  href={`/store/${cat.slug}`}
+                  class={isActive(`/store/${cat.slug}`, { deep: true }) ? 'active' : ''}
+                >
+                  <i class={storeIcon(cat)} aria-hidden="true"></i>
+                  <span>{cat.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div>
+        <!-- What's on: TYPE list with icons -->
+        <div class="has-dropmenu">
           <a
             href="/whats-on"
-            class={isActive('/whats-on', { deep: true }) ? 'active' : ''}
-            aria-current={isActive('/whats-on', { deep: true }) ? 'page' : undefined}
+            class={eventsOpen ? 'active' : ''}
+            aria-current={isActive('/whats-on') ? 'page' : undefined}
+            aria-haspopup="true"
+            aria-expanded={eventsOpen ? 'true' : 'false'}
           >What's on</a>
+
+          <ul class="dropmenu" aria-label="What's on submenu">
+            <li>
+              <a href="/whats-on" class={isActive('/whats-on') ? 'active' : ''}>
+                <i class="wt-calendar2" aria-hidden="true"></i><span>All events</span>
+              </a>
+            </li>
+            {eventTypes.map((t) => (
+              <li>
+                <a
+                  href={`/whats-on?type=${encodeURIComponent(t)}`}
+                  class={(current.startsWith('/whats-on') && decodeURIComponent(currentType) === t) ? 'active' : ''}
+                >
+                  <i class={eventTypeIcon(t)} aria-hidden="true"></i>
+                  <span>{t}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
+        <!-- Contact -->
         <div>
           <a
             href="/contact"
@@ -68,3 +250,12 @@ const isActive = (href: string, { deep = false } = {}) => {
     </div>
   </div>
 </header>
+
+<script is:inline>
+  // tiny hover-delay to prevent flicker
+  document.querySelectorAll('.has-dropmenu').forEach(el => {
+    let t;
+    el.addEventListener('mouseenter', () => { clearTimeout(t); el.classList.add('open'); });
+    el.addEventListener('mouseleave', () => { t = setTimeout(() => el.classList.remove('open'), 120); });
+  });
+</script>

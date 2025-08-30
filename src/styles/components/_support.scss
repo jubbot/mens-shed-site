@@ -1,0 +1,297 @@
+@use '../base/variables' as *;
+
+// SECTION - FAQs 
+.accordion {margin-top:20px;}
+ .accordion-item { 
+    border-top:1px solid #eaeaea; 
+ 
+}
+   
+ .accordion-item:last-child { border-bottom:1px solid $light2; }
+    .acc-input { position:absolute; opacity:0; pointer-events:none; }
+
+    /* Header */
+    .acc-label {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:.75rem; cursor:pointer; padding:.9rem 0; font-weight:600;
+    }
+    .acc-label i { 
+        transform:rotate(-90deg);
+        color:$light2;
+        font-size:.8rem;
+        transition: transform .2s ease; }
+
+    /* Panel (animated height without JS) */
+    .accordion-panel {
+      display:grid; grid-template-rows:0fr; transition:grid-template-rows .25s ease;
+    }
+    .accordion-panel > .a { overflow:hidden; padding:0 0 0; }
+
+    /* Open state via CSS */
+    .acc-input:checked + .acc-label + .accordion-panel { grid-template-rows:1fr; }
+    .acc-input:checked + .acc-label i { transform: rotate(90deg); }
+
+    /* Optional padding when open */
+    .acc-input:checked + .acc-label + .accordion-panel > .a { padding:0 0 1rem; }
+
+
+    section {
+        h2.heading {padding-bottom:10px; }
+        h2.heading i {padding-right:10px; font-size:2.2rem;}
+    }
+
+    // SECTION - Impact and Transparency
+    .impact {
+        margin:30px 0;
+        .stat {
+         text-align: center;   
+        background:#FFF;
+        border:1px solid #eaeaea;
+        padding:10px 10px 20px 10px;
+        }
+        i {
+            font-size:8rem;
+            color:$light2;
+            margin-bottom:20px;
+            display:block;
+        }
+        .num {font-size:2rem; margin-bottom:10px;}
+        .label {text-transform: uppercase;}
+    }
+
+ 
+ 
+
+
+    // Sponsors
+    .current-sponsor {
+ 
+        .sponsor-wall {
+            display:flex; 
+            margin:20px 0;
+           border:1px solid #eaeaea;
+           border-radius:10px;
+           background:#FFF;
+           overflow: hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+  
+        }
+        .sponsor {
+          display:flex;
+          justify-content: center;
+          align-items:center;
+          width:25%;
+          padding:10px;
+ 
+          margin:-1px;
+          border:1px solid #eaeaea;
+          
+        img {
+            height:auto;
+            width:100%;
+        }
+        }
+    }
+
+/* ===== Base ===== */
+.support {
+  .sr { display:none; }
+
+  /* WRAPPERS */
+  .tiers-wrap {
+    margin: 30px 0;
+    /* no fixed min-height here */
+  }
+  /* NEW: grid stack that maintains height & clips the slide animation */
+  .stage {
+    display: grid;
+    grid-template: 1fr / 1fr;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    /* responsive baseline height; tweak to taste */
+    //min-height: clamp(440px, 36vw, 720px);
+  }
+
+  /* PANELS (now in-flow, stacked on the same grid cell) */
+  .panel {
+    grid-area: 1 / 1;
+    /* removed: position:absolute; inset:… */
+    display: grid;
+    grid-template-rows: auto 1fr;
+    transition: transform .35s ease;
+    background: #fff;
+  }
+  .panel-a { transform: translateX(0%); padding: 16px; z-index: 1; }
+  .panel-b { transform: translateX(105%); z-index: 2; }
+  .sponsor-tier:has(input[name="tier"]:checked:not(#tier-none)) .panel-a { transform: translateX(-105%); }
+  .sponsor-tier:has(input[name="tier"]:checked:not(#tier-none)) .panel-b { transform: translateX(0%); }
+  @media (prefers-reduced-motion: reduce) { .panel { transition: none; } }
+  .h { margin:0 0 12px; }
+
+  /* CAROUSEL */
+  .carousel { --i:0; --count:1; --per:1; display:grid; gap:10px; }
+  .viewport {overflow: hidden;  }
+  .track {
+    display:flex;
+    transform: translateX(calc(-1 * min(
+      calc(var(--i) * 100%),
+      calc((var(--count) * 100%) / var(--per) - 100%)
+    )));
+    transition: transform .28s ease;
+  }
+
+  /* Items per breakpoint */
+  .item { flex:0 0 100%; padding:0 6px; display:flex; } /* equalize card heights */
+  @media (min-width:720px){ .carousel{ --per:3 } .item{ flex-basis: calc(33.33% - 12px); } }
+  @media (min-width:1024px){ .carousel{ --per:4 } .item{ flex-basis:calc(25% - 12px); } }
+
+  /* CARD */
+input[name="tier"]:checked + .tier-card{
+  transform: scale(1.05); /* use unitless, not 105% */
+}
+
+  .tier-card{
+    display:grid; gap:6px; align-content:start;
+    border-radius:10px;
+    transition: .18s, box-shadow .18s; cursor:pointer;
+    border: 5px solid #eaeaea; /* base */
+  }
+  .tier-head {
+    padding:15px 10px;
+    display:flex;
+     transition: background-color .18s;
+     .price {
+        margin-left:auto;
+     }
+  }
+.tier-name {text-transform: uppercase; i {margin-right:5px;}}
+  .blurb, .impact {
+    padding:5px 10px;
+  }
+  .impact {
+    margin:10px;
+    font-size: normal;
+  }
+.tag-inkind {padding:10px;}
+
+  /* Per-tier color map via label[for] */
+  .tier-card[for="tier-bronze"] { --tier-color:#cd7f32; }
+  .tier-card[for="tier-silver"]          { --tier-color:#b8b8b8; }
+  .tier-card[for="tier-gold"]            { --tier-color:#d4af37; }
+  .tier-card[for="tier-project-partner"] { --tier-color:#00966e; }
+
+  /* Base/hover using var */
+  .tier-card[for^="tier-"] {
+    border-color: color-mix(in oklab, var(--tier-color, #e0e0e0) 25%, #e0e0e0);
+  }
+  .tier-card[for^="tier-"] .tier-head {
+    background-color: color-mix(in oklab, var(--tier-color, #e0e0e0) 25%, #e0e0e0);
+  }
+  .tier-card[for^="tier-"]:hover{
+    border-color: var(--tier-color, #888);
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  }
+ .tier-card[for^="tier-"]:hover .tier-head {
+   background-color: var(--tier-color, #888);
+  }
+
+  /* Selected (radio checked → adjacent label) */
+  input[name="tier"]:checked + .tier-card{
+    border-color: var(--tier-color, currentColor);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--tier-color, #5aa) 22%, #fff);
+  }
+
+  .tier-card b{ font-weight:700; }
+  .tier-card small{ color:#6b6b6b; }
+.tier-card ul {margin:0 0 0 28px; padding:0;}
+  /* DOTS */
+  .dots{ display:none; gap:8px; justify-content:center; padding:6px 0 2px; }
+  .dot{ width:40px; height:15px; background:#cfcfcf; border:0; cursor:pointer; }
+
+/* Map page radios to index + active dot (support up to 12 pages; extend if needed) */ 
+.carousel:has(#page-0:checked){ --i:0 } #page-0:checked ~ .dots label[for="page-0"] {background:$light2;} 
+.carousel:has(#page-1:checked){ --i:1 } #page-1:checked ~ .dots label[for="page-1"]{background:$light2;} 
+.carousel:has(#page-2:checked){ --i:2 } #page-2:checked ~ .dots label[for="page-2"] {background:$light2;} 
+.carousel:has(#page-3:checked){ --i:3 } #page-3:checked ~ .dots label[for="page-3"]{background:$light2;} 
+.carousel:has(#page-4:checked){ --i:4 } #page-4:checked ~ .dots label[for="page-4"]{background:$light2;} 
+.carousel:has(#page-5:checked){ --i:5 } #page-5:checked ~ .dots label[for="page-5"]{background:$light2;} 
+.carousel:has(#page-6:checked){ --i:6 } #page-6:checked ~ .dots label[for="page-6"]{background:$light2;}
+.carousel:has(#page-7:checked){ --i:7 } #page-7:checked ~ .dots label[for="page-7"]{background:$light2;}
+
+  /* count → --count */
+  .carousel[data-count="1"]{--count:1}
+  .carousel[data-count="2"]{--count:2}
+  .carousel[data-count="3"]{--count:3}
+  .carousel[data-count="4"]{--count:4}
+  .carousel[data-count="5"]{--count:5}
+  .carousel[data-count="6"]{--count:6}
+  .carousel[data-count="7"]{--count:7}
+  .carousel[data-count="8"]{--count:8}
+  .carousel[data-count="9"]{--count:9}
+
+  /* Dots visibility per breakpoint (unchanged) */
+  @media (max-width:719.98px){
+    .carousel[data-pages-m="1"] .dots{ display:none }
+    .carousel:not([data-pages-m="1"]) .dots{ display:flex }
+  }
+  @media (min-width:720px) and (max-width:1023.98px){
+    .carousel[data-pages-t="1"] .dots{ display:none }
+    .carousel:not([data-pages-t="1"]) .dots{ display:flex }
+    .carousel[data-pages-t="2"] .dots .dot:nth-child(n+3){ display:none }
+    .carousel[data-pages-t="3"] .dots .dot:nth-child(n+4){ display:none }
+    .carousel[data-pages-t="4"] .dots .dot:nth-child(n+5){ display:none }
+    .carousel[data-pages-t="5"] .dots .dot:nth-child(n+6){ display:none }
+  }
+  @media (min-width:1024px){
+    .carousel[data-pages-d="1"] .dots{ display:none }
+    .carousel:not([data-pages-d="1"]) .dots{ display:flex }
+    .carousel[data-pages-d="2"] .dots .dot:nth-child(n+3){ display:none }
+    .carousel[data-pages-d="3"] .dots .dot:nth-child(n+4){ display:none }
+    .carousel[data-pages-d="4"] .dots .dot:nth-child(n+5){ display:none }
+    .carousel[data-pages-d="5"] .dots .dot:nth-child(n+6){ display:none }
+  }
+
+  /* Panel B chosen tier label & header accent (unchanged) */
+  .chosen .when{ display:none } .chosen .when.none{ display:inline }
+  .sponsor-tier:has(#tier-bronze:checked)           .chosen .when{ display:none } .sponsor-tier:has(#tier-bronze:checked)           .chosen .is-tier-bronze{ display:inline }
+  .sponsor-tier:has(#tier-silver:checked)           .chosen .when{ display:none } .sponsor-tier:has(#tier-silver:checked)           .chosen .is-tier-silver{ display:inline }
+  .sponsor-tier:has(#tier-gold:checked)             .chosen .when{ display:none } .sponsor-tier:has(#tier-gold:checked)             .chosen .is-tier-gold{ display:inline }
+  .sponsor-tier:has(#tier-project-partner:checked)  .chosen .when{ display:none } .sponsor-tier:has(#tier-project-partner:checked)  .chosen .is-tier-project-partner{ display:inline }
+  .panel-b-head .chosen { margin-left:10px; font-weight:600; }
+  .panel-b-head h3 { font-weight:500; }
+.panel-b .back {cursor: pointer;}
+  /* Header accent via selected tier */
+  .sponsor-tier{ --tier-accent: var(--accent, #00553d); }
+  .sponsor-tier:has(#tier-bronze:checked)          { --tier-accent:#cd7f32; }
+  .sponsor-tier:has(#tier-silver:checked)          { --tier-accent:#b8b8b8; }
+  .sponsor-tier:has(#tier-gold:checked)            { --tier-accent:#d4af37; }
+  .sponsor-tier:has(#tier-project-partner:checked) { --tier-accent:#00966e; }
+  .panel-b-head{
+    background: color-mix(in oklab, var(--tier-accent) 30%, #fff);
+    border-bottom: 1px solid color-mix(in oklab, var(--tier-accent) 38%, #e8e8e8);
+    padding:20px;
+  }
+  .panel-b-body { padding:50px 20px; }
+}
+
+/* Base styles for the header benefits list */
+.panel-b-head .benef-list{
+  display:none;               /* hidden by default; shown via :has() below */
+  margin:.5rem 0 0;
+  padding-left:1.1rem;
+}
+.panel-b-head .benef-list li{ margin:.15rem 0; font-size:.95rem; }
+
+/* Show the list that matches the selected tier */
+.sponsor-tier:has(#tier-bronze:checked)          .panel-b-head .benef-list.is-tier-bronze{ display:block; }
+.sponsor-tier:has(#tier-silver:checked)          .panel-b-head .benef-list.is-tier-silver{ display:block; }
+.sponsor-tier:has(#tier-gold:checked)            .panel-b-head .benef-list.is-tier-gold{ display:block; }
+.sponsor-tier:has(#tier-project-partner:checked) .panel-b-head .benef-list.is-tier-project-partner{ display:block; }
+
+/* (Optional) give the bullets a hint of the tier accent */
+.sponsor-tier:has(#tier-bronze:checked)          .panel-b-head .benef-list{ list-style: disc; color: inherit; }
+.sponsor-tier:has(#tier-silver:checked)          .panel-b-head .benef-list{ list-style: disc; }
+.sponsor-tier:has(#tier-gold:checked)            .panel-b-head .benef-list{ list-style: disc; }
+.sponsor-tier:has(#tier-project-partner:checked) .panel-b-head .benef-list{ list-style: disc; }

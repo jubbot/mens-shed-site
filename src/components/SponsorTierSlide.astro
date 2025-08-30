@@ -1,0 +1,172 @@
+---
+export interface Tier {
+  value: string;
+  label?: string;
+  blurb?: string;
+  price?: string;
+  impact?: string;
+  benefits?: string[];
+  inKind?: boolean;
+}
+export interface Props { title?: string; tiers?: Tier[] }
+
+const defaultTiers: Tier[] = [
+  {
+    value: 'Bronze',
+    blurb: 'Entry support',
+    price: '$250 +',
+    impact: 'Keeps consumables (glue, screws, sandpaper) stocked for a month.',
+    benefits: [
+      'Logo on website Supporters wall',
+      'One social thank-you post',
+      'Printed certificate for your workplace',
+      'Invite to a Shed tour morning'
+    ]
+  },
+  {
+    value: 'Silver',
+    blurb: 'Great visibility',
+    price: '$500 +',
+    impact: 'Funds 3 community repair mornings or a major tool service.',
+    benefits: [
+      'All Bronze benefits',
+      'Logo on Shed supporters board',
+      'Newsletter mention (seasonal)',
+      'Staff volunteer morning (up to 5)'
+    ]
+  },
+  {
+    value: 'Gold',
+    blurb: 'Premium placement',
+    price: '$2,500 +',
+    impact: 'Outfits a full workbench bay or replaces a key machine.',
+    benefits: [
+      'All Silver benefits',
+      'Large logo on website & event banner',
+      'Quarterly impact photos/updates',
+      'Volunteer day + BBQ (up to 10)'
+    ]
+  },
+  {
+    value: 'Project Partner',
+    blurb: 'Co-brand a project',
+    price: '$5,000 +',
+    impact: 'Co-fund a named project (e.g., accessible ramp, youth woodworking).',
+    inKind: true,
+    benefits: [
+      'Co-branding on project page & signage (by agreement)',
+      'Joint media release & case study',
+      'On-site signage during delivery',
+      'Tailored staff engagement days',
+    ]
+  },
+];
+
+const { title = 'Choose a Sponsor Tier', tiers = defaultTiers } = Astro.props;
+
+const n = tiers.length;                   // total cards
+const pagesM = n;                         // 1 per view (mobile)
+const pagesT = Math.ceil(n / 3);          // 3 per view (tablet)
+const pagesD = Math.ceil(n / 4);          // 4 per view (desktop)
+---
+
+<section class="sponsor-tier" data-component="sponsor-tier">
+  <form class="tiers-form" method="post">
+    <input class="sr tier-radio" type="radio" name="tier" id="tier-none" value="" checked />
+
+    <div class="tiers-wrap">
+      <!-- NEW: grid stacking container keeps height responsive -->
+      <div class="stage">
+        <!-- Panel A -->
+        <div class="panel panel-a">
+          <h2 class="h">{title}</h2>
+
+          <div class="carousel"
+               data-count={n}
+               data-pages-m={pagesM}
+               data-pages-t={pagesT}
+               data-pages-d={pagesD}>
+            {Array.from({ length: n }).map((_, i) => (
+              <input class="sr page-radio" type="radio" name="page" id={`page-${i}`} checked={i===0} />
+            ))}
+
+            <div class="viewport">
+              <div class="track">
+                {tiers.map((t) => {
+                  const tid = `tier-${t.value.toLowerCase().replace(/\s+/g,'-')}`;
+                  return (
+                    <div class="item">
+                      <input class="sr tier-radio" type="radio" name="tier" id={tid} value={t.value} />
+                      <label class="tier-card" for={tid}>
+                        <div class="tier-head">
+                          <b class="tier-name"><i class="wt-hardware"></i> {t.label ?? t.value}</b>
+                          {t.price && <span class="price">{t.price}</span>}
+                        </div>
+                        {t.blurb && <small class="blurb">{t.blurb}</small>}
+                        {t.impact && <em class="impact">{t.impact}</em>}
+                        {t.benefits?.length && (
+                          <ul class="benefits">
+                            {t.benefits.map((b) => <li>{b}</li>)}
+                          </ul>
+                        )}
+                        {t.inKind && <span class="tag-inkind">In-kind welcome</span>}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div class="dots">
+              {Array.from({ length: n }).map((_, i) => (
+                <label class="dot" for={`page-${i}`} aria-label={`Page ${i+1}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel B -->
+        <aside class="panel panel-b">
+          <header class="panel-b-head">
+            <label class="back" for="tier-none" role="button" tabindex="0"><i class="wt-arrow"></i> Back</label>
+            <h3>
+              Join as
+              <span class="chosen">
+                <span class="when none">—</span>
+                <span class="when is-tier-bronze">Bronze Sponsor</span>
+                <span class="when is-tier-silver">Silver Sponsor</span>
+                <span class="when is-tier-gold">Gold Sponsor</span>
+                <span class="when is-tier-project-partner">Project Partner</span>
+              </span>
+            </h3>
+            {/* NEW: show the selected tier’s benefits here */}
+{tiers.map((t) => {
+  const slug = t.value.toLowerCase().replace(/\s+/g, '-');
+  return t.benefits?.length ? (
+    <ul class={`benef-list is-tier-${slug}`}>
+      {t.benefits.map((b) => <li>{b}</li>)}
+    </ul>
+  ) : null;
+})}
+          </header>
+
+          <div class="panel-b-body">
+            <div class="form-group grid">
+              <label class="l-6 m-6 s-12"><span>Contact name</span><input name="contactName" type="text" required /></label>
+              <label class="l-6 m-6 s-12"><span>Company (optional)</span><input name="company" type="text" /></label>
+            </div>
+            <div class="form-group grid">
+              <label class="l-6 m-6 s-12"><span>Email</span><input name="email" type="email" required /></label>
+              <label class="l-6 m-6 s-12">Phone<input type="text" name="phone" /></label>
+            </div>
+            <div class="form-group"><div data-netlify-recaptcha="true"></div></div>
+            <div class="actions"><!-- submit -->
+              <button class="btn btn-alpha" type="submit"><i class="wt-mail"></i> Send request</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <!-- /stage -->
+    </div>
+  </form>
+</section>

@@ -1,0 +1,264 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TierCarousel from '../../components/TierCarousel.astro';
+import FAQAccordion from '../../components/FAQAccordion.astro'
+
+const tabs = [
+  { id: 'donate',     label: 'Donate' },
+  { id: 'sponsor',    label: 'Sponsor' },
+  { id: 'volunteer',  label: 'Volunteer' },
+  { id: 'in-kind',    label: 'Donate Tools & Materials' },
+  { id: 'fundraise',  label: 'Fundraise' },
+  { id: 'impact',     label: 'Impact' },
+  { id: 'faqs',       label: 'FAQs' },
+];
+---
+
+<Layout title="Support the Shed">
+<div class="wrapper support">
+<section id="donate">
+<div class="grid gap">
+        <div class="l-8 m-8 s-12">
+          <div class="panel">
+            <h2>Donate</h2>
+            <p>Choose a one-off or monthly gift. Every dollar helps.</p>
+
+            <!-- Payment quick-links (replace with your real links) -->
+            <div class="grid">
+              <div class="l-4 m-4 s-12"><a class="btn btn-alpha block" href="https://buy.stripe.com/your-link-20" target="_blank" rel="noopener">$20 One-off</a></div>
+              <div class="l-4 m-4 s-12"><a class="btn btn-alpha block" href="https://buy.stripe.com/your-link-50" target="_blank" rel="noopener">$50 One-off</a></div>
+              <div class="l-4 m-4 s-12"><a class="btn btn-alpha block" href="https://buy.stripe.com/your-link-100" target="_blank" rel="noopener">$100 One-off</a></div>
+              <div class="l-4 m-4 s-12"><a class="btn btn-delta block" href="https://buy.stripe.com/your-link-m20" target="_blank" rel="noopener">$20 / mo</a></div>
+              <div class="l-4 m-4 s-12"><a class="btn btn-delta block" href="https://buy.stripe.com/your-link-m50" target="_blank" rel="noopener">$50 / mo</a></div>
+              <div class="l-4 m-4 s-12"><a class="btn btn-delta block" href="https://buy.stripe.com/your-link-m100" target="_blank" rel="noopener">$100 / mo</a></div>
+            </div>
+
+            <h3>Where your money goes</h3>
+            <ul class="bullets two-col">
+              <li>$20 consumables (sandpaper, screws)</li>
+              <li>$50 timber & fixings for community builds</li>
+              <li>$100 PPE & safety servicing</li>
+              <li>$250 hardship membership</li>
+              <li>$500 machine maintenance/repairs</li>
+            </ul>
+
+            <details>
+              <summary>Prefer bank transfer?</summary>
+              <div class="bank-details">
+                <p><strong>BSB:</strong> 000-000 &nbsp; <strong>ACC:</strong> 00000000 &nbsp; <strong>Ref:</strong> Your Name</p>
+                <p><em>Note:</em> Add “Shed Donation” as the description. We’ll email you a receipt if you request one.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Bank receipt request (Netlify Form) -->
+        <div class="l-4 m-4 s-12">
+          <div class="panel">
+            <h3>Request a Receipt</h3>
+            <!-- Netlify Forms -->
+            <form name="bank-receipt-request" method="POST" data-netlify="true" netlify-honeypot="company" data-netlify-recaptcha="true" action="/support/thanks">
+              <input type="hidden" name="form-name" value="bank-receipt-request" />
+              <p class="hp" aria-hidden="true"><label>Company <input name="company" /></label></p>
+
+              <label>Full Name<input name="name" required /></label>
+              <label>Email<input type="email" name="email" required /></label>
+              <label>Amount (AUD)<input type="number" name="amount" step="0.01" required /></label>
+              <label>Transfer Date<input type="date" name="date" required /></label>
+
+              <div data-netlify-recaptcha="true"></div>
+              <button class="btn btn-alpha" type="submit"><i class="wt-mail"></i> Request receipt</button>
+            </form>
+          </div>
+        </div>
+      </div>
+</section>
+
+<section id="sponsor">
+    <h2 class="heading"><i class="wt-support"></i> Sponsor the Shed</h2>
+    <p>Partner with us to support men’s wellbeing and community projects.</p>
+    <TierCarousel />
+ <h2>Current Sponsors</h2>
+<p>Thank you to all our sponsors for supporting Men’s Shed Townsville.</p>
+
+
+   <div class="current-sponsor paper">
+    
+    <h3>Project Partners</h3>
+ <div class="sponsor-wall grid">
+   <div class="sponsor">
+    <img src="images/sponsors/bunnings_warehouse.svg">
+   </div>
+    <div class="sponsor"></div>      
+   </div>
+
+     <h3>Gold Sponsors</h3>
+ <div class="sponsor-wall grid">
+   <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+      <div class="sponsor"></div>
+    <div class="sponsor"></div>      
+   </div>
+
+     <h3>Silver Sponsors</h3>
+ <div class="sponsor-wall grid">
+   <div class="sponsor"></div>
+     <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+      <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+    <div class="sponsor"></div>      
+   </div>
+
+     <h3>Bronze Sponsors</h3>
+ <div class="sponsor-wall grid">
+   <div class="sponsor"></div>
+     <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+      <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+      <div class="sponsor"></div>
+    <div class="sponsor"></div>  
+    <div class="sponsor"></div>      
+   </div>
+
+   </div>
+           
+          
+
+      
+</section>
+
+<section id="volunteer">
+      <div class="grid gap">
+        <div class="l-8 m-8 s-12">
+          <div class="panel">
+            <h2>Volunteer</h2>
+            <ul class="bullets two-col">
+              <li>Workshop mentoring</li><li>Tool maintenance</li>
+              <li>Events & BBQs</li><li>Admin/help desk</li>
+              <li>Fundraising</li><li>Photography/Comms</li>
+            </ul>
+            <p>We’ll provide an induction and safety briefing. Some roles may require a Working With Children Check.</p>
+          </div>
+        </div>
+
+        <!-- Volunteer signup (Netlify Form) -->
+        <div class="l-4 m-4 s-12">
+          <div class="panel">
+            <h3>Volunteer Sign-Up</h3>
+            <form name="volunteer-signup" method="POST" data-netlify="true" netlify-honeypot="company" data-netlify-recaptcha="true" action="/support/thanks">
+              <input type="hidden" name="form-name" value="volunteer-signup" />
+              <p class="hp" aria-hidden="true"><label>Company <input name="company" /></label></p>
+
+              <label>Full Name<input name="name" required /></label>
+              <label>Email<input type="email" name="email" required /></label>
+              <label>Phone<input name="phone" /></label>
+              <label>Availability
+                <select name="availability">
+                  <option>Ad-hoc</option><option>Weekly</option><option>Events only</option>
+                </select>
+              </label>
+              <label>Skills / Interests<textarea name="skills" rows="4"></textarea></label>
+
+              <div data-netlify-recaptcha="true"></div>
+              <button class="btn btn-alpha" type="submit"><i class="wt-user"></i> I can help</button>
+            </form>
+          </div>
+        </div>
+      </div>
+</section>
+
+<section id="donate-tool-and-materials">
+   <h2 class"heading"><i class="wt-donate"></i> Donate Tools & Materials</h2>
+    <div class="grid gap">
+        <div class="l-8 m-8 s-12">
+          <div class="panel">
+          
+            <h3>Wish List</h3>
+            <ul class="wish-list">
+              <li>Timber (pine/hardwood), plywood sheets</li>
+              <li>Wood screws, glue, sandpaper</li>
+              <li>PPE: safety glasses, earmuffs, dust masks</li>
+              <li>Hand tools in good condition</li>
+              <li>18V batteries (compatible with major brands)</li>
+            </ul>
+            <p><strong>Quality guidelines:</strong> working/clean tools only; no broken electrics; no oil-soaked timber.</p>
+          </div>
+        </div>
+
+        <!-- In-kind donation form -->
+        <div class="l-4 m-4 s-12">
+          <div class="panel">
+            <h3>Offer an Item / Request Pickup</h3>
+            <form name="in-kind-donation" method="POST" data-netlify="true" netlify-honeypot="company" data-netlify-recaptcha="true" action="/support/thanks" enctype="multipart/form-data">
+              <input type="hidden" name="form-name" value="in-kind-donation" />
+              <p class="hp" aria-hidden="true"><label>Company <input name="company" /></label></p>
+
+              <label>Your Name<input name="name" required /></label>
+              <label>Email<input type="email" name="email" required /></label>
+              <label>Phone<input name="phone" /></label>
+              <label>Item(s) to donate<textarea name="items" rows="4" required></textarea></label>
+              <label>Photo (optional) <input type="file" name="photo" accept="image/*" /></label>
+              <label class="checkbox"><input type="checkbox" name="pickup" /> Request pickup (bulky item)</label>
+              <label>Address (if pickup requested)<input name="address" /></label>
+
+              <div data-netlify-recaptcha="true"></div>
+              <button class="btn btn-alpha" type="submit"><i class="wt-truck"></i> Send details</button>
+            </form>
+          </div>
+        </div>
+      </div>
+</section>
+
+<section id="fundraise">
+    <h2 class="heading"><i class="wt-donate"></i> Fundraise</h2>
+<div class="grid gap">
+        <div class="l-8 m-8 s-12">
+          <div class="panel">
+            <h2>Fundraise with Us</h2>
+            <ul class="bullets">
+              <li>Host a workplace BBQ or gold-coin morning tea</li>
+              <li>Run a raffle (we can help with prizes)</li>
+              <li>Fund a specific community build (e.g., planter boxes for a school)</li>
+            </ul>
+            <p>We’ll provide logos and a simple poster kit.</p>
+            <a class="btn btn-delta" href="/assets/brand-kit.zip"><i class="wt-download"></i> Download poster kit</a>
+          </div>
+        </div>
+      </div>
+</section>
+
+<section id="impact">
+<h2 class="heading"><i class="wt-leaf"></i> Impact & Transparency</h2>
+    <div class="grid impact">  
+        <div class="l-4 m-4 s-12">
+            <div class="stat">
+                <i class="wt-users"></i>
+                <div class="num">120</div>
+                <div class="label">Active members</div>
+            </div>
+        </div>
+        <div class="l-4 m-4 s-12">
+            <div class="stat">
+                <i class="wt-clock"></i>
+                <div class="num">1,400</div>
+                <div class="label">Volunteer hours</div>
+            </div>
+        </div>
+        <div class="l-4 m-4 s-12">
+            <div class="stat">
+                <i class="wt-lighton"></i>
+                <div class="num">85</div>
+                <div class="label">Community items built</div>
+            </div>
+        </div>
+    </div>
+    <p class="grid content-center"><a class="btn btn-delta" href="/about/governance"><i class="wt-file1"></i> Policies & reports</a></p>      
+</section>
+
+ 
+ <FAQAccordion allowMultiple={false} />
+ 
+</div>
+</Layout>

@@ -1,5 +1,27 @@
 @use '../base/variables' as *;
-
+.topbar {
+    margin-top:10px;
+    font-size:.9rem;
+      span {
+        border-right:1px solid #CCC;
+        margin-right:8px;
+        padding-right:8px;
+        &:last-child {
+          border-right:none;
+          margin-right:0;
+          padding-right:0;
+        }
+        a {
+        display:flex;
+        align-items: center;
+        opacity:.6;
+        color:$light4; font-weight:bold; padding:5px;
+         &:hover {opacity:1;}
+         &:hover i {color:$light2;}
+         i {margin-right:3px;}
+        }
+      }
+  }
 header.primary {
   background:$dark2;
  border-bottom:1px solid #eaeaea;
@@ -20,8 +42,8 @@ header.primary {
     > div {
       margin-right:15px;
       &:last-child {margin-right:0;}
-    }
-    a {
+    
+    > a {
      color:$light3;
       text-decoration: none;
       text-transform: uppercase;
@@ -36,28 +58,81 @@ header.primary {
       }
 
       &:hover {
-
         border-bottom: 5px solid $light2;
       }
     }
   }
+ 
+}
 
 }
 
-  .topbar {
-    margin-top:10px;
-    font-size:.9rem;
-      span {
-        border-right:1px solid #CCC;
-        margin-right:10px;
-        padding-right:10px;
-        opacity:.8;
-        &:hover {opacity: 1;}
-        &:last-child {
-          border-right:none;
-          margin-right:0;
-          padding-right:0;
-        }
-        a {color:$light4; font-weight:bold; padding:5px;}
-      }
+   
+
+  /* dropdown */
+.has-dropmenu { position: relative; }
+/* 1) Anchor the menu with no margin gap */
+.has-dropmenu .dropmenu {
+  position: absolute;
+  top: calc(100% + 12px); /* visual gap */
+  left: 0;
+  margin: 0;            /* avoid creating a real gap */
+  opacity: 0;
+  visibility: hidden;
+  background:#f8f8f8;
+  border:1px solid #eaeaea;
+  list-style:none;
+  padding:0;
+  transform: translateY(-4px);
+  transition: opacity .12s, transform .12s, visibility 0s .12s;
+  border-radius:0px 0px 10px 10px;
+  overflow: hidden;
+   box-shadow:
+    0 1px 2px rgba(0,0,0,.06),
+    0 8px 24px rgba(0,0,0,.10);
+li {
+  margin-bottom:3px;
+  &:last-child {margin-bottom:0;}
+}
+  a {
+    padding:12px;
+    display:block;
+    white-space: nowrap;
+    text-transform:uppercase;
+    transition: none;
   }
+  a:hover {
+    background:$light2;
+    color:#FFF;
+    filter:brightness(120%);
+    i {color:#FFF;}
+  }
+  a.active {
+    background:$light2;
+    color:#FFF;
+    cursor:auto;
+  &:hover {filter:brightness(100%);}
+    i {color:#FFF;}
+}
+  i {margin-right:10px; color:$light2;}
+}
+
+/* 2) Hover bridge to keep :hover alive while moving cursor down */
+.has-dropmenu::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 100%;
+  height: 12px;          /* must match the +8px above */
+  /* no background needed; it's invisible but hoverable */
+}
+
+/* 3) Show the menu on hover/focus (and your JS can toggle 'open' too) */
+.has-dropmenu:hover .dropmenu,
+.has-dropmenu:focus-within .dropmenu,
+.has-dropmenu.open .dropmenu {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .12s, transform .12s, visibility 0s;
+}
