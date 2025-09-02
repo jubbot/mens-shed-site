@@ -1,0 +1,161 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Dashboard-Layout.astro';
+ 
+import { getSupabaseServerClient } from '../../../lib/supabaseServer';
+
+const supa = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
+const { data: { user } } = await supa.auth.getUser();
+if (!user) return Astro.redirect('/login?next=/dashboard/projects');
+
+const url = Astro.url;
+const q         = url.searchParams.get('q')?.trim() || '';
+const status    = url.searchParams.get('status') || '';
+const catId     = url.searchParams.get('category') || '';
+const subcatId  = url.searchParams.get('subcategory') || '';
+
+const query = supa
+  .from('projects')
+  .select(`
+    id, title, job_id, slug, started_at, volunteers, views, status,
+    category:project_categories (id,title),
+    subcategory:project_subcategories (id,title)
+  `)
+  .order('started_at', { ascending: false, nullsFirst: false })
+  .limit(200);
+
+// Filters
+if (q) {
+  // Search across title, summary, job_id
+  // NOTE: Supabase .or needs raw filter string
+  query.or(`title.ilike.%${q}%,summary.ilike.%${q}%,job_id.ilike.%${q}%`);
+}
+if (status) query.eq('status', status);
+if (catId) query.eq('category_id', catId);
+if (subcatId) query.eq('subcategory_id', subcatId);
+
+const { data: projects = [], error } = await query;
+
+const { data: categories = [] } = await supa
+  .from('project_categories').select('id,title').order('title');
+
+const { data: subcategories = [] } = await supa
+  .from('project_subcategories').select('id,title,parent_category').order('title');
+---
+
+<Layout title="Projects – Dashboard">
+ 
+  <section class="wrap">
+    <div class="row">
+      <h1>Projects</h1>
+      <a class="btn" href="/dashboard/projects/new">+ New project</a>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="filters">
+      <input type="search" name="q" placeholder="Search title, summary, job ID…" value={q} />
+      <select name="status">
+        <option value="">All statuses</option>
+        <option value="active"    selected={status==='active'}>Active</option>
+        <option value="paused"    selected={status==='paused'}>Paused</option>
+        <option value="completed" selected={status==='completed'}>Completed</option>
+      </select>
+
+      <select name="category" id="cat">
+        <option value="">All categories</option>
+        {categories.map(c => (
+          <option value={c.id} selected={catId===c.id}>{c.title}</option>
+        ))}
+      </select>
+
+      <select name="subcategory" id="sub">
+        <option value="">All subcategories</option>
+        {subcategories.map(sc => (
+          <option value={sc.id} data-parent={sc.parent_category} selected={subcatId===sc.id}>
+            {sc.title}
+          </option>
+        ))}
+      </select>
+
+      <button type="submit">Filter</button>
+      <a class="link" href="/dashboard/projects">Reset</a>
+    </form>
+
+    {error && <p class="error">Error loading projects: {error.message}</p>}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Job&nbsp;ID</th>
+          <th>Category</th>
+          <th>Started</th>
+          <th>Status</th>
+          <th>Volunteers</th>
+          <th>Views</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(projects ?? []).map((p) => (
+          <tr>
+            <td><a href={`/dashboard/projects/${p.slug || p.id}`}>{p.title}</a></td>
+            <td>{p.job_id || '—'}</td>
+            <td>{[p.category?.title, p.subcategory?.title].filter(Boolean).join(' / ') || '—'}</td>
+            <td>{p.started_at || '—'}</td>
+            <td>
+              <span class={`badge badge-${p.status}`}>
+                {p.status?.charAt(0).toUpperCase() + p.status?.slice(1)}
+              </span>
+            </td>
+            <td>{p.volunteers ?? 0}</td>
+            <td>{p.views ?? 0}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <script type="module">
+    // cascade category -> subcategory in filters
+    const cat = document.getElementById('cat') as HTMLSelectElement | null;
+    const sub = document.getElementById('sub') as HTMLSelectElement | null;
+    if (cat && sub) {
+      const all = Array.from(sub.querySelectorAll('option[data-parent]'));
+      function filterSubs() {
+        const v = cat.value;
+        // Keep currently selected if still valid
+        const selected = sub.value;
+        sub.querySelectorAll('option[data-parent]').forEach(o => o.remove());
+        if (!v) {
+          // Show none (keep current selection only if it has no parent)
+          return;
+        }
+        all.filter(o => o.getAttribute('data-parent') === v).forEach(o => sub.appendChild(o));
+        // if current is not valid for new cat, reset
+        const hasSelected = !!sub.querySelector(`option[value="${CSS.escape(selected)}"]`);
+        if (!hasSelected) sub.value = '';
+      }
+      cat.addEventListener('change', filterSubs);
+      filterSubs();
+    }
+  </script>
+
+  <style>
+    .wrap { width: min(1100px, 92%); margin: 0 auto; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+    .btn { background: var(--brand,#2a7f62); color:#fff; padding:.6rem .9rem; border-radius:10px; text-decoration:none; }
+    .filters { display:flex; flex-wrap:wrap; gap:.5rem; margin:.75rem 0 1rem; }
+    .filters input, .filters select, .filters button { padding:.45rem .55rem; }
+    .filters .link { align-self:center; }
+    .table { width:100%; border-collapse: collapse; margin-top: .5rem; }
+    th, td { text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--border,#e5e7eb); }
+    .error { color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; padding:.5rem .75rem; border-radius:8px; }
+
+    /* Status badges */
+    .badge { display:inline-block; padding:.2rem .5rem; border-radius:999px; font-size:.82rem; font-weight:600; border:1px solid transparent; }
+    .badge-active    { background:#ecfdf5; color:#065f46; border-color:#34d399; }
+    .badge-paused    { background:#fffbeb; color:#92400e; border-color:#fbbf24; }
+    .badge-completed { background:#eff6ff; color:#1e3a8a; border-color:#60a5fa; }
+  </style>
+</Layout>

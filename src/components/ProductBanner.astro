@@ -17,7 +17,7 @@ const fmtCompact = (n: number) =>
   new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n ?? 0);
 const viewsText = viewsCompact ?? fmtCompact(viewsCount ?? 0);
 ---
-<div class="grid gap banner">
+<div class="grid banner">
   <div class="l-8 m-8 s-12">
     <div class="crumpbet"><span><a href="#">Store</a></span></div>
     <h1 class="l-txt">Men's Shed Townsville Store</h1>

@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+import authResetUrl from '../scripts/auth-reset.ts?url';
+---
+
+<Layout title="Reset Password">
+  <div class="wrapper auth">
+    <div class="panel">
+      <h1>Reset your password</h1>
+      <p class="muted">Enter your email. We’ll send you a reset link.</p>
+
+      <form id="reset-form" class="form" novalidate>
+        <label for="reset-email">Email</label>
+        <input id="reset-email" type="email" name="email" required />
+        <button type="submit" class="btn">Send reset link</button>
+        <p id="reset-status" class="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="back"><a href="/login">Back to login</a></p>
+    </div>
+  </div>
+
+  <style>
+    .wrapper.auth{display:grid;place-items:center;min-height:60svh;padding:2rem}
+    .panel{width:min(560px,100%);background:#fff;border-radius:12px;padding:1.25rem 1.5rem;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+    .muted{color:#6b7280;margin:.25rem 0 1rem}
+    .form{display:grid;gap:.75rem}
+    input[type="email"]{padding:.6rem .7rem;border:1px solid #d1d5db;border-radius:8px}
+    .btn{padding:.65rem .9rem;border:0;border-radius:8px;background:#00553d;color:#fff;cursor:pointer}
+    .status{min-height:1.25rem;margin-top:.25rem}
+    .status.error{color:#b91c1c}
+    .status.ok{color:#065f46}
+    .back{margin-top:1rem}
+  </style>
+
+  <script type="module">
+    import { supabase } from '../lib/supabaseClient.ts';
+
+    const form = document.getElementById('reset-form');
+    const status = document.getElementById('reset-status');
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.className = 'status';
+
+      const fd = new FormData(form);
+      const email = String(fd.get('email') || '').trim();
+
+      const btn = form.querySelector('button');
+      btn.disabled = true;
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: new URL('/reset/confirm', window.location.origin).href
+        });
+        if (error) throw error;
+        status.textContent = 'If that email exists, a reset link has been sent.';
+        status.classList.add('ok');
+      } catch (err) {
+        status.textContent = err?.message ?? 'Could not send reset link';
+        status.classList.add('error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+   <script type="module" src={authResetUrl}></script>
+</Layout>

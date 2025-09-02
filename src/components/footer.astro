@@ -4,6 +4,7 @@ import PaymentMethods from "../components/PaymentMethods.astro";
 import ContactReveal from "../components/ContactReveal.astro";
 import LegalIds from "../components/LegalIds.astro";
 import SmartMapLink from "../components/SmartMapLink.astro";
+import headerAuthUrl from '../scripts/header-auth.ts?url';
 ---
 <footer>
   <div class="wrapper">
@@ -119,3 +120,8 @@ import SmartMapLink from "../components/SmartMapLink.astro";
   "areaServed": "AU"
 }
 </script>
+<!-- Load client fallback for “Hello {username}” -->
+<script type="module" src={headerAuthUrl}></script>
+
+<!-- Load global flash wiring -->
+<script type="module" src="/scripts/flash.js"></script>

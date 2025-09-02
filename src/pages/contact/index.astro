@@ -9,10 +9,7 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
 ---
 <Layout title="Contact">
   <div class="wrapper contact">
-    <!-- inline status lives near the form; stays visible after submit -->
-    <p id="form-status" class="status" role="status" aria-live="polite"></p>
-
-    <div class="grid gap banner">
+    <div class="grid banner">
       <div>
         <nav class="crumbset" aria-label="Breadcrumb">
           <a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/contact">Contact</a>
@@ -23,6 +20,8 @@ const googlePlace = `https://www.google.com/maps/search/?api=1&query=${encodeURI
       </div>
     </div>
 
+     <!-- inline status lives near the form; stays visible after submit -->
+    <p id="form-status" class="status" role="status" aria-live="polite"></p>
     <!-- TWO COLUMNS IN ONE GRID -->
     <section class="grid gap">
       <!-- LEFT column -->

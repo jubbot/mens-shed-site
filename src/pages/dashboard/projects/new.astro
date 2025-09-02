@@ -1,0 +1,231 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Dashboard-Layout.astro';
+import { getSupabaseServerClient } from '../../../lib/supabaseServer';
+import { WOOD_TOOLS, METAL_TOOLS } from '../../../constants/tools';
+
+const supa = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
+const { data: { user } } = await supa.auth.getUser();
+if (!user) return Astro.redirect('/login?next=/dashboard/projects/new');
+
+// Load taxonomies
+const { data: categories = [] } = await supa
+  .from('project_categories').select('id,title').order('title');
+const { data: subcategories = [] } = await supa
+  .from('project_subcategories').select('id,title,parent_category').order('title');
+---
+
+<Layout title="New Project – Dashboard">
+  <section class="wrap">
+    <h1>New project</h1>
+
+    <!-- IMPORTANT: enctype for file upload -->
+    <form id="create-project-form" action="/api/projects/create" method="post" class="form" enctype="multipart/form-data">
+      <fieldset>
+        <legend>Overview</legend>
+
+        <label>Title
+          <input type="text" name="title" required />
+        </label>
+
+        <!-- Job ID is auto-assigned by DB -->
+        <div class="inline">
+          <label>Project Job ID</label>
+          <input type="text" value="Auto-assigned on create (e.g. MST-2025-0001)" readonly class="readonly" />
+        </div>
+
+        <label>Summary
+          <textarea name="summary" rows="3" placeholder="1–3 sentences"></textarea>
+        </label>
+
+        <div class="grid">
+          <label>Category
+            <select name="category_id" id="category" required>
+              <option value="">— Select —</option>
+              {categories.map(c => <option value={c.id}>{c.title}</option>)}
+            </select>
+          </label>
+
+          <label>Subcategory
+            <select name="subcategory_id" id="subcategory">
+              <option value="">— Select —</option>
+              {subcategories.map(sc => (
+                <option value={sc.id} data-parent={sc.parent_category}>{sc.title}</option>
+              ))}
+            </select>
+          </label>
+
+          <label>Started at
+            <input type="date" name="started_at" />
+          </label>
+        </div>
+
+        <label>Materials (comma separated)
+          <input type="text" name="materials" placeholder="Pine, Plywood, Screws" />
+        </label>
+
+        <label>Volunteers
+          <input type="number" name="volunteers" min="0" value="0" />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Thumbnail</legend>
+        <div class="thumb-grid">
+          <div>
+            <label class="file">
+              <input type="file" name="thumbnail" id="thumbnail" accept="image/*" />
+              <span>Select image…</span>
+            </label>
+            <p class="hint">PNG/JPG up to ~5 MB. Cropping is handled later.</p>
+          </div>
+          <figure class="preview" id="thumb-figure" hidden>
+            <img id="thumb-preview" alt="Thumbnail preview" />
+            <figcaption class="muted">Preview</figcaption>
+          </figure>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tools (Wood)</legend>
+        <div class="chips">
+          {WOOD_TOOLS.map(t => (
+            <label class="chip">
+              <input type="checkbox" name="wood_tools" value={t} /> {t}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tools (Metal)</legend>
+        <div class="chips">
+          {METAL_TOOLS.map(t => (
+            <label class="chip">
+              <input type="checkbox" name="metal_tools" value={t} /> {t}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Sticky actions -->
+      <div class="actions actions-sticky" data-actions>
+        <a href="/dashboard/projects" class="btn-secondary">Cancel</a>
+        <button class="btn-primary" type="submit" data-submit>Create project</button>
+        <input type="submit" value="Create project" class="btn-primary sr-only" data-submit-fallback />
+      </div>
+    </form>
+  </section>
+
+  <script type="module">
+    // Category → Subcategory cascade
+    const cat = document.getElementById('category') as HTMLSelectElement | null;
+    const sub = document.getElementById('subcategory') as HTMLSelectElement | null;
+    if (cat && sub) {
+      const all = Array.from(sub.querySelectorAll('option[data-parent]'));
+      function filterSubs() {
+        const v = cat.value;
+        const selected = sub.value;
+        sub.querySelectorAll('option[data-parent]').forEach(o => o.remove());
+        if (v) {
+          all.filter(o => o.getAttribute('data-parent') === v).forEach(o => sub.appendChild(o));
+          const hasSelected = !!sub.querySelector(`option[value="${CSS.escape(selected)}"]`);
+          if (!hasSelected) sub.value = '';
+        } else {
+          sub.value = '';
+        }
+      }
+      cat.addEventListener('change', filterSubs);
+      filterSubs();
+    }
+
+    // Thumbnail live preview + basic size guard
+    const fileInput = document.getElementById('thumbnail') as HTMLInputElement | null;
+    const fig = document.getElementById('thumb-figure') as HTMLElement | null;
+    const img = document.getElementById('thumb-preview') as HTMLImageElement | null;
+
+    fileInput?.addEventListener('change', () => {
+      const f = fileInput.files?.[0];
+      if (!f) { if (fig) fig.hidden = true; return; }
+      // ~5MB guard
+      if (f.size > 5 * 1024 * 1024) {
+        alert('Image is larger than 5 MB. Please choose a smaller file.');
+        fileInput.value = '';
+        if (fig) fig.hidden = true;
+        return;
+      }
+      const url = URL.createObjectURL(f);
+      if (img && fig) {
+        img.src = url;
+        fig.hidden = false;
+      }
+    });
+
+    // Disable submit while posting
+    const form = document.getElementById('create-project-form') as HTMLFormElement | null;
+    form?.addEventListener('submit', () => {
+      const btn = form.querySelector('[data-submit]') as HTMLButtonElement | null;
+      const fb  = form.querySelector('[data-submit-fallback]') as HTMLInputElement | null;
+      if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
+      if (fb) fb.disabled = true;
+    });
+  </script>
+
+  <style>
+    .wrap { width:min(1100px,92%); margin:0 auto; }
+    form.form { display:grid; gap:1rem; }
+    fieldset { border:1px solid var(--border,#e5e7eb); padding:1rem; border-radius:10px; }
+    legend { font-weight:700; padding:0 .4rem; }
+    label { display:grid; gap:.35rem; margin:.5rem 0; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:.75rem; }
+    .chips { display:flex; flex-wrap:wrap; gap:.5rem .75rem; }
+    .chip { border:1px solid var(--border,#e5e7eb); padding:.35rem .6rem; border-radius:999px; }
+
+    .inline { display:grid; gap:.35rem; margin:.5rem 0; }
+    .readonly {
+      background:#f9fafb; color:#6b7280;
+      border:1px dashed var(--border,#e5e7eb); cursor:not-allowed;
+    }
+
+    /* Thumbnail */
+    .thumb-grid { display:grid; grid-template-columns: 1fr auto; gap:1rem; align-items:start; }
+    .file input[type="file"] { display:block; }
+    .hint { margin:.25rem 0 0; color:#6b7280; font-size:.9rem; }
+    .preview { border:1px solid var(--border,#e5e7eb); padding:.5rem; border-radius:10px; width:200px; }
+    .preview img { display:block; width:100%; height:auto; border-radius:8px; }
+    .muted { color:#6b7280; font-size:.85rem; text-align:center; margin-top:.35rem; }
+
+    /* Sticky action bar */
+    .actions-sticky {
+      position: sticky; bottom: 0; background: var(--bg,#fff);
+      padding: .75rem 0; display:flex; justify-content:flex-end; gap:.75rem;
+      border-top:1px solid var(--border,#e5e7eb); z-index:2;
+    }
+
+    /* Strong buttons */
+    .btn-primary {
+      display:inline-flex !important; align-items:center !important; justify-content:center !important;
+      gap:.4rem !important; background:#2a7f62 !important; color:#fff !important; border:0 !important;
+      padding:.6rem .9rem !important; border-radius:10px !important; text-decoration:none !important;
+      cursor:pointer !important; font-weight:600 !important;
+    }
+    .btn-primary:disabled { opacity:.7; cursor:default; }
+    .btn-secondary {
+      color:#2a7f62 !important; text-decoration:none !important; padding:.6rem .9rem !important;
+      border-radius:10px !important; border:1px solid #2a7f62 !important; background:transparent !important;
+    }
+
+    /* Visually-hidden but interactive fallback */
+    .sr-only {
+      position: absolute !important; width:1px !important; height:1px !important;
+      padding:0 !important; margin:-1px !important; overflow:hidden !important;
+      clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important;
+    }
+
+    @media (max-width: 720px) {
+      .thumb-grid { grid-template-columns: 1fr; }
+      .preview { width: 100%; max-width: 360px; }
+    }
+  </style>
+</Layout>

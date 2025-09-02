@@ -1,16 +1,29 @@
 ---
-// src/components/TrackPageView.astro
+/* src/components/TrackPageView.astro */
 export interface Props { key: string }
 const { key } = Astro.props;
 ---
+
+<!-- Pass the key safely via a data-attribute -->
+<div id="pv-track" data-key={key}></div>
+
 <script is:inline>
-  (function(){
-    var k = {JSON.stringify(key)};
-    if (!k) return;
-    var tag = 'pv_page_' + k;
-    if (sessionStorage.getItem(tag)) return;
-    sessionStorage.setItem(tag, '1');
-    fetch('/api/analytics/track?kind=page&key=' + encodeURIComponent(k), { cache:'no-store' })
-      .catch(function(){});
+  (function () {
+    try {
+      var el = document.getElementById('pv-track');
+      if (!el) return;
+
+      var k = el.dataset.key;
+      if (!k) return;
+
+      var tag = 'pv_page_' + k; // one hit per tab/session per page key
+      if (sessionStorage.getItem(tag)) return;
+
+      sessionStorage.setItem(tag, '1');
+      fetch('/api/analytics/track?kind=page&key=' + encodeURIComponent(k), { cache: 'no-store' })
+        .catch(function () { /* swallow */ });
+    } catch (e) {
+      // no-op: tracking should never break the page
+    }
   })();
 </script>

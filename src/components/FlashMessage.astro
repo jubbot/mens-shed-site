@@ -1,0 +1,102 @@
+---
+type FlashType = 'success' | 'error' | 'info';
+
+interface Props {
+  /** Message text to display */
+  message?: string;
+  /** Visual style */
+  type?: FlashType;
+  /** Auto-dismiss after N ms (omit/0 to keep persistent) */
+  dismissAfterMs?: number;
+}
+
+const { message = '', type = 'info', dismissAfterMs }: Props = Astro.props;
+if (!message) return null;
+
+const classes: Record<FlashType, string> = {
+  success: 'flash-success',
+  error: 'flash-error',
+  info: 'flash-info',
+};
+---
+
+<div
+  class={`flash ${classes[type]}`}
+  role="status"
+  aria-live="polite"
+  data-dismiss={dismissAfterMs ?? ''}
+>
+  <span class="flash-text">{message}</span>
+  <button class="flash-close" type="button" aria-label="Close notification" title="Dismiss">&times;</button>
+</div>
+
+<style>
+  .flash {
+    position: relative;
+    padding: 0.75rem 2.25rem 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 10px;
+    font-weight: 500;
+    max-width: 800px;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+    border: 1px solid transparent;
+  }
+
+  .flash-success { background:#ecfdf5; color:#065f46; border-color:#34d399; }
+  .flash-error   { background:#fef2f2; color:#991b1b; border-color:#f87171; }
+  .flash-info    { background:#eff6ff; color:#1e3a8a; border-color:#60a5fa; }
+
+  .flash.fade-out { opacity: 0; }
+
+  .flash-close {
+    position: absolute;
+    right: .5rem;
+    top: .35rem;
+    border: 0;
+    background: transparent;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flash { transition: none; }
+  }
+</style>
+
+<script type="module">
+  const el = document.currentScript?.previousElementSibling;
+  if (el && el.classList.contains('flash')) {
+    const closeBtn = el.querySelector('.flash-close');
+
+    const getTransitionMs = (node) => {
+      const dur = getComputedStyle(node).transitionDuration || '0s';
+      // Handle "0.6s, 0s" etc. -> take the longest
+      const parts = dur.split(',').map(s => s.trim());
+      const toMs = (s) => s.endsWith('ms') ? parseFloat(s) : parseFloat(s) * 1000;
+      const vals = parts.map(toMs).filter(n => Number.isFinite(n));
+      return vals.length ? Math.max(...vals) : 600;
+    };
+
+    const remove = () => {
+      el.classList.add('fade-out');
+      const ms = getTransitionMs(el);
+      setTimeout(() => el.remove(), ms);
+    };
+
+    // Manual close
+    closeBtn?.addEventListener('click', remove);
+
+    // ESC to close (optional, accessibility nicety)
+    const onKey = (e) => { if (e.key === 'Escape') remove(); };
+    document.addEventListener('keydown', onKey, { once: true });
+
+    // Auto-dismiss if data-dismiss is set
+    const msAttr = Number(el.getAttribute('data-dismiss'));
+    if (Number.isFinite(msAttr) && msAttr > 0) {
+      setTimeout(remove, msAttr);
+    }
+  }
+</script>

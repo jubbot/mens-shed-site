@@ -1,0 +1,174 @@
+---
+// src/pages/dashboard/members/index.astro
+export const prerender = false;
+import Layout from '../../../layouts/Dashboard-Layout.astro';
+---
+<Layout title="Members">
+  <div class="wrapper">
+    <div class="flex between">
+      <h1>Members</h1>
+      <form id="invite-form" class="row gap">
+        <input type="email" id="invite-email" placeholder="email@example.com" required />
+        <select id="invite-role">
+          <option value="member">Member</option>
+          <option value="staff">Staff</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Invite</button>
+        <button type="button" id="create-temp" class="btn">Create w/ Temp</button>
+      </form>
+    </div>
+
+    <div class="row gap mt">
+      <input id="search" placeholder="Search email…" />
+      <button id="refresh" class="btn">Refresh</button>
+    </div>
+
+    <div class="table-wrap mt">
+      <table class="table" id="users-table" aria-live="polite">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last sign-in</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="row mt">
+      <button id="prev">Prev</button>
+      <span id="pageinfo"></span>
+      <button id="next">Next</button>
+    </div>
+
+    <dialog id="temp-dialog">
+      <h3>One-time password (copy now)</h3>
+      <p id="temp-pass" style="font-family:monospace;"></p>
+      <button id="temp-close">Close</button>
+    </dialog>
+  </div>
+
+  <script type="module">
+    let page = 1, perPage = 20, q = '';
+    const tbody = document.querySelector('#users-table tbody');
+    const pageinfo = document.querySelector('#pageinfo');
+
+    async function list() {
+      const res = await fetch(`/api/admin/users/list?page=${page}&perPage=${perPage}&q=${encodeURIComponent(q)}`, { cache:'no-store' });
+      const data = await res.json();
+      tbody.innerHTML = '';
+      if (!data.ok) { tbody.innerHTML = `<tr><td colspan="5">${data.error || 'Error'}</td></tr>`; return; }
+      data.users.forEach(u => {
+        const tr = document.createElement('tr');
+        const status = u.disabled ? 'Disabled' : (u.must_change_password ? 'Temp-login' : 'Active');
+        tr.innerHTML = \`
+          <td>\${u.email}</td>
+          <td>
+            <select data-id="\${u.id}" class="role">
+              <option value="member" \${u.role==='member'?'selected':''}>Member</option>
+              <option value="staff" \${u.role==='staff'?'selected':''}>Staff</option>
+              <option value="admin" \${u.role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </td>
+          <td>\${status}</td>
+          <td>\${u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : '—'}</td>
+          <td class="row gap">
+            <button class="reset" data-email="\${u.email}">Reset</button>
+            <button class="toggle" data-id="\${u.id}" data-disabled="\${u.disabled ? '1':'0'}">\${u.disabled ? 'Enable':'Disable'}</button>
+            <button class="delete danger" data-id="\${u.id}">Delete</button>
+          </td>
+        \`;
+        tbody.appendChild(tr);
+      });
+      pageinfo.textContent = \`Page \${data.page}\`;
+    }
+
+    document.querySelector('#refresh').addEventListener('click', list);
+    document.querySelector('#prev').addEventListener('click', ()=>{ if (page>1){ page--; list(); }});
+    document.querySelector('#next').addEventListener('click', ()=>{ page++; list(); });
+    document.querySelector('#search').addEventListener('input', e => { q = e.target.value; page=1; list(); });
+
+    document.querySelector('#invite-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.querySelector('#invite-email').value.trim();
+      const role = document.querySelector('#invite-role').value;
+      const res = await fetch('/api/admin/users/invite', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ email, role }) });
+      const data = await res.json();
+      alert(data.ok ? 'Invite sent' : data.error || 'Error');
+      if (data.ok) list();
+    });
+
+    document.querySelector('#create-temp').addEventListener('click', async () => {
+      const email = prompt('Email for temp account:');
+      if (!email) return;
+      const role = document.querySelector('#invite-role').value;
+      const res = await fetch('/api/admin/users/create-with-temp', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ email, role }) });
+      const data = await res.json();
+      if (!data.ok) { alert(data.error || 'Error'); return; }
+      const dlg = document.querySelector('#temp-dialog');
+      document.querySelector('#temp-pass').textContent = data.oneTimePassword;
+      dlg.showModal();
+      document.querySelector('#temp-close').onclick = ()=> dlg.close();
+      list();
+    });
+
+    tbody.addEventListener('change', async (e) => {
+      if (e.target.classList.contains('role')) {
+        const id = e.target.getAttribute('data-id');
+        const role = e.target.value;
+        const res = await fetch('/api/admin/users/update-role', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ id, role }) });
+        const data = await res.json();
+        if (!data.ok) alert(data.error || 'Error');
+        else list();
+      }
+    });
+
+    tbody.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      if (btn.classList.contains('reset')) {
+        const email = btn.getAttribute('data-email');
+        const res = await fetch('/api/admin/users/reset', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ email }) });
+        const data = await res.json();
+        alert(data.ok ? 'Reset email sent' : data.error || 'Error');
+      }
+
+      if (btn.classList.contains('toggle')) {
+        const id = btn.getAttribute('data-id');
+        const disabled = btn.getAttribute('data-disabled') === '1';
+        const res = await fetch('/api/admin/users/set-disabled', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ id, disabled: !disabled }) });
+        const data = await res.json();
+        if (!data.ok) alert(data.error || 'Error');
+        list();
+      }
+
+      if (btn.classList.contains('delete')) {
+        if (!confirm('Permanently delete this user?')) return;
+        const id = btn.getAttribute('data-id');
+        const res = await fetch('/api/admin/users/delete', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ id }) });
+        const data = await res.json();
+        if (!data.ok) alert(data.error || 'Error');
+        list();
+      }
+    });
+
+    list(); // initial
+  </script>
+
+  <style>
+    .wrapper { max-width: 1080px; margin: 0 auto; }
+    .row { display:flex; align-items:center; gap:.5rem; }
+    .between { justify-content: space-between; }
+    .gap { gap:.5rem; }
+    .mt { margin-top: 1rem; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: .6rem .5rem; border-bottom: 1px solid #e5e7eb; }
+    .table th { text-align:left; background:#f8fafc; position: sticky; top: 0; }
+    .table-wrap { overflow:auto; border:1px solid var(--border,#e5e7eb); border-radius:12px; }
+  </style>
+</Layout>

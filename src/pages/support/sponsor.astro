@@ -2,31 +2,17 @@
 import Layout from '../../layouts/Layout.astro';
 import SponsorTierSlide from '../../components/SponsorTierSlide.astro';
 import SponsorWall from '../../components/support/SponsorWall.astro';
+import SupportBanner from '../../components/SupportBanner.astro';
 ---
 
 <Layout title="Sponsor the Shed">
   <div class="wrapper support">
+   <SupportBanner
+      title="Sponsor"
+      description="Share your skills (or learn new ones) while helping on community projects. We welcome all experience levels."
+      loadStatsFrom="api"
+    />
 
-    <div class="grid banner">
-      <div class="l-8 m-8 s-12">
-        <div class="crumpbet"><span><a href="/support">Support</a></span></div>
-        <h1 class="l-txt">Sponsor</h1>
-        <p>Thank you to all our sponsors for supporting Men’s Shed Townsville.</p>
-        <div class="statistic grid">
-          <div class="figure"><span class="num">120</span> <span class="label">Active Members</span></div>
-          <div class="figure"><span class="num">1.4K</span> <span class="label">Volunteer Hours</span></div>
-          <div class="figure"><span class="num">85</span> <span class="label">Community Projects</span></div>
-        </div>
-      </div>
-
-      <div class="l-4 m-4 s-4">
-        <div class="tipbox">
-          <h3>How to support us</h3>
-          <p>Townsville men generously volunteer their time and expertise to support local community projects — and they’re seeking your support to continue making a difference.</p>
-          <a class="btn btn-delta" href="/about/governance"><i class="wt-file1"></i> Policies &amp; reports</a>
-        </div>
-      </div>
-    </div>
     <div class="spacer"></div>
     <SponsorWall />
 <div class="spacer"></div>

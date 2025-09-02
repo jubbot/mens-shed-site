@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+export const prerender = false;
+const next = Astro.url.searchParams.get('next') || '/dashboard';
+---
+
+<Layout title="Login – Men’s Shed Hub">
+  <div class="wrapper login">
+    <h1>Login</h1>
+
+    <!-- Plain POST; server redirects on success -->
+    <form action="/api/auth/login" method="post">
+      <input type="hidden" name="next" value={next} />
+      <label>Email <input type="email" name="email" required /></label>
+      <label>Password <input type="password" name="password" required /></label>
+      <button type="submit">Sign in</button>
+    </form>
+
+    {Astro.url.searchParams.get('error') && (
+      <p class="error" role="alert">⚠️ {Astro.url.searchParams.get('error')}</p>
+    )}
+  </div>
+</Layout>

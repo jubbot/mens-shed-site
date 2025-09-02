@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import FAQAccordion from '../../components/FAQAccordion.astro'
+import SupportBanner from '../../components/SupportBanner.astro';
 
 const tabs = [
   { id: 'donate',     label: 'Donate' },
@@ -15,6 +16,12 @@ const tabs = [
 
 <Layout title="Support the Shed">
 <div class="wrapper support">
+   <SupportBanner
+      title="Donate"
+      description="Share your skills (or learn new ones) while helping on community projects. We welcome all experience levels."
+      loadStatsFrom="api"
+    />
+
 <section id="donate">
 <div class="grid gap">
         <div class="l-8 m-8 s-12">

@@ -1,27 +1,148 @@
 ---
-const current = Astro.url.pathname;
+import { getSupabaseServerClient } from '../../lib/supabaseServer';
+
+const path = Astro.url.pathname;
+
+// Mark active for exact or nested paths (e.g. /dashboard/projects/123)
+const isActive = (href: string) =>
+  path === href || (href !== '/' && path.startsWith(href)) ? 'active' : undefined;
+
+// Auth (SSR)
+const supabase = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
+const { data: { user } } = await supabase.auth.getUser();
+
+let displayName: string | null = null;
+if (user) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('id', user.id)
+    .single();
+
+  displayName = data?.display_name || user.email || 'User';
+}
 ---
-<header>
+
+<header class="primary" role="banner">
   <div class="width-fixed grid gap align-bottom">
     <div class="l-4 m-4 s-12">
       <a href="/" class="brand">
-          <img src="/images/mensshed-logo-coloured.svg" alt="Men’s Shed Townsville Logo" width="150" height="auto" />
+        <img src="/images/mensshed-logo-coloured.svg" alt="Men’s Shed Townsville Logo" width="150" height="auto" />
       </a>
-  </div>
-    <!-- Navigation -->
- <div class="l-8 m-8 s-12">
-     <div class="topbar grid align-center content-end">
-        <span><a href="/"><i class="wt-home"></i> Return to Home</a></span>
-        <span><a href="/dashboard/user"><i class="wt-user1"> </i> Hello William Thomas</a></span>
-         </div>
-     <nav class="grid content-end">
-         <div class="has-dropmenu">
-         <a href="/dashboard/products" class={current === '/dashboard/products' ? 'active' : ''}>Products</a></div>
-         <div><a href="/dashboard/projects" class={current === '/dashboard/projects' ? 'active' : ''}>Projects</a></div>
-          <div><a href="/dashboard/events" class={current === '/dashboard/whats-on' ? 'active' : ''}>What's on</a></div>
-         <div><a href="/whats-on" class={current === '/dashboard/members' ? 'active' : ''}>Members</a></div>
-       
-     </nav>
- </div>
     </div>
+
+    <div class="l-8 m-8 s-12">
+      <!-- Topbar -->
+      <div class="topbar grid align-center content-end">
+        <span><a href="/"><i class="wt-home"></i> Return to Home</a></span>
+
+        {user ? (
+          <details class="user-menu">
+            <summary class="user-summary" aria-haspopup="menu" aria-expanded="false">
+              <i class="wt-user1" aria-hidden="true"></i>
+              <span class="hello">Hello {displayName}</span>
+            </summary>
+            <ul class="user-dropdown" role="menu">
+              <li><a role="menuitem" href="/dashboard/user"><i class="wt-user1" aria-hidden="true"></i> Profile</a></li>
+              <li><a role="menuitem" href="/dashboard/settings"><i class="wt-gear" aria-hidden="true"></i> Settings</a></li>
+              <li class="sep" aria-hidden="true"></li>
+              <li>
+                <form action="/api/auth/logout" method="post">
+                  <button role="menuitem" type="submit"><i class="wt-logout" aria-hidden="true"></i> Logout</button>
+                </form>
+              </li>
+            </ul>
+          </details>
+        ) : (
+          <span><a href="/login"><i class="wt-user1"></i> Login</a></span>
+        )}
+      </div>
+
+      <!-- Section Nav -->
+      <nav class="grid content-end dash-nav" aria-label="Dashboard">
+        <div><a href="/dashboard/products" class={isActive('/dashboard/products')} aria-current={isActive('/dashboard/products') ? 'page' : undefined}>Products</a></div>
+        <div><a href="/dashboard/projects" class={isActive('/dashboard/projects')} aria-current={isActive('/dashboard/projects') ? 'page' : undefined}>Projects</a></div>
+        <div><a href="/dashboard/events"   class={isActive('/dashboard/events')}   aria-current={isActive('/dashboard/events') ? 'page' : undefined}>Events</a></div>
+        <div><a href="/dashboard/members"  class={isActive('/dashboard/members')}  aria-current={isActive('/dashboard/members') ? 'page' : undefined}>Members</a></div>
+        <div><a href="/dashboard/settings" class={isActive('/dashboard/settings')} aria-current={isActive('/dashboard/settings') ? 'page' : undefined}>Settings</a></div>
+      </nav>
+    </div>
+  </div>
 </header>
+
+<script type="module">
+  // Auto-close <details.user-menu> on outside click, on item click, or Escape
+  const menu = document.querySelector('.user-menu');
+  if (menu) {
+    const summary = menu.querySelector('.user-summary');
+
+    const close = () => {
+      if (menu.hasAttribute('open')) {
+        menu.removeAttribute('open');
+        summary?.setAttribute('aria-expanded', 'false');
+      }
+    };
+    const open = () => summary?.setAttribute('aria-expanded', 'true');
+
+    // Keep aria-expanded in sync
+    menu.addEventListener('toggle', () => {
+      const expanded = menu.hasAttribute('open');
+      summary?.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+
+    // Click anywhere on the document
+    document.addEventListener('click', (e) => {
+      if (!menu.hasAttribute('open')) return;
+
+      // If click is inside the menu:
+      if (menu.contains(e.target as Node)) {
+        // Close if a menu item (link or button) was clicked
+        const item = (e.target as HTMLElement).closest('.user-dropdown a, .user-dropdown button');
+        if (item) close();
+        return; // otherwise keep it open (e.g. clicking summary)
+      }
+
+      // Clicked outside -> close
+      close();
+    });
+
+    // ESC to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+  }
+</script>
+
+<style>
+  /* Active state for dashboard nav */
+  .dash-nav a.active {
+    color: var(--brand, #2a7f62);
+    font-weight: 700;
+    position: relative;
+    text-decoration: none;
+  }
+  .dash-nav a.active::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -0.35rem;
+    height: 2px; background: currentColor; border-radius: 2px;
+  }
+
+  /* User dropdown via <details> */
+  .user-menu { position: relative; }
+  .user-summary { list-style: none; cursor: pointer; display: inline-flex; gap: .5rem; align-items: center; }
+  .user-summary::-webkit-details-marker { display: none; }
+  .user-dropdown {
+    position: absolute; right: 0; margin: 0; padding: .5rem 0; list-style: none;
+    background: #fff; border: 1px solid var(--border, #e5e7eb); border-radius: 10px;
+    min-width: 200px; box-shadow: 0 8px 28px rgba(0,0,0,.08); z-index: 50;
+  }
+  .user-dropdown li.sep { height: 1px; background: var(--border, #e5e7eb); margin: .35rem 0; }
+  .user-dropdown a, .user-dropdown button {
+    display: block; width: 100%; text-align: left; padding: .55rem .9rem;
+    background: transparent; border: 0; color: inherit; text-decoration: none; cursor: pointer;
+  }
+  .user-dropdown a:hover, .user-dropdown button:hover { background: #f7faf9; }
+  .user-menu[open] > .user-summary { font-weight: 600; }
+</style>
+<div class="spacer"></div>

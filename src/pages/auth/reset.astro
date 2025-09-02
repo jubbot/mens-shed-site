@@ -1,0 +1,43 @@
+---
+// src/pages/auth/reset.astro
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Set a New Password">
+  <div class="wrapper">
+    <h1>Reset your password</h1>
+    <form id="reset-form">
+      <label for="password">New password</label>
+      <input id="password" name="password" type="password" minlength="12" required />
+      <button type="submit">Update password</button>
+      <p id="status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <script type="module">
+    import { createClient } from '@supabase/supabase-js';
+    const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+
+    // If the link used the "code" param flow, exchange it for a session:
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    if (code) {
+      try { await supabase.auth.exchangeCodeForSession(code); } catch (e) {}
+    }
+
+    document.querySelector('#reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = /** @type {HTMLInputElement} */(document.querySelector('#password')).value;
+      const status = /** @type {HTMLElement} */(document.querySelector('#status'));
+
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) { status.textContent = error.message; return; }
+
+      // Clear first-login flag so middleware stops redirecting
+      await supabase.auth.updateUser({ data: { must_change_password: false } });
+
+      status.textContent = 'Password updated.';
+      const next = new URLSearchParams(location.search).get('next');
+      if (next) setTimeout(() => location.href = next, 500);
+    });
+  </script>
+</Layout>

@@ -1,0 +1,186 @@
+---
+export const prerender = false;
+
+import Layout from '../../../layouts/Layout.astro';
+import DashHeader from '../../../components/dashboard/header.astro';
+import { getSupabaseServerClient } from '../../../lib/supabaseServer';
+import { WOOD_TOOLS, METAL_TOOLS } from '../../../constants/tools';
+
+const supa = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
+const { data: { user } } = await supa.auth.getUser();
+if (!user) return Astro.redirect('/login?next=' + encodeURIComponent(Astro.url.pathname));
+
+const slug = Astro.params.slug!;
+
+// Load project by slug OR id
+let { data: project, error: pErr } = await supa
+  .from('projects')
+  .select(`
+    id, title, job_id, slug, summary, status, started_at, volunteers, materials, wood_tools, metal_tools,
+    category_id, subcategory_id,
+    category:project_categories (id,title),
+    subcategory:project_subcategories (id,title),
+    update_at
+  `)
+  .or(`slug.eq.${slug},id.eq.${slug}`)
+  .single();
+
+if (pErr || !project) {
+  return Astro.redirect('/dashboard/projects?flash=custom&type=error&msg=Project%20not%20found');
+}
+
+const { data: me } = await supa.from('profiles').select('role,display_name').eq('id', user.id).single();
+const isAdmin = me?.role === 'admin';
+
+// Taxonomy for edit selects
+const { data: categories = [] } = await supa
+  .from('project_categories').select('id,title').order('title');
+const { data: subcategories = [] } = await supa
+  .from('project_subcategories').select('id,title,parent_category').order('title');
+---
+
+<Layout title={`${project.title} – Projects – Dashboard`}>
+  <DashHeader />
+
+  <section class="wrap">
+    <div class="row">
+      <h1>{project.title}</h1>
+      <span class={`badge badge-${project.status}`}>{project.status}</span>
+    </div>
+
+    <div class="meta">
+      <div><strong>Job ID:</strong> {project.job_id || '—'}</div>
+      <div><strong>Category:</strong> {[project.category?.title, project.subcategory?.title].filter(Boolean).join(' / ') || '—'}</div>
+      <div><strong>Started:</strong> {project.started_at || '—'}</div>
+      <div><strong>Volunteers:</strong> {project.volunteers ?? 0}</div>
+      <div><strong>Views:</strong> {project.views ?? 0}</div>
+    </div>
+
+    <!-- Quick status update -->
+    {isAdmin && (
+      <form action="/api/projects/set-status" method="post" class="status-form">
+        <input type="hidden" name="id" value={project.id} />
+        <label>Status
+          <select name="status" required>
+            <option value="active"    selected={project.status==='active'}>Active</option>
+            <option value="paused"    selected={project.status==='paused'}>Paused</option>
+            <option value="completed" selected={project.status==='completed'}>Completed</option>
+          </select>
+        </label>
+        <button type="submit">Update</button>
+      </form>
+    )}
+
+    <!-- Edit form -->
+    {isAdmin && (
+      <form action="/api/projects/update" method="post" class="form">
+        <input type="hidden" name="id" value={project.id} />
+
+        <fieldset>
+          <legend>Overview</legend>
+          <label>Title<input type="text" name="title" value={project.title} required /></label>
+          <label>Job ID<input type="text" name="job_id" value={project.job_id || ''} /></label>
+          <label>Summary<textarea name="summary" rows="3">{project.summary || ''}</textarea></label>
+
+          <div class="grid">
+            <label>Category
+              <select name="category_id" id="category" required>
+                <option value="">— Select —</option>
+                {categories.map(c => <option value={c.id} selected={project.category_id===c.id}>{c.title}</option>)}
+              </select>
+            </label>
+
+            <label>Subcategory
+              <select name="subcategory_id" id="subcategory">
+                <option value="">— Select —</option>
+                {subcategories.map(sc => (
+                  <option value={sc.id} data-parent={sc.parent_category} selected={project.subcategory_id===sc.id}>{sc.title}</option>
+                ))}
+              </select>
+            </label>
+
+            <label>Started at<input type="date" name="started_at" value={project.started_at || ''} /></label>
+          </div>
+
+          <label>Materials (comma separated)
+            <input type="text" name="materials" value={(project.materials || []).join(', ')} />
+          </label>
+
+          <label>Volunteers
+            <input type="number" name="volunteers" min="0" value={project.volunteers ?? 0} />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tools (Wood)</legend>
+          <div class="chips">
+            {WOOD_TOOLS.map(t => (
+              <label class="chip">
+                <input type="checkbox" name="wood_tools" value={t} checked={(project.wood_tools||[]).includes(t)} /> {t}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tools (Metal)</legend>
+          <div class="chips">
+            {METAL_TOOLS.map(t => (
+              <label class="chip">
+                <input type="checkbox" name="metal_tools" value={t} checked={(project.metal_tools||[]).includes(t)} /> {t}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <a href="/dashboard/projects" class="btn-secondary">Back</a>
+          <button class="btn-primary" type="submit">Save changes</button>
+        </div>
+      </form>
+    )}
+  </section>
+
+  <script type="module">
+    // cascade category -> subcategory
+    const cat = document.getElementById('category') as HTMLSelectElement | null;
+    const sub = document.getElementById('subcategory') as HTMLSelectElement | null;
+    if (cat && sub) {
+      const all = Array.from(sub.querySelectorAll('option[data-parent]'));
+      function filterSubs() {
+        const v = cat.value;
+        const selected = sub.value;
+        sub.querySelectorAll('option[data-parent]').forEach(o => o.remove());
+        if (!v) return;
+        all.filter(o => o.getAttribute('data-parent') === v).forEach(o => sub.appendChild(o));
+        const hasSelected = !!sub.querySelector(`option[value="${CSS.escape(selected)}"]`);
+        if (!hasSelected) sub.value = '';
+      }
+      cat.addEventListener('change', filterSubs);
+      filterSubs();
+    }
+  </script>
+
+  <style>
+    .wrap { width:min(1100px,92%); margin:0 auto; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+    .badge { display:inline-block; padding:.2rem .5rem; border-radius:999px; font-size:.82rem; font-weight:600; border:1px solid transparent; text-transform:capitalize; }
+    .badge-active    { background:#ecfdf5; color:#065f46; border-color:#34d399; }
+    .badge-paused    { background:#fffbeb; color:#92400e; border-color:#fbbf24; }
+    .badge-completed { background:#eff6ff; color:#1e3a8a; border-color:#60a5fa; }
+
+    .meta { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:.5rem; margin:.5rem 0 1rem; }
+    .status-form { margin: .5rem 0 1rem; display:flex; gap:.5rem; align-items:center; }
+
+    form.form { display:grid; gap:1rem; }
+    fieldset { border:1px solid var(--border,#e5e7eb); padding:1rem; border-radius:10px; }
+    legend { font-weight:700; padding:0 .4rem; }
+    label { display:grid; gap:.35rem; margin:.5rem 0; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:.75rem; }
+    .chips { display:flex; flex-wrap:wrap; gap:.5rem .75rem; }
+    .chip { border:1px solid var(--border,#e5e7eb); padding:.35rem .6rem; border-radius:999px; }
+    .actions { display:flex; justify-content:flex-end; gap:.75rem; margin-top:.5rem; }
+    .btn-primary { background:#2a7f62; color:#fff; border:0; padding:.6rem .9rem; border-radius:10px; cursor:pointer; }
+    .btn-secondary { color:#2a7f62; text-decoration:none; padding:.6rem .9rem; border-radius:10px; border:1px solid #2a7f62; }
+  </style>
+</Layout>

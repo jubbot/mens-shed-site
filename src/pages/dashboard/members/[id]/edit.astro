@@ -1,0 +1,85 @@
+---
+export const prerender = false;
+
+import Layout from '../../../../layouts/Dashboard-Layout.astro';
+import { getSupabaseServerClient } from '../../../../lib/supabaseServer';
+
+const supa = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
+const { id } = Astro.params;
+
+const { data: { user } } = await supa.auth.getUser();
+if (!user) return Astro.redirect(`/login?next=/dashboard/members/${id}/edit`);
+
+let { data: member, error } = await supa
+  .from('members')
+  .select('id,email,full_name,role,is_active')
+  .eq('id', id)
+  .single();
+
+if (!member) return Astro.redirect('/dashboard/members?missing=1');
+
+const { data: me } = await supa.from('members').select('role,is_active').eq('id', user.id).single();
+const iAmStaff = me?.is_active && ['admin','staff'].includes(me.role);
+const editingSelf = user.id === id;
+
+// Only staff/admin or self can view; but self can only change their own name
+if (!iAmStaff && !editingSelf) return Astro.redirect('/dashboard?forbidden=1');
+---
+
+<Layout title="Edit Member">
+  <div class="wrap">
+    <h1>Edit member</h1>
+
+    <form method="post" action="/api/admin/members/update" class="form">
+      <input type="hidden" name="id" value={member.id} />
+
+      <p class="email"><strong>{member.email}</strong></p>
+
+      <label>Full name
+        <input name="full_name" value={member.full_name} required />
+      </label>
+
+      {iAmStaff ? (
+        <>
+          <label>Role
+            <select name="role" value={member.role}>
+              <option value="member">Member</option>
+              <option value="staff">Staff</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+
+          <label>Status
+            <select name="is_active" value={String(member.is_active)}>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </label>
+        </>
+      ) : (
+        // Non-staff editing themselves — lock role/status
+        <>
+          <input type="hidden" name="role" value={member.role} />
+          <input type="hidden" name="is_active" value={String(member.is_active)} />
+        </>
+      )}
+
+      <div class="actions">
+        <a class="btn btn-ghost" href="/dashboard/members">Back</a>
+        <button class="btn btn-primary" type="submit">Save changes</button>
+      </div>
+    </form>
+  </div>
+
+  <style>
+    .wrap { width:min(700px,92%); margin:0 auto; }
+    .email { color:#374151; margin-bottom:.25rem; }
+    .form { display:grid; gap:.9rem; margin-top:.75rem; }
+    label { display:grid; gap:.35rem; }
+    input, select { padding:.6rem .7rem; border:1px solid var(--border,#e5e7eb); border-radius:10px; }
+    .actions { display:flex; gap:.6rem; justify-content:flex-end; margin-top:.5rem; }
+    .btn { display:inline-flex; align-items:center; gap:.4rem; border-radius:10px; padding:.5rem .8rem; text-decoration:none; }
+    .btn-primary { background:#2a7f62; color:#fff; border:0; }
+    .btn-ghost { color:#2a7f62; border:1px solid #2a7f62; }
+  </style>
+</Layout>

@@ -1,7 +1,10 @@
 ---
-import { sanity } from '../lib/sanityClient'; // adjust if needed
+import { sanity } from '../lib/sanityClient';
 
-// URL helpers
+// Types
+type Category = { title: string; slug: string; icon?: string };
+
+// URL helpers (unchanged)
 const normalize = (p: string) => (p.endsWith('/') && p !== '/' ? p.slice(0, -1) : p) || '/';
 const current = normalize(Astro.url.pathname);
 const isActive = (href: string, { deep = false } = {}) => {
@@ -9,7 +12,7 @@ const isActive = (href: string, { deep = false } = {}) => {
   return deep ? (current === h || current.startsWith(h + '/')) : current === h;
 };
 
-// SUPPORT — unchanged
+// SUPPORT (unchanged)
 const supportLinks = [
   { href: '/support/donate',    label: 'Donate',                    icon: 'wt-donate' },
   { href: '/support/sponsor',   label: 'Become a Sponsor',          icon: 'wt-users' },
@@ -19,47 +22,43 @@ const supportLinks = [
 ];
 const supportIsOpen = isActive('/support', { deep: true });
 
-// QUERIES
-// Projects: level-one categories (include optional icon if present in schema)
+// GROQ (unchanged)
 const PROJ_TOP_QUERY = `*[_type == "category" && defined(slug.current)]{
   title, "slug": slug.current, icon
 } | order(title asc)`;
 
-// Store: level-one categories (your storeCategory schema)
 const STORE_TOP_QUERY = `*[_type == "storeCategory" && defined(slug.current)]{
   title, "slug": slug.current, icon
 } | order(title asc)`;
 
-// What's on: event types array (strings)
 const EVENT_TYPES_QUERY = `array::unique(*[_type=="whatsOn" && defined(type)].type)`;
 
-// Fetch data
-let projectTopCats = [];
-let storeTopCats   = [];
-let eventTypes     = [];
-try { projectTopCats = await sanity.fetch(PROJ_TOP_QUERY); } catch {}
-try { storeTopCats   = await sanity.fetch(STORE_TOP_QUERY); } catch {}
-try { eventTypes     = (await sanity.fetch(EVENT_TYPES_QUERY)) ?? []; } catch {}
+// Fetch (typed)
+let projectTopCats: Category[] = [];
+let storeTopCats:   Category[] = [];
+let eventTypes:     string[]   = [];
+try { projectTopCats = await sanity.fetch(PROJ_TOP_QUERY) as Category[]; } catch {}
+try { storeTopCats   = await sanity.fetch(STORE_TOP_QUERY)   as Category[]; } catch {}
+try { eventTypes     = await sanity.fetch(EVENT_TYPES_QUERY) as string[]; } catch {}
 
 const projectsOpen = isActive('/projects', { deep: true });
 const storeOpen    = isActive('/store', { deep: true });
 const eventsOpen   = isActive('/whats-on', { deep: true });
 const currentType  = Astro.url.searchParams.get('type') || '';
 
-// ICON HELPERS (override mappings to taste)
-const catIcon = (cat: any) => {
+// ICON HELPERS
+const catIcon = (cat: Category) => {
   if (cat?.icon) return cat.icon;
   const map: Record<string,string> = {
     woodshed: 'wt-mountain',
     metalshed: 'wt-hardware',
     'art-and-craft': 'wt-paintbrush1',
-    
   };
   return map[cat?.slug] || 'wt-product';
 };
 
-const storeIcon = (cat: any) => {
-  if (cat?.icon) return cat.icon; // in case you add icon to storeCategory later
+const storeIcon = (cat: Category) => {
+  if (cat?.icon) return cat.icon;
   const map: Record<string,string> = {
     tools: 'wt-product',
     timber: 'wt-tree',
@@ -87,6 +86,7 @@ const eventTypeIcon = (t: string) => {
   return map[key] || 'wt-product';
 };
 ---
+
 
 <header class="primary">
   <div class="width-fixed grid gap align-bottom">
