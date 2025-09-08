@@ -1,29 +1,36 @@
 import type { MiddlewareHandler } from 'astro';
-import { getSupabaseServerClient } from './lib/supabaseServer';
+import { createServerClient } from '@supabase/ssr';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 export const onRequest: MiddlewareHandler = async (ctx, next) => {
-  const { request, cookies, url } = ctx;
-  const accept = request.headers.get('accept') || '';
-  const isPage = accept.includes('text/html');
-
-  // Protect /dashboard routes
-  if (url.pathname.startsWith('/dashboard') && isPage) {
-    const supa = getSupabaseServerClient({ request, cookies });
-    const { data: { user } } = await supa.auth.getUser();
-
-    if (!user) {
-      const nextParam = encodeURIComponent(url.pathname + url.search);
-      return ctx.redirect(`/login?next=${nextParam}`);
+  const supabase = createServerClient(
+    import.meta.env.PUBLIC_SUPABASE_URL!,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (k) => ctx.cookies.get(k)?.value,
+        set: (k, v, o) => ctx.cookies.set(k, v, o),
+        remove: (k, o) => ctx.cookies.delete(k, o),
+      },
+      // pass through incoming headers (helps SSR libs that inspect them)
+      headers: {
+        get: (k: string) => ctx.request.headers.get(k) ?? undefined,
+      },
     }
+  ) as SupabaseClient;
 
-    // Optional extras
-    if ((user.app_metadata as any)?.disabled) {
-      return ctx.redirect('/login?disabled=1');
-    }
-    if ((user.user_metadata as any)?.must_change_password && !url.pathname.startsWith('/auth/reset')) {
-      return ctx.redirect(`/auth/reset?next=${encodeURIComponent(url.pathname)}`);
-    }
-  }
+  // ⬇️ This may refresh cookies. Do it BEFORE next(), while headers are writable.
+  await supabase.auth.getSession();
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Make available to pages/layouts/components without re-initializing
+  ctx.locals.supabase = supabase;
+  ctx.locals.user = user as User | null;
+
+if (!user && ctx.url.pathname.startsWith('/dashboard')) {
+  return ctx.redirect(`/login?next=${encodeURIComponent(ctx.url.pathname)}`);
+}
 
   return next();
 };

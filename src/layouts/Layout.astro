@@ -1,64 +1,27 @@
 ---
-export const prerender = false; // ensure SSR so cookies/headers are writable
+export const prerender = false;
 
 import Header from '../components/header1.astro';
 import Footer from '../components/footer.astro';
 import "../styles/global.scss";
-import { createServerClient } from '@supabase/ssr';
 
-interface Props {
-  /** Pass only the part AFTER the pipe, e.g. "Category — Subcategory — Project Title" */
-  title?: string;
-  /** If provided, use this exact string for <title> (bypasses the site-name prefix) */
-  fullTitle?: string;
-  /** Optional meta description */
-  description?: string;
-  /** Social/OG image: absolute or relative path */
-  image?: string;
-  /** Alt text for the social image */
-  imageAlt?: string;
-  /** Open Graph type: 'website' | 'article' (default 'website') */
-  ogType?: 'website' | 'article';
-  /** Set true to add robots noindex,nofollow */
-  noIndex?: boolean;
-}
+interface Props { /* ...same as yours... */ }
 
 const SITE_NAME = "Men's Shed Townsville";
-
 const {
-  title = "",
-  fullTitle = "",
-  description = "",
-  image = "",
-  imageAlt = "",
-  ogType = "website",
-  noIndex = false,
+  title = "", fullTitle = "", description = "", image = "", imageAlt = "",
+  ogType = "website", noIndex = false,
 } = Astro.props as Props;
 
 const computedTitle = fullTitle ? fullTitle : (title ? `${SITE_NAME} | ${title}` : SITE_NAME);
 const metaDescription = description || "Men's Shed Townsville community projects and events.";
-
 const canonicalUrl = Astro.url?.href ?? "";
 const ogImage = image ? new URL(image, Astro.url).href : "";
 const twitterCard = ogImage ? "summary_large_image" : "summary";
 
-/** Supabase SSR: create client & sync cookies BEFORE any HTML is sent */
-const supabase = createServerClient(
-  import.meta.env.PUBLIC_SUPABASE_URL!,
-  import.meta.env.PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    cookies: {
-      get: (k) => Astro.cookies.get(k)?.value,
-      set: (k, v, o) => Astro.cookies.set(k, v, o),
-      remove: (k, o) => Astro.cookies.delete(k, o),
-    },
-  }
-);
-
-// Trigger early cookie refresh so headers can be written safely
-await supabase.auth.getSession();
-
-const { data: { user } } = await supabase.auth.getUser();
+/** ✅ Use middleware-provided client & user */
+const supabase = Astro.locals.supabase;
+const user = Astro.locals.user;
 
 type Profile = { first_name?: string | null; last_name?: string | null; display_name?: string | null };
 let profile: Profile | null = null;
@@ -72,7 +35,6 @@ if (user) {
     .single();
 
   profile = data ?? null;
-
   if (data?.first_name || data?.last_name) {
     displayName = `${data?.first_name ?? ''} ${data?.last_name ?? ''}`.trim();
   } else {
@@ -80,10 +42,9 @@ if (user) {
   }
 }
 ---
-
 <!doctype html>
 <html lang="en">
-  <head>
+    <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -119,12 +80,9 @@ if (user) {
     />
 
     <slot name="head" />
-  </head>
   <body>
     <Header user={user} profile={profile} displayName={displayName} />
-    <main>
-      <slot />
-    </main>
+    <main><slot /></main>
     <Footer />
   </body>
 </html>

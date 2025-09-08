@@ -1,6 +1,10 @@
 ---
 export const prerender = false;
-
+const FEATURE_SANITY_DISABLED = true;
+if (FEATURE_SANITY_DISABLED) {
+  const message = "This section is being migrated to Supabase.";
+  return <div style="padding:2rem"><h2>{message}</h2></div>;
+}
 import ProjectList from '../../components/ProjectList.astro';
 import { sanity } from '../../lib/sanityClient';
 
