@@ -9,8 +9,6 @@ const message =
     ? 'Please sign in to continue'
     : null;
 
-{message && <p style="color:#b45309;background:#fef3c7;padding:.5rem 1rem;border-radius:.375rem">{message}</p>}
-
 const supa = getSupabaseServerClient(Astro);
 const { data: { user } } = await supa.auth.getUser();
 
@@ -28,6 +26,12 @@ const { data: members, error } = await supa
 
 <Layout title="Members Dashboard">
   <h1>Members</h1>
+
+  {message && (
+    <p style="color:#b45309;background:#fef3c7;padding:.5rem 1rem;border-radius:.375rem">
+      {message}
+    </p>
+  )}
 
   {error && <p style="color:red">Error loading members: {error.message}</p>}
 
