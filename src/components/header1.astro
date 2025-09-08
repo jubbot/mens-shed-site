@@ -1,29 +1,28 @@
 ---
-import { getSupabaseServerClient } from '../lib/supabaseServer';
+interface Props {
+  currentPath?: string;
+  user?: any;
+  displayName?: string | null;
+  profile?: { first_name?: string | null; last_name?: string | null; display_name?: string | null } | null;
+}
 
-interface Props { currentPath?: string }
-const { currentPath } = Astro.props as Props;
+const { currentPath, user, displayName } = Astro.props as Props;
 const path = currentPath ?? Astro.url.pathname;
 
 const isActive = (href: string) =>
   path === href || (href !== '/' && path.startsWith(href)) ? 'active' : '';
-
-// SSR: show greeting when layout/page is SSR
-const supabase = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
-const { data: { user } } = await supabase.auth.getUser();
-
-let displayName: string | null = null;
-if (user) {
-  const { data } = await supabase.from('profiles').select('display_name').eq('id', user.id).single();
-  displayName = data?.display_name || user.email || 'User';
-}
 ---
 
 <header class="primary" role="banner">
   <div class="width-fixed grid gap align-bottom">
     <div class="l-4 m-4 s-12">
       <a href="/" class="brand">
-        <img src="/images/mensshed-logo-coloured.svg" alt="Men’s Shed Townsville Logo" width="150" height="auto" />
+        <img
+          src="/images/mensshed-logo-coloured.svg"
+          alt="Men’s Shed Townsville Logo"
+          width="150"
+          height="auto"
+        />
       </a>
     </div>
 
@@ -32,16 +31,17 @@ if (user) {
         <span><a href="/job-form"><i class="wt-clipboard"></i> Start Job</a></span>
         <span><a href="/membership"><i class="wt-user1"></i> Become a member</a></span>
 
-        <!-- SSR if available; otherwise client script will upgrade this slot -->
         <span id="auth-slot" data-ssr-user={displayName ? '1' : '0'}>
-          {displayName ? (
+          {user && displayName ? (
             <details class="user-menu">
               <summary class="user-summary">
                 <i class="wt-user1" aria-hidden="true"></i>
                 <span class="hello">Hello {displayName}</span>
               </summary>
               <ul class="user-dropdown">
-                <li><a href="/dashboard"><i class="wt-mountain" aria-hidden="true"></i> Dashboard</a></li>
+                <li>
+                  <a href="/dashboard"><i class="wt-mountain" aria-hidden="true"></i> Dashboard</a>
+                </li>
                 <li>
                   <form action="/api/auth/logout" method="post">
                     <button type="submit"><i class="wt-logout" aria-hidden="true"></i> Logout</button>
@@ -57,7 +57,11 @@ if (user) {
 
       <nav class="grid content-end main-nav" role="navigation" aria-label="Primary">
         <div class="has-dropmenu">
-          <a href="/projects" class={isActive('/projects')} aria-current={isActive('/projects') ? 'page' : undefined}>
+          <a
+            href="/projects"
+            class={isActive('/projects')}
+            aria-current={isActive('/projects') ? 'page' : undefined}
+          >
             Projects
           </a>
           <ul class="dropmenu" aria-label="Projects submenu">
@@ -70,14 +74,22 @@ if (user) {
         </div>
 
         <div class="has-dropmenu">
-          <a href="/support" class={isActive('/support')} aria-current={isActive('/support') ? 'page' : undefined}>
+          <a
+            href="/support"
+            class={isActive('/support')}
+            aria-current={isActive('/support') ? 'page' : undefined}
+          >
             Support
           </a>
           <ul class="dropmenu" aria-label="Support submenu"><li></li></ul>
         </div>
 
         <div class="has-dropmenu">
-          <a href="/store" class={isActive('/store')} aria-current={isActive('/store') ? 'page' : undefined}>
+          <a
+            href="/store"
+            class={isActive('/store')}
+            aria-current={isActive('/store') ? 'page' : undefined}
+          >
             Store
           </a>
           <ul class="dropmenu" aria-label="Store submenu">
@@ -90,7 +102,11 @@ if (user) {
         </div>
 
         <div class="has-dropmenu">
-          <a href="/whats-on" class={isActive('/whats-on')} aria-current={isActive('/whats-on') ? 'page' : undefined}>
+          <a
+            href="/whats-on"
+            class={isActive('/whats-on')}
+            aria-current={isActive('/whats-on') ? 'page' : undefined}
+          >
             What's on
           </a>
           <ul class="dropmenu" aria-label="What's on submenu">
@@ -103,7 +119,11 @@ if (user) {
         </div>
 
         <div>
-          <a href="/contact" class={isActive('/contact')} aria-current={isActive('/contact') ? 'page' : undefined}>
+          <a
+            href="/contact"
+            class={isActive('/contact')}
+            aria-current={isActive('/contact') ? 'page' : undefined}
+          >
             Contact
           </a>
         </div>

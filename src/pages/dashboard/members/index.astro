@@ -1,0 +1,56 @@
+---
+import Layout from '../../../layouts/Dashboard-Layout.astro';
+import { getSupabaseServerClient } from '../../../lib/supabaseServer';
+
+const url = new URL(Astro.request.url);
+const msg = url.searchParams.get('msg');
+const message =
+  msg === 'signin'
+    ? 'Please sign in to continue'
+    : null;
+
+{message && <p style="color:#b45309;background:#fef3c7;padding:.5rem 1rem;border-radius:.375rem">{message}</p>}
+
+const supa = getSupabaseServerClient(Astro);
+const { data: { user } } = await supa.auth.getUser();
+
+// Only staff/admin allowed
+if (!user) return Astro.redirect('/login');
+if (!['admin','staff'].includes(user.role)) {
+  return Astro.redirect('/dashboard'); 
+}
+
+const { data: members, error } = await supa
+  .from('members')
+  .select('id, full_name, email, role, is_active, created_at')
+  .order('created_at', { ascending: false });
+---
+
+<Layout title="Members Dashboard">
+  <h1>Members</h1>
+
+  {error && <p style="color:red">Error loading members: {error.message}</p>}
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Joined</th>
+      </tr>
+    </thead>
+    <tbody>
+      {members?.map(m => (
+        <tr>
+          <td>{m.full_name}</td>
+          <td>{m.email}</td>
+          <td>{m.role}</td>
+          <td>{m.is_active ? 'Active' : 'Disabled'}</td>
+          <td>{new Date(m.created_at).toLocaleDateString()}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Layout>

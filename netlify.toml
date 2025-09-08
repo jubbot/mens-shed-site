@@ -1,0 +1,22 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  # Astro SSR output lives in functions, ensure ES modules are supported
+  node_bundler = "esbuild"
+  external_node_modules = ["@supabase/ssr"]
+
+[[redirects]]
+  # Redirect all requests to Astro’s SSR handler (server.mjs in Netlify Functions)
+  from = "/*"
+  to = "/.netlify/functions/entry"
+  status = 200
+
+[headers]
+  # Ensure Supabase auth cookies can flow
+  # HttpOnly/SameSite/secure flags are set by Supabase already
+  [[headers.values]]
+  Access-Control-Allow-Origin = "*"
+  Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+  Access-Control-Allow-Headers = "Content-Type, Authorization, apikey"

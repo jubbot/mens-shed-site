@@ -1,23 +1,90 @@
 ---
-import Layout from '../layouts/Layout.astro';
 export const prerender = false;
-const next = Astro.url.searchParams.get('next') || '/dashboard';
+
+import { createServerClient } from '@supabase/ssr';
+
+let errorMsg: string | null = null;
+let message: string | null = null;
+
+// Build a server-side Supabase client bound to cookies
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL!,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    cookies: {
+      get: (key) => Astro.cookies.get(key)?.value,
+      set: (key, value, options) => Astro.cookies.set(key, value, options),
+      remove: (key, options) => Astro.cookies.delete(key, options),
+    },
+  }
+);
+
+// Read query params for friendly messages and "next" redirect
+const url = new URL(Astro.request.url);
+const msgParam = url.searchParams.get('msg');
+const nextParam = url.searchParams.get('next') || '/dashboard';
+if (msgParam === 'signin') message = 'Please sign in to continue';
+
+// Handle only real form POSTs with the right Content-Type
+const isPost = Astro.request.method === 'POST';
+const ct = Astro.request.headers.get('content-type') || '';
+const isFormPost =
+  ct.startsWith('application/x-www-form-urlencoded') ||
+  ct.startsWith('multipart/form-data');
+
+if (isPost && isFormPost) {
+  const formData = await Astro.request.formData();
+  const email = String(formData.get('email') || '');
+  const password = String(formData.get('password') || '');
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    // generic, safe error
+    errorMsg = 'Invalid email or password';
+  } else if (data?.user) {
+    // success: redirect to next or dashboard
+    return Astro.redirect(nextParam);
+  }
+}
 ---
 
-<Layout title="Login – Men’s Shed Hub">
-  <div class="wrapper login">
-    <h1>Login</h1>
+<html lang="en">
+  <head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body style="max-width: 520px; margin: 3rem auto; font-family: system-ui, sans-serif;">
+    <h1 style="margin-bottom: 1rem;">Login</h1>
 
-    <!-- Plain POST; server redirects on success -->
-    <form action="/api/auth/login" method="post">
-      <input type="hidden" name="next" value={next} />
-      <label>Email <input type="email" name="email" required /></label>
-      <label>Password <input type="password" name="password" required /></label>
-      <button type="submit">Sign in</button>
-    </form>
-
-    {Astro.url.searchParams.get('error') && (
-      <p class="error" role="alert">⚠️ {Astro.url.searchParams.get('error')}</p>
+    {message && (
+      <p style="color:#92400e;background:#fef3c7;padding:.6rem .8rem;border-radius:.5rem;margin:.5rem 0 1rem;">
+        {message}
+      </p>
     )}
-  </div>
-</Layout>
+    {errorMsg && (
+      <p style="color:#b91c1c;background:#fee2e2;padding:.6rem .8rem;border-radius:.5rem;margin:.5rem 0 1rem;">
+        {errorMsg}
+      </p>
+    )}
+
+    <form method="POST" style="display:grid; gap:.75rem;">
+      <input type="hidden" name="next" value={nextParam} />
+      <label>
+        <div>Email</div>
+        <input name="email" type="email" required
+               style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:.5rem;" />
+      </label>
+
+      <label>
+        <div>Password</div>
+        <input name="password" type="password" required
+               style="width:100%;padding:.6rem;border:1px solid #ddd;border-radius:.5rem;" />
+      </label>
+
+      <button type="submit" style="padding:.7rem 1rem;border:0;border-radius:.5rem;background:#111;color:#fff;">
+        Sign in
+      </button>
+    </form>
+  </body>
+</html>

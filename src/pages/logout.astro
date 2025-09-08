@@ -1,5 +1,12 @@
 ---
-import { supabase } from '../lib/supabaseClient';
-Astro.redirect('/');
-await supabase.auth.signOut();
+import Layout from '@/layouts/Layout.astro';
 ---
+<Layout title="Logout">
+  <p class="muted">Signing you out…</p>
+  <script type="module">
+    import { createClient } from '@supabase/supabase-js';
+    const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+    await supabase.auth.signOut();
+    location.href = '/login';
+  </script>
+</Layout>

@@ -1,0 +1,32 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+<Layout title="Set a New Password">
+  <div class="panel">
+    <h1>Reset your password</h1>
+    <form id="reset-form">
+      <label for="password">New password</label>
+      <input id="password" name="password" type="password" minlength="12" required />
+      <button type="submit" class="btn btn-primary">Update password</button>
+      <p id="status" role="status" aria-live="polite" class="muted"></p>
+    </form>
+  </div>
+  <script type="module">
+    import { createClient } from '@supabase/supabase-js';
+    const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    if (code) { try { await supabase.auth.exchangeCodeForSession(code); } catch {} }
+    document.querySelector('#reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.querySelector('#password').value;
+      const status = document.querySelector('#status');
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) { status.textContent = error.message; return; }
+      await supabase.auth.updateUser({ data: { must_change_password: false } });
+      status.textContent = 'Password updated. Redirecting…';
+      const next = params.get('next') || '/dashboard';
+      setTimeout(()=>location.href=next, 500);
+    });
+  </script>
+</Layout>

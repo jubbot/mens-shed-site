@@ -1,26 +1,11 @@
 ---
 export const prerender = false;
 import Layout from '../../layouts/Dashboard-Layout.astro';
-import { getSupabaseServerClient } from '../../lib/supabaseServer';
-
-const supa = getSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
-const { data: { user } } = await supa.auth.getUser();
-
-if (!user) return Astro.redirect(`/login?next=/dashboard`);
-
-const { data: profile } = await supa.from('profiles').select('display_name,role').eq('id', user.id).single();
-const { data: stats }   = await supa.from('site_stats').select('key,value').limit(10);
 ---
-
-<Layout title="Dashboard – Men’s Shed Townsville">
-  
-  <div class="wrapper">
-  <h1>Welcome{profile?.display_name ? `, ${profile.display_name}` : ''}</h1>
-  <p>Role: {profile?.role ?? 'member'}</p>
-
-  <section>
-    <h2>Stats</h2>
-    <pre>{JSON.stringify(stats ?? [], null, 2)}</pre>
-  </section>
+<Layout title="Dashboard">
+  <div class="panel">
+    <h1>Dashboard</h1>
+    <p>Protected area. Only visible if signed in.</p>
+    <p>Go to <a href="/dashboard/members">Members</a> if you're admin/staff.</p>
   </div>
 </Layout>

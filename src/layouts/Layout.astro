@@ -1,18 +1,25 @@
 ---
-export const prerender = false;
+export const prerender = false; // ensure SSR so cookies/headers are writable
 
 import Header from '../components/header1.astro';
 import Footer from '../components/footer.astro';
-import FlashMessage from '../components/FlashMessage.astro';
 import "../styles/global.scss";
+import { createServerClient } from '@supabase/ssr';
 
 interface Props {
+  /** Pass only the part AFTER the pipe, e.g. "Category — Subcategory — Project Title" */
   title?: string;
+  /** If provided, use this exact string for <title> (bypasses the site-name prefix) */
   fullTitle?: string;
+  /** Optional meta description */
   description?: string;
+  /** Social/OG image: absolute or relative path */
   image?: string;
+  /** Alt text for the social image */
   imageAlt?: string;
+  /** Open Graph type: 'website' | 'article' (default 'website') */
   ogType?: 'website' | 'article';
+  /** Set true to add robots noindex,nofollow */
   noIndex?: boolean;
 }
 
@@ -35,27 +42,42 @@ const canonicalUrl = Astro.url?.href ?? "";
 const ogImage = image ? new URL(image, Astro.url).href : "";
 const twitterCard = ogImage ? "summary_large_image" : "summary";
 
-/** Flash: login/logout banners */
-type FlashType = 'success' | 'error' | 'info';
-type Flash = { message: string; type: FlashType; dismissAfterMs?: number };
+/** Supabase SSR: create client & sync cookies BEFORE any HTML is sent */
+const supabase = createServerClient(
+  import.meta.env.PUBLIC_SUPABASE_URL!,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    cookies: {
+      get: (k) => Astro.cookies.get(k)?.value,
+      set: (k, v, o) => Astro.cookies.set(k, v, o),
+      remove: (k, o) => Astro.cookies.delete(k, o),
+    },
+  }
+);
 
-const params = Astro.url.searchParams;
-const flashParam = params.get('flash');
-let flash: Flash | null = null;
+// Trigger early cookie refresh so headers can be written safely
+await supabase.auth.getSession();
 
-if (flashParam === 'welcome') {
-  flash = { message: '👋 Welcome back!', type: 'success', dismissAfterMs: 4000 };
-} else if (flashParam === 'loggedOut') {
-  flash = { message: '✅ Successfully logged out', type: 'success', dismissAfterMs: 4000 };
-} else if (flashParam === 'loginError') {
-  flash = { message: '⚠️ Invalid email or password', type: 'error', dismissAfterMs: 6000 };
-} else if (flashParam === 'custom') {
-  // Optional generic flash via ?flash=custom&msg=...&type=success|error|info
-  const rawMsg = params.get('msg') || '';
-  const t = (params.get('type') || 'info') as FlashType;
-  // Simple safety: trim and cap length
-  const safeMsg = rawMsg.trim().slice(0, 200);
-  if (safeMsg) flash = { message: safeMsg, type: ['success','error','info'].includes(t) ? t : 'info', dismissAfterMs: 5000 };
+const { data: { user } } = await supabase.auth.getUser();
+
+type Profile = { first_name?: string | null; last_name?: string | null; display_name?: string | null };
+let profile: Profile | null = null;
+let displayName: string | null = null;
+
+if (user) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('first_name,last_name,display_name')
+    .eq('id', user.id)
+    .single();
+
+  profile = data ?? null;
+
+  if (data?.first_name || data?.last_name) {
+    displayName = `${data?.first_name ?? ''} ${data?.last_name ?? ''}`.trim();
+  } else {
+    displayName = data?.display_name ?? user.email ?? 'User';
+  }
 }
 ---
 
@@ -66,20 +88,15 @@ if (flashParam === 'welcome') {
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#2a7f62" />
 
     <title>{computedTitle}</title>
 
-    <!-- Canonical -->
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
-    <!-- Robots -->
     {noIndex && <meta name="robots" content="noindex,nofollow" />}
 
-    <!-- Basic meta -->
     <meta name="description" content={metaDescription} />
 
-    <!-- Open Graph -->
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:type" content={ogType} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
@@ -88,13 +105,12 @@ if (flashParam === 'welcome') {
     {ogImage && <meta property="og:image" content={ogImage} />}
     {ogImage && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
 
-    <!-- Twitter -->
     <meta name="twitter:card" content={twitterCard} />
     <meta name="twitter:title" content={computedTitle} />
     <meta name="twitter:description" content={metaDescription} />
     {ogImage && <meta name="twitter:image" content={ogImage} />}
 
-    <!-- Fonts -->
+    <!-- Fonts only (no Sanity) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -102,14 +118,11 @@ if (flashParam === 'welcome') {
       rel="stylesheet"
     />
 
-    <!-- (Perf) Remove global reCAPTCHA; include it only on pages that need it via <slot name="head" /> -->
     <slot name="head" />
   </head>
   <body>
-    <Header currentPath={Astro.url.pathname} />
-    <main id="main">
-      <div id="flash-root"></div>
-      {flash && <FlashMessage {...flash} />}
+    <Header user={user} profile={profile} displayName={displayName} />
+    <main>
       <slot />
     </main>
     <Footer />
