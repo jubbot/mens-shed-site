@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getSupabaseServerClient } from '@/lib/supabaseServer';
+import { getSupabaseServerClient } from '../lib/supabaseServer';
 
 export async function requireStaff(ctx: Parameters<APIRoute>[0]) {
   // @ts-ignore
